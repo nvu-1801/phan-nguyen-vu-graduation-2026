@@ -1,0 +1,107 @@
+{
+  "generatedDate": "2026-11-19",
+  "motionSource": "Local Portfolio 3D workspace; no git metadata",
+  "skillsUpstreamCommit": "48377973bd111a14f1fd5542bfecea1cf48ba5d1",
+  "files": [
+    {
+      "path": "assets/originals/vu-9505.jpg",
+      "bytes": 8831397,
+      "sha256": "52dc6b066862e1229d77dc7f2e713774487b3c5a639e946183babec6c5c696a9"
+    },
+    {
+      "path": "assets/originals/vu-9516.jpg",
+      "bytes": 10242827,
+      "sha256": "96129681674fceac274cf3a66a19104921ba26e80e19bff51aff2ae9c75ac1ee"
+    },
+    {
+      "path": "vendor/motion-kit/camera.ts",
+      "bytes": 4191,
+      "sha256": "7d267118bbc252c75afbdf138e09d0f2d9545630afa24a673339411a3a64bda6"
+    },
+    {
+      "path": "vendor/motion-kit/CameraRig.tsx",
+      "bytes": 4206,
+      "sha256": "894015c4bcfb82bf725f669435996657fd67f00e60089bc756278c4b1cf021a6"
+    },
+    {
+      "path": "vendor/motion-kit/DebugHud.tsx",
+      "bytes": 1844,
+      "sha256": "1888c3d956f699d59d21d9729331efa49a4999ee27537bffecd2fd159fc465eb"
+    },
+    {
+      "path": "vendor/motion-kit/DeviceScreen.tsx",
+      "bytes": 2599,
+      "sha256": "fc662a8ef30d92b03b1e0cf35b4de40958673ea56198ed9be24c4aff4abdc0ed"
+    },
+    {
+      "path": "vendor/motion-kit/fonts.ts",
+      "bytes": 610,
+      "sha256": "40b6de31a3f53390991cdf39c79a783e8146b33b142dac0ef423ab602e3db5ab"
+    },
+    {
+      "path": "vendor/motion-kit/geometry.ts",
+      "bytes": 1239,
+      "sha256": "871dcc38987dc2bd454f73de47dc2d826780174ad56654540e875e64d61efc1e"
+    },
+    {
+      "path": "vendor/motion-kit/index.ts",
+      "bytes": 1433,
+      "sha256": "148164e9d5220be739c29b4385397510ec650380d3329841648a16c6cb95bf18"
+    },
+    {
+      "path": "vendor/motion-kit/LayerStack.tsx",
+      "bytes": 2450,
+      "sha256": "afe60d33257171b8a55cdaef1f0341d4a50a60ec9341cdc2f3a3ef93d1593797"
+    },
+    {
+      "path": "vendor/motion-kit/MotionPreferences.tsx",
+      "bytes": 1610,
+      "sha256": "559b370a8ea1923b64f8b85bfcac119dc265a2c6f56c1624cb098ff4907f675f"
+    },
+    {
+      "path": "vendor/motion-kit/registry.ts",
+      "bytes": 3138,
+      "sha256": "fc904d5b27261d07a60281937ea39c557ee799b058d7daab7a744f5b97cb74db"
+    },
+    {
+      "path": "vendor/motion-kit/scene-context.ts",
+      "bytes": 801,
+      "sha256": "03c46db9b5415426fcfd38eb365d77539c9ec7fb9907b6eea8223c18e155c506"
+    },
+    {
+      "path": "vendor/motion-kit/SceneCanvas.tsx",
+      "bytes": 4609,
+      "sha256": "6082aad25c9fdfe462ade2747c1a7e30acf4d8dc458a68703f9ea742df13086e"
+    },
+    {
+      "path": "vendor/motion-kit/SceneFallback.tsx",
+      "bytes": 1363,
+      "sha256": "73dd2bdd0e297045c3d5fd44194c3d7ab1822a79243422952b653bbdf1d58110"
+    },
+    {
+      "path": "vendor/motion-kit/ScrollScene.tsx",
+      "bytes": 10140,
+      "sha256": "69b6533b27146498ff958f0c58670de951a7e94bc55b7d3e0defc69cf2876788"
+    },
+    {
+      "path": "vendor/motion-kit/StoryChapter.tsx",
+      "bytes": 1253,
+      "sha256": "41d3c814e7d756de3337fe6c5726c1ff5dd1640270ee4b60f7c2f29944c65193"
+    },
+    {
+      "path": "vendor/motion-kit/styles.css",
+      "bytes": 9399,
+      "sha256": "e1d446af756eca2eb66a988352b20434a26c7f17d4b7f7c095dbf9f513a874cd"
+    },
+    {
+      "path": "vendor/motion-kit/types.ts",
+      "bytes": 2713,
+      "sha256": "f340582eed944db9ee9d7f6917660bbbf3782627cdb25a8ac1f62b776f4eab64"
+    },
+    {
+      "path": "vendor/motion-kit/presets/travel.ts",
+      "bytes": 1727,
+      "sha256": "31c976244dd3dd43f2254d53d3a5267a4335f61fccc6074f969486da5fbdff54"
+    }
+  ]
+}
