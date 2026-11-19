@@ -1,12 +1,12 @@
 # Prompt cho chat web thực thi
 
-Dùng sau khi bộ bàn giao đã được push lên repo đích. Thay URL, branch, SHA bằng kết quả thật; không để placeholder trong task được lên lịch.
+Bộ bàn giao đã được push lên repo private. URL, branch và bootstrap SHA bên dưới là thật. Chat web phải có quyền đọc repo private và môi trường thực thi code.
 
 ```text
 Hãy build website thiệp mời tốt nghiệp của tôi, Phan Nguyên Vũ, dựa trên repo:
-REPOSITORY_URL: <điền URL repo nvu-1801 đã push>
-BOOTSTRAP_BRANCH: <branch thật>
-BOOTSTRAP_SHA: <commit thật chứa docs, ảnh và motion source>
+REPOSITORY_URL: https://github.com/nvu-1801/phan-nguyen-vu-graduation-2026
+BOOTSTRAP_BRANCH: main
+BOOTSTRAP_SHA: 390d2129ee1b82823963de711bad8909c44c26d9
 
 Đây là phiên thực thi dự kiến bắt đầu 03:00 ngày 20/11/2026 giờ Việt Nam (UTC+7), không phải giới hạn làm việc 3 giờ. Hãy thực hiện công việc trong môi trường code có quyền đọc repo, chạy lệnh, push GitHub và deploy Vercel. Nếu môi trường lịch không thực thi code, nói rõ giới hạn, không báo giả đã build/push.
 
