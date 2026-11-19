@@ -102,6 +102,11 @@
       "path": "vendor/motion-kit/presets/travel.ts",
       "bytes": 1727,
       "sha256": "31c976244dd3dd43f2254d53d3a5267a4335f61fccc6074f969486da5fbdff54"
+    },
+    {
+      "path": "assets/payments/vu-coffee-vietqr.png",
+      "bytes": 84882,
+      "sha256": "6c1d757af4815ce7ca6b67dd5ab3ad4bc1bbe2677cca63c33dc85fdfb149483e"
     }
   ],
   "hashBasis": "Git blob bytes (LF-normalized text); original JPEG bytes unchanged"

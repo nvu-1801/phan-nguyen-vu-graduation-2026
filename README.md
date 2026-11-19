@@ -16,6 +16,6 @@ Bootstrap để chat web triển khai website thiệp mời tốt nghiệp. **Ch
 - Ba skill UI/motion trong `docs/graduation/skills/`.
 - Content, kiến trúc SQLite, API, pipeline, kiểm thử và Vercel trong kế hoạch.
 
-DB production chưa được cấp: đề xuất libSQL từ xa tương thích SQLite để giữ dữ liệu trên Vercel; không dùng file SQLite tạm trên serverless. QR cà phê tắt cho đến khi có thông tin thật. Không đưa dữ liệu khách của web tham khảo vào ứng dụng.
+DB production chưa được cấp: đề xuất libSQL từ xa tương thích SQLite để giữ dữ liệu trên Vercel; không dùng file SQLite tạm trên serverless. Đã có QR cà phê do người dùng cung cấp tại assets/payments/vu-coffee-vietqr.png; số liên hệ 0343628267. Đọc cập nhật cuối kế hoạch để bật section này. Không đưa dữ liệu khách của web tham khảo vào ứng dụng.
 
 Không có lịch tự động hoặc Vercel project được tạo trong bước bootstrap. Người dùng sẽ giao prompt cho phiên chat web có môi trường code và quyền GitHub/Vercel.

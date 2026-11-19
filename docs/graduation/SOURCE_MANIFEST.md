@@ -24,3 +24,6 @@ Các đoạn ghi “chưa đóng gói/chưa copy” trong kế hoạch là lịc
 ## Runner web cần làm
 
 Đọc IMPLEMENTATION_PLAN.md và WEB_CHAT_PROMPT.md, xem cả hai ảnh, tạo app root package mới, tích hợp vendor/motion-kit cần thiết, xử lý derivatives public bỏ EXIF, implement UI và backend, kiểm thử rồi deploy theo quyền trong prompt người dùng gửi.
+
+## Asset bổ sung
+Người dùng cung cấp assets/payments/vu-coffee-vietqr.png và số liên hệ 0343628267. Bật khối cà phê theo cập nhật cuối IMPLEMENTATION_PLAN.md; hash ảnh QR có trong assets/manifest.json. Chưa quét xác minh payload thanh toán.

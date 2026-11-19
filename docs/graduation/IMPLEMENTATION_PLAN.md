@@ -219,3 +219,15 @@ Agent dài hạn kiểm tra quota thật lúc đầu, trước pha lớn và kho
 - libSQL tương thích SQLite: https://docs.turso.tech/libsql
 
 Chưa chạy build/test của website mới vì chưa implement. Các kết quả test trong README portfolio thuộc dự án cũ, không phải bằng chứng cho website tốt nghiệp.
+
+## Cập nhật người dùng — QR cà phê và liên hệ (19/11/2026)
+
+Cập nhật này thay thế mọi chỉ dẫn trước đó về tắt khối cà phê hoặc chưa có số điện thoại.
+
+- Người dùng đã cung cấp QR ngân hàng để bạn bè mời cà phê: `assets/payments/vu-coffee-vietqr.png`.
+- Số liên hệ: **0343628267**, hiển thị **0343 628 267**, liên kết `tel:+84343628267`. Không tự suy ra Zalo hoặc kênh khác.
+- Bật section cà phê tùy chọn: “Mời Vũ một ly cà phê” / “Một lời chúc hay một ly cà phê đều là món quà mình trân quý. Cảm ơn bạn đã tiếp năng lượng cho chặng đường mới!” Không bắt buộc RSVP, không khóa lời chúc sau thanh toán.
+- QR phải dùng nguyên ảnh cung cấp, không tạo lại bằng AI, không crop vùng mã/quiet zone, không bo góc phủ mã hoặc overlay logo; giữ tỷ lệ, nền sáng, kích thước đủ đọc trên mobile, cho tải ảnh gốc và xem lớn. Khi mở modal cần focus trap, Escape và trả focus về nút mở.
+- Chưa xác minh payload ngân hàng/tên người nhận/số tài khoản. Không tự điền ngân hàng, tài khoản, số tiền hoặc xác nhận đã nhận tiền. UI ghi “Vui lòng kiểm tra tên người nhận trong ứng dụng ngân hàng trước khi chuyển.” Không tự động mở giao dịch hoặc yêu cầu số tiền.
+- Kiểm thử QR bằng điện thoại/ứng dụng phù hợp nếu có thiết bị; nếu chưa quét thử phải báo rõ, không tuyên bố đã xác minh chuyển khoản.
+- Repo bootstrap là private. Người dùng cung cấp QR và SĐT cho website mời bạn bè; đưa hai thông tin này vào UI theo yêu cầu, không đưa secret hoặc dữ liệu khách lên public.
