@@ -9,4 +9,3 @@ description: Implement WebGL or React Three Fiber scenes for web UI, including s
 - Keep text and CTA in semantic HTML. Reserve the stage size and load the renderer separately. Confirm version compatibility from the target lockfile.
 - Cap device pixel ratio and test frame time on mobile. Dispose GPU resources on teardown. Keep a poster visible when WebGL is unavailable or reduced motion is enabled.
 - For externally authored GLB, verify scale, orientation, texture weight and asset provenance before integration.
-

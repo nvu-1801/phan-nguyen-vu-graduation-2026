@@ -11,4 +11,3 @@ description: Design polished responsive web interfaces, landing pages and portfo
 - Use a consistent crop ratio on cards and keep prices, durations and statuses legible when images fail. Validate the design in the smallest supported viewport.
 
 - Trace the actual theme/override source before introducing font/color literals. Reuse semantic roles and light/dark/state variants; keep different brands separate. A new screen should not establish a second token scale for the same role.
-

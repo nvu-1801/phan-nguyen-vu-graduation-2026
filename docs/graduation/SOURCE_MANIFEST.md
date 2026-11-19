@@ -5,7 +5,7 @@ Ngày đóng gói: 19/11/2026. Repo: https://github.com/nvu-1801/phan-nguyen-vu-
 ## Đã đóng gói
 
 - Hai ảnh JPEG gốc trong assets/originals, chưa chỉnh sửa/crop/resize. Không có ảnh 9511.
-- Motion kit: vendor/motion-kit (20 files); dependency evidence: vendor/source-package.json và source-package-lock.json.
+- Motion kit: vendor/motion-kit (18 files); dependency evidence: vendor/source-package.json và source-package-lock.json.
 - Tài liệu tích hợp/kiến trúc/pattern: docs/motion-kit.
 - Plan, prompt và 3 skill snapshots: docs/graduation.
 - README, AGENTS, CONTINUE, env example và git ignore. Chưa implement app hoặc deploy.

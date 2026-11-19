@@ -103,5 +103,6 @@
       "bytes": 1727,
       "sha256": "31c976244dd3dd43f2254d53d3a5267a4335f61fccc6074f969486da5fbdff54"
     }
-  ]
+  ],
+  "hashBasis": "Git blob bytes (LF-normalized text); original JPEG bytes unchanged"
 }
