@@ -170,8 +170,6 @@ dialog::backdrop { background: #162d45aa; }
 .postcards figure { padding: .4rem; background: var(--white); }
 .postcards img { aspect-ratio: 4/5; height: auto; object-fit: cover; }
 .postcards figcaption { padding: .35rem; font-size: .75rem; }
-.map-details { margin-top: 1rem; }
-.map-details summary { cursor: pointer; padding-block: .5rem; }
 @media (max-width: 430px) {
   .wrap { width: calc(100% - 32px); }
   .hero h1 { font-size: clamp(2.6rem, 11vw, 3.4rem); }
@@ -184,4 +182,29 @@ dialog::backdrop { background: #162d45aa; }
   .photo-poster { position: static; }
 }
 
-.map-details iframe { display: block; width: 100%; height: clamp(240px, 50vw, 400px); border: 0; margin-top: .75rem; }
+
+.venue {
+  color: #f5fbff;
+  background: radial-gradient(ellipse at 85% 0%, #35607b 0, transparent 57%), linear-gradient(125deg, #132d43, #23475e);
+  padding-block: clamp(2.75rem, 7vw, 6rem);
+}
+.venue-grid { display: grid; grid-template-columns: minmax(0, .85fr) minmax(0, 1.15fr); align-items: center; gap: clamp(1.5rem, 5vw, 5rem); }
+.venue h2 { line-height: 1.04; }
+.venue h2 em { color: #c5e6ff; font-weight: inherit; }
+.venue h3 { font: 650 1.08rem/1.4 var(--sans); margin-top: 1.45rem; }
+.venue p { margin-top: .5rem; color: #d8e8f4; max-width: 34ch; }
+.venue-directions { width: 100%; background: #dcefff; color: #132d43; margin-top: 1.5rem; }
+.venue-directions:hover { background: #fff; }
+.venue-links { display: grid; grid-template-columns: repeat(2, minmax(0,1fr)); gap: .5rem .9rem; margin-top: .45rem; align-items: center; }
+.venue-links > a { padding-block: .7rem; font-size: .83rem; }
+.venue-links button { border-color: #b5d2e47a; }
+.venue-links button:hover { background: #ffffff20; }
+.venue-links [role="status"] { grid-column: 1 / -1; font-size: .78rem; }
+.venue-links [role="status"]:empty { display: none; }
+.venue :focus-visible { outline-color: #dcefff; }
+.venue-map { padding: .45rem; background: #ffffff30; border: 1px solid #d5ebfb60; border-radius: .8rem; }
+.venue-map iframe { display: block; width: 100%; height: clamp(300px, 33vw, 480px); border: 0; border-radius: .4rem; background: #edf5fb; }
+@media (max-width: 760px) {
+  .venue-grid { grid-template-columns: 1fr; }
+  .venue-map iframe { height: clamp(280px, 82vw, 370px); }
+}

@@ -65,10 +65,10 @@ export function SmsLink({ children, message }: { children: string; message: stri
 }
 
 export function MapPreview() {
-  const [expanded, setExpanded] = useState(false);
   const query = encodeURIComponent(event.venue + ", " + event.address);
-  return <div className="map-details">
-    <button className="button button-line" type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{expanded ? "Ẩn bản đồ" : "Xem bản đồ"}</button>
-    {expanded && <iframe title="Bản đồ địa điểm tổ chức lễ tốt nghiệp" src={`https://maps.google.com/maps?q=${query}&output=embed`} loading="lazy" />}
+  return <div className="venue-map">
+    <iframe title="Bản đồ Trung tâm Hội nghị tỉnh Gia Lai"
+      src={`https://maps.google.com/maps?q=${query}&output=embed`}
+      loading="lazy" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
   </div>;
 }

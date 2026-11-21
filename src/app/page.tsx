@@ -89,11 +89,20 @@ export default function Invitation() {
         </div>
       </section>
       {!online && <section id="loi-chuc" className="letter-section"><div className="wrap response-inner"><h2>Gửi Vũ vài dòng</h2><p>Nếu có điều gì bạn muốn nhắn mình trước ngày tốt nghiệp, mình rất vui được đọc.</p><SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink></div></section>}
-      <section id="duong-di" className="wrap response-inner">
-        <h2>Đường đến buổi lễ</h2>
-        <p>{event.venue}<br />{event.address}</p>
-        <div className="actions"><a className="button button-dark" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường</a><CopyAddress /></div>
-        <MapPreview />
+      <section id="duong-di" className="venue" aria-labelledby="venue-heading">
+        <div className="wrap venue-grid">
+          <div className="venue-copy">
+            <h2 id="venue-heading">Hẹn gặp bạn<br /><em>tại đây</em></h2>
+            <h3>{event.venue}</h3>
+            <p>{event.address}</p>
+            <a className="button venue-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường đến lễ tốt nghiệp</a>
+            <div className="venue-links">
+              <a href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a>
+              <CopyAddress />
+            </div>
+          </div>
+          <MapPreview />
+        </div>
       </section>
     </main>
 
