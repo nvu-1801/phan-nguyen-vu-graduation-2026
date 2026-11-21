@@ -31,7 +31,7 @@ function PublicEntries({ kind, revision }: { kind: Kind; revision: number }) {
       setCursor(page.nextCursor);
       setCounts(page.counts);
     } catch {
-      if (!controller.signal.aborted) setError("Chưa tải được danh sách.");
+      if (!controller.signal.aborted) setError("Không tải được danh sách.");
     } finally {
       if (!controller.signal.aborted) setLoading(false);
     }
@@ -53,7 +53,7 @@ function PublicEntries({ kind, revision }: { kind: Kind; revision: number }) {
     {error && <p role="status">{error} <button className="text-button" type="button" onClick={() => void load()}>Thử lại</button></p>}
     {!loading && !error && items.length === 0 && <p>{kind === "rsvp"
       ? "Chưa có phản hồi được chia sẻ công khai."
-      : "Trang giấy còn trống. Bạn muốn gửi lời chúc đầu tiên chứ?"}</p>}
+      : "Chưa có lời chúc công khai."}</p>}
     {!loading && !error && cursor && <button type="button" className="text-button" onClick={() => void load(cursor)}>Xem thêm</button>}
   </div>;
 }
@@ -114,13 +114,13 @@ export function Guestbook({ kind }: { kind: Kind }) {
           <label><input type="radio" name="attendance" value="yes" defaultChecked required /> Mình sẽ đến</label>
           <label><input type="radio" name="attendance" value="no" required /> Gửi lời chúc từ xa</label>
         </div>}
-        <label>Tên của bạn<input name="name" autoComplete="name" required maxLength={80} placeholder="Bạn muốn Vũ gọi bạn là gì?" /></label>
-        <label>{isRsvp ? "Lời nhắn riêng (không bắt buộc)" : "Lời chúc của bạn"}<textarea name="message" rows={4} required={!isRsvp} maxLength={1000} placeholder={isRsvp ? "Nhắn riêng cho Vũ…" : "Gửi Vũ đôi dòng…"} /></label>
+        <label>Tên của bạn<input name="name" autoComplete="name" required maxLength={80} placeholder="Tên của bạn" /></label>
+        <label>{isRsvp ? "Lời nhắn riêng (không bắt buộc)" : "Lời chúc của bạn"}<textarea name="message" rows={4} required={!isRsvp} maxLength={1000} placeholder={isRsvp ? "Lời nhắn cho Vũ" : "Lời chúc"} /></label>
         <div hidden><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
         <label className="checkbox"><input type="checkbox" name="consent" />{isRsvp
           ? "Cho phép hiển thị tên và trạng thái tham dự."
           : "Cho phép hiển thị tên và lời chúc sau khi duyệt."}</label>
-        <button type="submit" className="button button-dark">{pending ? "Đang gửi…" : isRsvp ? "Gửi xác nhận" : "Gửi lời chúc"} <span aria-hidden="true">↗</span></button>
+        <button type="submit" className="button button-dark">{pending ? "Đang gửi…" : isRsvp ? "Gửi xác nhận" : "Gửi lời chúc"}</button>
       </fieldset>
       <p role="status" className="form-feedback">{feedback}</p>
       <noscript><p>Vui lòng bật JavaScript để gửi phản hồi.</p></noscript>

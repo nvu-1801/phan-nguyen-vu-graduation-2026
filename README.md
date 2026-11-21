@@ -36,10 +36,10 @@ npm run moderate -- cleanup
 
 Dùng cấu hình DB đúng môi trường khi chạy. Chỉ lời chúc đã duyệt và có consent mới xuất hiện. RSVP công khai chỉ hiện tên và trạng thái khi khách đồng ý, lời nhắn RSVP luôn riêng tư.
 
-## Vercel Preview
+## Vercel
 
-Gắn DB libSQL dành riêng cho Preview, ví dụ Turso Cloud. Đặt `DATABASE_URL` và `DATABASE_AUTH_TOKEN` ở môi trường Preview hoặc dùng `TURSO_DATABASE_URL` và `TURSO_AUTH_TOKEN` do tích hợp Turso cung cấp. Đặt `RATE_LIMIT_SECRET` dưới dạng biến nhạy cảm ở Preview. Có thể đặt `NEXT_PUBLIC_SITE_URL` nếu dùng URL chuẩn riêng.
+Có thể phát hành thiệp mời và liên hệ trực tiếp khi chưa cấu hình DB. Trang sẽ hiển thị nút SMS/gọi điện trong mục xác nhận. Khi kết nối DB, website hiển thị form RSVP và lời chúc như ở bản chạy cục bộ.
 
-Nạp biến bằng kênh bảo mật rồi chạy `npm run db:migrate` trên DB Preview trước khi tạo deployment. Deploy đúng SHA đã qua CI của `preview/graduation-2026` bằng một luồng deploy, với Vercel Authentication. Xác minh HTTPS, health, ảnh, luồng gửi nhận và dữ liệu còn sau redeploy. Dọn dữ liệu thử theo đúng ID thử nghiệm. Thư mục SQLite trên Vercel không phải nơi lưu dữ liệu của ứng dụng.
+Để dùng form trên Vercel, đặt `DATABASE_URL` và `DATABASE_AUTH_TOKEN` (hoặc `TURSO_DATABASE_URL` và `TURSO_AUTH_TOKEN`) cho môi trường tương ứng. Tách DB Preview và Production. Đặt `RATE_LIMIT_SECRET` dưới dạng biến nhạy cảm. Có thể đặt `NEXT_PUBLIC_SITE_URL` cho URL chuẩn.
 
-Ảnh và nội dung sự kiện chưa xác nhận chính thức được ghi trong kế hoạch. Việc mở quyền truy cập và phát hành Production cần quyết định riêng.
+Nạp các biến bằng kênh bảo mật và chạy `npm run db:migrate` trên DB được chọn. Redeploy, kiểm tra health và dữ liệu gửi qua form. Thư mục SQLite trên máy chạy Vercel không phải là nơi lưu dữ liệu của ứng dụng.

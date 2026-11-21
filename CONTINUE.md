@@ -2,17 +2,13 @@
 
 Mục tiêu là thiệp mời tốt nghiệp của Phan Nguyên Vũ chạy trên Vercel Preview riêng. Nhánh thực hiện `preview/graduation-2026`, tiếp nối commit `0581d38d8c88cfa23fe35512550dd5519d5f7b74`.
 
-## Ứng dụng
+## Kế hoạch chỉnh giao diện
 
-- Next.js App Router và TypeScript, giao diện tiếng Việt với vé mời, đếm ngược, tải lịch, thư, RSVP, sổ lưu bút, QR và liên kết Google Maps.
-- Tích hợp camera/progress từ motion kit vào hai postcard, với poster HTML khi tắt motion hoặc WebGL hỏng.
-- SQLite/libSQL, migration bổ sung lời nhắn RSVP riêng tư, validation/consent, idempotency, rate limit, phân trang, health và CLI kiểm duyệt.
-- CI checkout đầy đủ, xử lý ảnh gốc, build và Playwright. QR đã đối chiếu SHA-256. Trình kết nối GitHub xác minh được blob của hai JPEG nhưng không chuyển được byte gốc vào shell. CI kiểm tra SHA-256 từng ảnh, sinh WebP bỏ EXIF rồi kiểm tra tải ảnh trên trình duyệt. Chưa kiểm tra crop/mặt/mũ, tách nền hoặc ảnh campus.
-- Lint, TypeScript, production build với chế độ fallback cục bộ, 1 test SQLite và 9 bài Playwright đã qua. Test ảnh thật/WebGL fallback chờ checkout đầy đủ. Axe tại 390px không có vi phạm serious/critical.
-- Không đọc được quota Codex thực và chưa quét QR bằng ứng dụng ngân hàng thật.
+1. Bố cục thiệp giữ ảnh chân dung làm trọng tâm. Dùng nền giấy ấm và đỏ nâu lấy từ dải khăn trong ảnh. Phần mở đầu có một lời mời, ngày dự kiến và một nút xác nhận.
+2. Gộp ngày, địa chỉ, bản đồ và lịch vào một mục. Giữ cả hai ảnh thật, bỏ khối cuộn 3D, đếm ngược và các đoạn dẫn lặp. Đưa QR cà phê xuống chân trang.
+3. Khi Vercel chưa có DB, dùng nút nhắn tin và gọi điện. Khi có DB đúng cấu hình, hiển thị lại form và danh sách phản hồi. Backend SQLite/libSQL, migration và kiểm duyệt tiếp tục dùng được.
+4. Chạy CI trên nhánh Preview trước khi cập nhật main. Deploy Production từ SHA đã kiểm thử, xác minh trang mở được, ảnh tải và các nút liên hệ có đúng đích.
 
-## Phát hành
+## Hạ tầng
 
-- Project Vercel `phan-nguyen-vu-graduation-2026` đã tạo trong `nguyen-vus-projects-0643d880`, bật Vercel Authentication cho Preview và thiết lập biến rate-limit chỉ cho Preview. Project chưa liên kết GitHub để tránh một lượt triển khai main ngoài phạm vi.
-- Thiếu DB libSQL Preview và thông tin xác thực. Vercel Marketplace yêu cầu đăng nhập để cấp Turso. Cần gắn một DB Preview riêng, chạy migration, kiểm tra CI ở SHA đầu nhánh, rồi triển khai Preview và xác minh dữ liệu vẫn còn sau redeploy.
-- Không có URL website Preview hoặc Production ở thời điểm checkpoint.
+Project Vercel: `phan-nguyen-vu-graduation-2026` trong `nguyen-vus-projects-0643d880`. Phát hành giao diện với lựa chọn liên hệ trực tiếp theo yêu cầu. Webform cần DB SQLite-compatible có lưu trữ lâu dài. Cấu hình kết nối và migration ở README.

@@ -7,7 +7,7 @@ import "@fontsource-variable/playfair-display/wght-italic.css";
 import "./globals.css";
 
 const siteUrl = process.env.NEXT_PUBLIC_SITE_URL || (process.env.VERCEL_URL ? `https://${process.env.VERCEL_URL}` : undefined);
-const description = "Hẹn bạn trong ngày mình tốt nghiệp. Thiệp mời tốt nghiệp của Phan Nguyên Vũ tại Đại học FPT Quy Nhơn.";
+const description = "Thiệp mời lễ tốt nghiệp của Phan Nguyên Vũ, Đại học FPT Quy Nhơn.";
 
 export const metadata: Metadata = {
   title: "Phan Nguyên Vũ · Tốt nghiệp 2026",
