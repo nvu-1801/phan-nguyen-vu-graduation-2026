@@ -1,7 +1,7 @@
 export const event = {
   name: "Phan Nguyên Vũ",
-  school: "Đại học FPT · Quy Nhơn",
-  date: "Chủ nhật, 20.12.2026",
+  school: "Đại học FPT Quy Nhơn",
+  date: "Chủ nhật, 20/12/2026",
   countdown: "2026-12-20T00:00:00+07:00",
   venue: "Trung tâm Hội nghị tỉnh Gia Lai",
   address: "01 Nguyễn Tất Thành, phường Quy Nhơn, tỉnh Gia Lai",

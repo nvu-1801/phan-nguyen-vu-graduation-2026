@@ -1,6 +1,7 @@
 "use client";
 
-import { useRef } from "react";
+import { useEffect, useRef, useState } from "react";
+import { event } from "@/content/event";
 
 export function CoffeeQr() {
   const dialog = useRef<HTMLDialogElement>(null);
@@ -21,4 +22,23 @@ export function CoffeeQr() {
     </dialog>
     <noscript><p><a href="/payments/vu-coffee-vietqr.png">Mở ảnh mã QR</a></p></noscript>
   </>;
+}
+
+export function Countdown() {
+  const [days, setDays] = useState<number | null>(null);
+
+  useEffect(() => {
+    function update() {
+      setDays(Math.max(0, Math.ceil((Date.parse(event.countdown) - Date.now()) / 86_400_000)));
+    }
+    const initial = window.setTimeout(update, 0);
+    const interval = window.setInterval(update, 60_000);
+    return () => {
+      window.clearTimeout(initial);
+      window.clearInterval(interval);
+    };
+  }, []);
+
+  if (!days) return null;
+  return <p className="countdown">Còn <strong>{days} ngày</strong> đến ngày dự kiến</p>;
 }

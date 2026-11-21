@@ -42,12 +42,12 @@ await mkdir(new URL("../public/payments/", import.meta.url), { recursive: true }
 await writeFile(new URL("../public/payments/vu-coffee-vietqr.png", import.meta.url), qr);
 
 const art = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="1200" height="630">
-  <rect width="1200" height="630" fill="#f7f2e9"/>
-  <path d="M78 111h550M78 518h550" stroke="#cbbbae" fill="none"/>
-  <text x="82" y="170" fill="#6d312b" font-size="25" font-family="sans-serif">Đại học FPT · Quy Nhơn</text>
-  <text x="76" y="275" fill="#271e1c" font-size="67" font-family="serif">Lễ tốt nghiệp</text>
-  <text x="76" y="365" fill="#6d312b" font-size="74" font-family="serif" font-style="italic">của Vũ</text>
-  <text x="82" y="445" fill="#271e1c" font-size="30" font-family="sans-serif">20.12.2026</text>
+  <rect width="1200" height="630" fill="#edf5fb"/>
+  <path d="M78 111h550M78 518h550" stroke="#abc5d7" fill="none"/>
+  <text x="82" y="170" fill="#23557a" font-size="25" font-family="sans-serif">Đại học FPT Quy Nhơn</text>
+  <text x="76" y="275" fill="#162d45" font-size="67" font-family="serif">Lễ tốt nghiệp</text>
+  <text x="76" y="365" fill="#23557a" font-size="74" font-family="serif" font-style="italic">của Vũ</text>
+  <text x="82" y="445" fill="#162d45" font-size="30" font-family="sans-serif">20/12/2026</text>
 </svg>`);
 const layers = [];
 if (manifest.length === 8) {
@@ -56,7 +56,7 @@ if (manifest.length === 8) {
   layers.push({ input: image, left: 784, top: 75 });
 }
 await sharp(art).composite(layers).png().toFile(new URL("graduation-og.png", output).pathname);
-const icon = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="10" fill="#6d312b"/><path fill="#f7f2e9" d="M13 15h9l12 30 12-30h7L36 53h-6z"/><circle cx="50" cy="48" r="5" fill="#f7f2e9"/></svg>`);
+const icon = Buffer.from(`<svg xmlns="http://www.w3.org/2000/svg" width="64" height="64"><rect width="64" height="64" rx="10" fill="#23557a"/><path fill="#edf5fb" d="M13 15h9l12 30 12-30h7L36 53h-6z"/><circle cx="50" cy="48" r="5" fill="#edf5fb"/></svg>`);
 await sharp(icon).png().toFile(new URL("graduation-icon.png", output).pathname);
 await writeFile(new URL("manifest.json", output), JSON.stringify(manifest, null, 2) + "\n");
 await writeFile(new URL("../src/content/photos.generated.ts", import.meta.url), `export const photosAvailable = ${manifest.length === 8};\n`);
