@@ -1,4 +1,4 @@
-import { CoffeeQr, Countdown, CopyAddress } from "@/components/EventActions";
+import { CoffeeQr, Countdown, CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
 import { Guestbook } from "@/components/Guestbook";
 import { PhotoStory } from "@/components/PhotoStory";
 import { Portrait } from "@/components/Portrait";
@@ -81,19 +81,19 @@ export default function Invitation() {
           </> : <>
             <p>Bạn nhắn mình để xác nhận tham dự hoặc gửi lời chúc nếu không thể đến nhé.</p>
             <div className="actions">
-              <a className="button button-dark" href={`sms:${event.tel}`}>Mình sẽ đến</a>
+              <SmsLink message="Vũ ơi, mình sẽ đến dự lễ tốt nghiệp của bạn.">Mình sẽ đến</SmsLink>
               <a className="button button-line" href="#loi-chuc">Mình gửi lời chúc từ xa</a>
               <a className="button button-line" href={`tel:${event.tel}`}>Gọi {event.phone}</a>
             </div>
           </>}
         </div>
       </section>
-      {!online && <section id="loi-chuc" className="letter-section"><div className="wrap response-inner"><h2>Gửi Vũ vài dòng</h2><p>Nếu có điều gì bạn muốn nhắn mình trước ngày tốt nghiệp, mình rất vui được đọc.</p><a className="button button-dark" href={`sms:${event.tel}`}>Gửi lời chúc</a></div></section>}
+      {!online && <section id="loi-chuc" className="letter-section"><div className="wrap response-inner"><h2>Gửi Vũ vài dòng</h2><p>Nếu có điều gì bạn muốn nhắn mình trước ngày tốt nghiệp, mình rất vui được đọc.</p><SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink></div></section>}
       <section id="duong-di" className="wrap response-inner">
         <h2>Đường đến buổi lễ</h2>
         <p>{event.venue}<br />{event.address}</p>
         <div className="actions"><a className="button button-dark" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường</a><CopyAddress /></div>
-        <details className="map-details"><summary>Xem bản đồ</summary><a href={mapsUrl} target="_blank" rel="noreferrer">Mở bản đồ trong Google Maps</a></details>
+        <MapPreview />
       </section>
     </main>
 

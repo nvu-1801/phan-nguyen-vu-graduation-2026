@@ -140,3 +140,14 @@ test("deployed invitation without a database gives working contact links", async
   await expect(page.locator("main form")).toHaveCount(0);
   expect(requests.some(url => /\/api\/(guests|wishes|rsvps)$/.test(url))).toBe(false);
 });
+
+test("loads the Three.js scene on scroll at phone width", async ({ page }) => {
+  test.skip(!photosRequired, "Original photos are required for the scene.");
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.goto("/");
+  await page.locator(".story").scrollIntoViewIfNeeded();
+  await expect(page.locator(".photo-stage-live canvas")).toBeVisible({ timeout: 15000 });
+  await page.mouse.wheel(0, 220);
+  await page.mouse.wheel(0, -220);
+  await expect(page.locator(".photo-stage-live canvas")).toBeVisible();
+});

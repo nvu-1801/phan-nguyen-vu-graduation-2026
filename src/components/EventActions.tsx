@@ -55,3 +55,20 @@ export function CopyAddress() {
   }
   return <><button className="button button-line" type="button" onClick={copy}>Sao chép địa chỉ</button><span role="status">{message}</span></>;
 }
+
+export function SmsLink({ children, message }: { children: string; message: string }) {
+  function open(eventClick: React.MouseEvent<HTMLAnchorElement>) {
+    const ios = /iPhone|iPad|iPod/.test(navigator.userAgent);
+    eventClick.currentTarget.href = `sms:${event.tel}${ios ? "&" : "?"}body=${encodeURIComponent(message)}`;
+  }
+  return <a className="button button-dark" href={`sms:${event.tel}`} onClick={open}>{children}</a>;
+}
+
+export function MapPreview() {
+  const [expanded, setExpanded] = useState(false);
+  const query = encodeURIComponent(event.venue + ", " + event.address);
+  return <div className="map-details">
+    <button className="button button-line" type="button" aria-expanded={expanded} onClick={() => setExpanded(!expanded)}>{expanded ? "Ẩn bản đồ" : "Xem bản đồ"}</button>
+    {expanded && <iframe title="Bản đồ địa điểm tổ chức lễ tốt nghiệp" src={`https://maps.google.com/maps?q=${query}&output=embed`} loading="lazy" />}
+  </div>;
+}
