@@ -42,3 +42,16 @@ export function Countdown() {
   if (!days) return null;
   return <p className="countdown">Còn <strong>{days} ngày</strong> đến ngày dự kiến</p>;
 }
+
+export function CopyAddress() {
+  const [message, setMessage] = useState("");
+  async function copy() {
+    try {
+      await navigator.clipboard.writeText(event.address);
+      setMessage("Đã sao chép địa chỉ.");
+    } catch {
+      setMessage("Bạn có thể chọn và sao chép địa chỉ ở phía trên.");
+    }
+  }
+  return <><button className="button button-line" type="button" onClick={copy}>Sao chép địa chỉ</button><span role="status">{message}</span></>;
+}

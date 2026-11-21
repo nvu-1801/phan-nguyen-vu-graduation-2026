@@ -17,7 +17,7 @@ for (const [width, height] of [[360, 800], [390, 844], [768, 1024], [1440, 900]]
     const errors: string[] = [];
     page.on("pageerror", error => errors.push(error.message));
     await page.goto("/");
-    await expect(page.getByRole("heading", { name: "Lễ tốt nghiệp của Vũ" })).toBeVisible();
+    await expect(page.getByRole("heading", { name: "Phan Nguyên Vũ" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Xác nhận tham dự" })).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
     if (photosRequired) await expect.poll(() => page.locator(".hero-frame img").evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
@@ -61,7 +61,7 @@ test("both portraits and the calendar are served", async ({ page, request }) => 
   test.skip(!photosRequired, "Originals are available in full repository checkouts.");
   await page.goto("/");
   const images = page.locator("main figure img");
-  await expect(images).toHaveCount(2);
+  await expect(images).toHaveCount(3);
   for (const image of await images.all()) {
     await image.scrollIntoViewIfNeeded();
     await expect.poll(() => image.evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
@@ -135,7 +135,7 @@ test("deployed invitation without a database gives working contact links", async
   const requests: string[] = [];
   page.on("request", req => requests.push(req.url()));
   await page.goto("http://127.0.0.1:3218/");
-  await expect(page.getByRole("link", { name: "Nhắn tin cho Vũ" })).toHaveAttribute("href", /^sms:/);
+  await expect(page.getByRole("link", { name: "Mình sẽ đến" })).toHaveAttribute("href", /^sms:/);
   await expect(page.getByRole("link", { name: /^Gọi / })).toHaveAttribute("href", /^tel:/);
   await expect(page.locator("main form")).toHaveCount(0);
   expect(requests.some(url => /\/api\/(guests|wishes|rsvps)$/.test(url))).toBe(false);
