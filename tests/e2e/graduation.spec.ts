@@ -20,7 +20,7 @@ for (const [width, height] of [[360, 800], [390, 844], [768, 1024], [1440, 900]]
     await expect(page.getByRole("heading", { name: "Lễ tốt nghiệp của Vũ" })).toBeVisible();
     await expect(page.getByRole("link", { name: "Xác nhận tham dự" })).toBeVisible();
     await page.evaluate(() => document.fonts.ready);
-    if (photosRequired) await expect.poll(() => page.locator(".hero-photo img").evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
+    if (photosRequired) await expect.poll(() => page.locator(".hero-frame img").evaluate((img: HTMLImageElement) => img.naturalWidth)).toBeGreaterThan(0);
     expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(width);
     await expect(page.locator("canvas")).toHaveCount(0);
     await page.screenshot({ path: info.outputPath(`graduation-${width}.png`), fullPage: true });
