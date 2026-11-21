@@ -19,3 +19,10 @@ playwright-report/
 blob-report/
 *.log
 .DS_Store
+public/images/vu-*.webp
+public/images/manifest.json
+src/content/photos.generated.ts
+.next-dev/
+public/payments/vu-coffee-vietqr.png
+public/images/graduation-*.png
+next-env.d.ts

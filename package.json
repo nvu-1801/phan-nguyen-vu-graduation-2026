@@ -1,0 +1,46 @@
+{
+  "name": "phan-nguyen-vu-graduation-2026",
+  "version": "0.1.0",
+  "scripts": {
+    "images": "node scripts/process-images.mjs",
+    "predev": "npm run images",
+    "dev": "next dev",
+    "prebuild": "npm run images",
+    "build": "next build",
+    "start": "next start",
+    "lint": "eslint .",
+    "typecheck": "npm run images && next typegen && tsc --noEmit",
+    "test": "node --test tests/db/*.test.mjs",
+    "test:browser": "playwright test",
+    "db:migrate": "node scripts/migrate.mjs",
+    "moderate": "node scripts/moderate.mjs"
+  },
+  "dependencies": {
+    "@fontsource-variable/playfair-display": "5.3.0",
+    "@fontsource/be-vietnam-pro": "5.3.0",
+    "@libsql/client": "0.18.0",
+    "@react-three/fiber": "9.8.2",
+    "gsap": "3.15.1",
+    "next": "16.4.6",
+    "react": "19.3.1",
+    "react-dom": "19.3.1",
+    "sharp": "0.35.5",
+    "three": "0.187.0",
+    "zod": "4.6.7"
+  },
+  "devDependencies": {
+    "@axe-core/playwright": "4.14.0",
+    "@playwright/test": "1.65.1",
+    "@types/node": "24.19.2",
+    "@types/react": "19.3.0",
+    "@types/react-dom": "19.3.0",
+    "@types/three": "0.187.0",
+    "eslint": "9.39.5",
+    "eslint-config-next": "16.4.6",
+    "typescript": "6.0.3"
+  },
+  "private": true,
+  "engines": {
+    "node": "24.x"
+  }
+}

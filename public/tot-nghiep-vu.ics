@@ -1,0 +1,15 @@
+BEGIN:VCALENDAR
+VERSION:2.0
+PRODID:-//Phan Nguyen Vu//Graduation 2026//VI
+CALSCALE:GREGORIAN
+BEGIN:VEVENT
+UID:phan-nguyen-vu-graduation-2026@graduation
+DTSTAMP:20261119T000000Z
+DTSTART;VALUE=DATE:20261220
+DTEND;VALUE=DATE:20261221
+SUMMARY:Lễ tốt nghiệp Phan Nguyên Vũ (dự kiến)
+LOCATION:Trung tâm Hội nghị tỉnh Gia Lai
+DESCRIPTION:Ngày dự kiến. Giờ tổ chức chưa được cập nhật.
+STATUS:TENTATIVE
+END:VEVENT
+END:VCALENDAR

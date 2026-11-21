@@ -1,21 +1,45 @@
 # Phan Nguyên Vũ · Graduation 2026
 
-Bootstrap để chat web triển khai website thiệp mời tốt nghiệp. **Chưa có ứng dụng hoàn chỉnh, chưa build/deploy.**
+Thiệp mời tốt nghiệp tiếng Việt, viết bằng Next.js và SQLite. Xem [kế hoạch](docs/graduation/IMPLEMENTATION_PLAN.md), [manifest nguồn](docs/graduation/SOURCE_MANIFEST.md) và [trạng thái triển khai](CONTINUE.md).
 
-## Bắt đầu
+## Chạy trên máy
 
-1. Đọc [kế hoạch triển khai](docs/graduation/IMPLEMENTATION_PLAN.md).
-2. Đọc [manifest bàn giao](docs/graduation/SOURCE_MANIFEST.md) và `assets/manifest.json`.
-3. Dùng [prompt thực thi](docs/graduation/WEB_CHAT_PROMPT.md).
+Dùng Node phiên bản trong `.node-version` và checkout đầy đủ repo riêng tư để có ảnh gốc.
 
-## Đã đóng gói
+```sh
+npm ci
+npm run db:migrate
+npm run dev
+```
 
-- Hai ảnh JPEG gốc của Phan Nguyên Vũ ở `assets/originals/`; chưa crop/resize, cần kiểm tra ảnh và bỏ EXIF trước khi xuất bản derivatives.
-- Source motion kit tái sử dụng tại `vendor/motion-kit/`, tài liệu tại `docs/motion-kit/`.
-- `vendor/source-package.json` và lockfile là bằng chứng dependency của workspace nguồn; không phải app package ở root. Agent triển khai phải tạo root package phù hợp.
-- Ba skill UI/motion trong `docs/graduation/skills/`.
-- Content, kiến trúc SQLite, API, pipeline, kiểm thử và Vercel trong kế hoạch.
+Mở http://localhost:3000. DB mặc định là `data/graduation.db`. Build xuất ảnh WebP bỏ metadata từ hai JPEG, kiểm tra SHA-256 của JPEG và sao chép nguyên byte ảnh QR. Các ảnh công khai sinh vào `public/images` và `public/payments`.
 
-DB production chưa được cấp: đề xuất libSQL từ xa tương thích SQLite để giữ dữ liệu trên Vercel; không dùng file SQLite tạm trên serverless. Đã có QR cà phê do người dùng cung cấp tại assets/payments/vu-coffee-vietqr.png; số liên hệ 0343628267. Đọc cập nhật cuối kế hoạch để bật section này. Không đưa dữ liệu khách của web tham khảo vào ứng dụng.
+```sh
+npm run lint
+npm run typecheck
+npm test
+npm run build
+npx playwright install chromium
+npm run test:browser
+```
 
-Không có lịch tự động hoặc Vercel project được tạo trong bước bootstrap. Người dùng sẽ giao prompt cho phiên chat web có môi trường code và quyền GitHub/Vercel.
+Playwright khởi tạo file SQLite riêng trong thư mục kết quả và chạy trên bản build production. Dữ liệu này được tạo lại mỗi lần chạy.
+
+## Kiểm duyệt
+
+```sh
+npm run moderate -- pending
+npm run moderate -- approve <id>
+npm run moderate -- reject <id>
+npm run moderate -- cleanup
+```
+
+Dùng cấu hình DB đúng môi trường khi chạy. Chỉ lời chúc đã duyệt và có consent mới xuất hiện. RSVP công khai chỉ hiện tên và trạng thái khi khách đồng ý, lời nhắn RSVP luôn riêng tư.
+
+## Vercel Preview
+
+Gắn DB libSQL dành riêng cho Preview, ví dụ Turso Cloud. Đặt `DATABASE_URL` và `DATABASE_AUTH_TOKEN` ở môi trường Preview hoặc dùng `TURSO_DATABASE_URL` và `TURSO_AUTH_TOKEN` do tích hợp Turso cung cấp. Đặt `RATE_LIMIT_SECRET` dưới dạng biến nhạy cảm ở Preview. Có thể đặt `NEXT_PUBLIC_SITE_URL` nếu dùng URL chuẩn riêng.
+
+Nạp biến bằng kênh bảo mật rồi chạy `npm run db:migrate` trên DB Preview trước khi tạo deployment. Deploy đúng SHA đã qua CI của `preview/graduation-2026` bằng một luồng deploy, với Vercel Authentication. Xác minh HTTPS, health, ảnh, luồng gửi nhận và dữ liệu còn sau redeploy. Dọn dữ liệu thử theo đúng ID thử nghiệm. Thư mục SQLite trên Vercel không phải nơi lưu dữ liệu của ứng dụng.
+
+Ảnh và nội dung sự kiện chưa xác nhận chính thức được ghi trong kế hoạch. Việc mở quyền truy cập và phát hành Production cần quyết định riêng.
