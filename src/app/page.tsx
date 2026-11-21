@@ -1,7 +1,7 @@
 import { CoffeeQr, Countdown, CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
 import { Guestbook } from "@/components/Guestbook";
 import { PhotoStory } from "@/components/PhotoStory";
-import { Portrait } from "@/components/Portrait";
+import Image from "next/image";
 import { event, mapsUrl } from "@/content/event";
 import { databaseConfigured } from "@/lib/db";
 
@@ -23,33 +23,41 @@ export default function Invitation() {
     </header>
 
     <main id="noi-dung">
-      <section className="wrap hero" aria-labelledby="hero-title">
+      <section className="hero-surface" aria-labelledby="hero-title"><div className="wrap hero">
         <div className="hero-copy">
           <p className="school">Thiệp mời tốt nghiệp</p>
           <h1 id="hero-title">{event.name}</h1>
           <p className="school-name">{event.school}</p>
-          <p className="invitation">Mình mời bạn đến dự lễ tốt nghiệp. Hôm ấy, mình mong được chụp cùng bạn một tấm ảnh và nói lời cảm ơn mà nhiều khi mình vẫn chưa nói thành lời.</p>
+          <p className="invitation">Mình mời bạn đến dự lễ tốt nghiệp. Mình mong hôm ấy tụi mình có thể chụp cùng nhau một tấm ảnh, và mình có dịp nói lời cảm ơn đã để dành từ lâu.</p>
           <div className="hero-date">
             <time dateTime="2026-12-20">20/12/2026</time>
             <span>Chủ nhật, dự kiến</span>
           </div>
-          <a className="button button-dark" href="#xac-nhan">Xác nhận tham dự <span className="arrow" aria-hidden="true" /></a>
+          <div className="hero-actions">
+            <a className="button button-dark" href="#xac-nhan">Xác nhận tham dự <span className="arrow" aria-hidden="true" /></a>
+            <a className="hero-wish" href="#loi-chuc">Viết lời chúc</a>
+          </div>
         </div>
-        <figure className="hero-frame"><Portrait id="9516" hero /></figure>
-      </section>
+        <figure className="hero-frame">
+          <Image src="/images/portrait-9516-cutout.webp" alt="Phan Nguyên Vũ trong lễ phục tốt nghiệp" width={850} height={1364} unoptimized preload />
+        </figure>
+      </div></section>
 
       <section id="dia-diem" className="event-section" aria-labelledby="event-title">
         <div className="wrap event-inner">
-          
+
+          <div className="event-calendar">
+            <time dateTime="2026-12-20"><span>Chủ nhật</span><strong>20/12</strong><span>2026</span></time>
+          </div>
           <div className="event-copy">
             <h2 id="event-title">Thông tin buổi lễ</h2>
             <dl className="event-facts">
-              <div><dt>Ngày</dt><dd><time dateTime="2026-12-20">Chủ nhật, 20/12/2026</time><small>Ngày dự kiến. Giờ tổ chức sẽ được cập nhật.</small></dd></div>
+              <div><dt>Ngày</dt><dd><time dateTime="2026-12-20">Chủ nhật, 20/12/2026</time><small>Ngày dự kiến, giờ tổ chức sẽ được cập nhật.</small></dd></div>
               <div><dt>Địa điểm</dt><dd>{event.venue}<small>{event.address}</small></dd></div>
             </dl>
             <Countdown />
             <div className="actions">
-              <a className="button button-dark" href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a>
+              <a className="button button-dark" href="#duong-di">Chỉ đường</a>
               <a className="button button-line" href="/tot-nghiep-vu.ics" download>Lưu vào lịch</a>
             </div>
           </div>
@@ -70,7 +78,11 @@ export default function Invitation() {
       </section>
 
       <section id="xac-nhan" className="response-section" aria-labelledby="rsvp-title">
-        <div className="wrap response-inner">
+        <div className="wrap response-inner response-layout">
+          <div className="response-portrait">
+            <Image src="/images/portrait-9505-cutout.webp" alt="Ảnh toàn thân của Vũ trong lễ phục tốt nghiệp" width={650} height={2216} unoptimized />
+          </div>
+          <div>
           <h2 id="rsvp-title">Bạn có thể đến dự không?</h2>
           {online ? <>
             <Guestbook kind="rsvp" />
@@ -86,6 +98,7 @@ export default function Invitation() {
               <a className="button button-line" href={`tel:${event.tel}`}>Gọi {event.phone}</a>
             </div>
           </>}
+          </div>
         </div>
       </section>
       {!online && <section id="loi-chuc" className="letter-section"><div className="wrap response-inner"><h2>Gửi Vũ vài dòng</h2><p>Nếu có điều gì bạn muốn nhắn mình trước ngày tốt nghiệp, mình rất vui được đọc.</p><SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink></div></section>}
