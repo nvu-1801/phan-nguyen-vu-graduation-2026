@@ -1,11 +1,14 @@
+import { copy } from "@/content/copy";
 import { Portrait } from "@/components/Portrait";
 import { photosAvailable } from "@/content/photos.generated";
 import { PhotoStage } from "./PhotoStage";
 
 export function PhotoStory() {
   return <section className="story" aria-labelledby="story-title">
-    <div className="wrap story-intro">
-      <h2 id="story-title">Một tấm ảnh để nhớ</h2>
+    <div className="story-watermark" aria-hidden="true" />
+    <div className="wrap story-intro" data-reveal>
+      <p className="eyebrow">03 / GIỮ LẠI THANH XUÂN</p>
+      <h2 id="story-title">Để dành một tấm ảnh <em>có bạn.</em></h2>
     </div>
     <PhotoStage enabled={photosAvailable}>
       <div className="postcards">
@@ -14,7 +17,7 @@ export function PhotoStory() {
       </div>
     </PhotoStage>
     <div className="wrap story-captions">
-      <p>Hôm ấy, mình muốn có một tấm hình cùng bạn. Sau này xem lại, mình sẽ còn nhớ mình đã chia sẻ ngày này với ai.</p>
+      <p>{copy.photo}</p>
     </div>
   </section>;
 }

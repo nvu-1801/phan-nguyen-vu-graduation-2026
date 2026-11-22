@@ -65,10 +65,16 @@ export function SmsLink({ children, message }: { children: string; message: stri
 }
 
 export function MapPreview() {
+  const [open, setOpen] = useState(false);
   const query = encodeURIComponent(event.venue + ", " + event.address);
   return <div className="venue-map">
-    <iframe title="Bản đồ Trung tâm Hội nghị tỉnh Gia Lai"
+    {open ? <iframe title="Bản đồ Trung tâm Hội nghị tỉnh Gia Lai"
       src={`https://maps.google.com/maps?q=${query}&output=embed`}
-      loading="lazy" allowFullScreen referrerPolicy="strict-origin-when-cross-origin" />
+      allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /> : <div className="map-placeholder">
+      <svg viewBox="0 0 240 140" aria-hidden="true"><path d="M0 40L240 100M0 110L240 30M50 0L100 140M175 0L140 140" fill="none" stroke="currentColor" strokeWidth="12" opacity=".18" /><circle cx="125" cy="70" r="16" fill="currentColor" /><circle cx="125" cy="70" r="5" fill="white" /></svg>
+      <p>{event.venue}</p><span>{event.address}</span>
+      <button className="button button-line" type="button" onClick={() => setOpen(true)}>Hiển thị bản đồ</button>
+      <noscript><p>Dùng liên kết Google Maps để xem bản đồ.</p></noscript>
+    </div>}
   </div>;
 }

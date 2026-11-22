@@ -1,0 +1,62 @@
+[
+  {
+    "file": "public/images/backgrounds/fpt-800.webp",
+    "width": 800,
+    "height": 450,
+    "bytes": 106778,
+    "sha256": "49f8c253a7c2e0a395f4e79cd9b1074d230870ae50ee9d5d5ae82ea1478a1475",
+    "original": "assets/backgrounds/fpt.jpg",
+    "originalSha256": "49b1228a160efccac7a2cbb3b47b40073a1f78a4dc4bfaa838889343d1beef8f",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/fpt.jpg"
+  },
+  {
+    "file": "public/images/backgrounds/fpt-1600.webp",
+    "width": 1600,
+    "height": 900,
+    "bytes": 352478,
+    "sha256": "dcb0b1ee11e3aa45de79d120bee20f22c589c75a20eb0e003b6cfcebf791a225",
+    "original": "assets/backgrounds/fpt.jpg",
+    "originalSha256": "49b1228a160efccac7a2cbb3b47b40073a1f78a4dc4bfaa838889343d1beef8f",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/fpt.jpg"
+  },
+  {
+    "file": "public/images/backgrounds/venue-800.webp",
+    "width": 800,
+    "height": 533,
+    "bytes": 84140,
+    "sha256": "07eaf58a6cb4c4b7b6461608c085fd8c9d4ce2ef759cfd3a05bcd0a4b673eab1",
+    "original": "assets/backgrounds/venue.jpg",
+    "originalSha256": "917f34257c11f8fb2ec6356703bb4085115eb6fe5f60d0be3192fdf56b6d7263",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/venue.jpg"
+  },
+  {
+    "file": "public/images/backgrounds/venue-1600.webp",
+    "width": 1600,
+    "height": 1067,
+    "bytes": 233644,
+    "sha256": "0196e226b2d4a969f794866c0088d3e3077bf4785035c8a6449f25cfa758e8bc",
+    "original": "assets/backgrounds/venue.jpg",
+    "originalSha256": "917f34257c11f8fb2ec6356703bb4085115eb6fe5f60d0be3192fdf56b6d7263",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/venue.jpg"
+  },
+  {
+    "file": "public/images/backgrounds/cafe-800.webp",
+    "width": 800,
+    "height": 453,
+    "bytes": 37508,
+    "sha256": "3cc894cd8e4e2b2f388db3f70e9f34892ba901b39d9c578398337d2b1fe03c38",
+    "original": "assets/backgrounds/cafe.jpg",
+    "originalSha256": "d6ff0342f864c8db52e7cc1f288ff62bf6d4a8eb9a96890f8cc50a853186a8f8",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/cafe.jpg"
+  },
+  {
+    "file": "public/images/backgrounds/cafe-1600.webp",
+    "width": 1544,
+    "height": 874,
+    "bytes": 75166,
+    "sha256": "ce7b5eba5be0a1193376809d905bf2db5b6be1f8e22782f8d63f9c60e21277ae",
+    "original": "assets/backgrounds/cafe.jpg",
+    "originalSha256": "d6ff0342f864c8db52e7cc1f288ff62bf6d4a8eb9a96890f8cc50a853186a8f8",
+    "source": "https://heejoon-graduation-2026.vercel.app/images/cafe.jpg"
+  }
+]

@@ -43,3 +43,7 @@ Có thể phát hành thiệp mời và liên hệ trực tiếp khi chưa cấu
 Để dùng form trên Vercel, đặt `DATABASE_URL` và `DATABASE_AUTH_TOKEN` (hoặc `TURSO_DATABASE_URL` và `TURSO_AUTH_TOKEN`) cho môi trường tương ứng. Tách DB Preview và Production. Đặt `RATE_LIMIT_SECRET` dưới dạng biến nhạy cảm. Có thể đặt `NEXT_PUBLIC_SITE_URL` cho URL chuẩn.
 
 Nạp các biến bằng kênh bảo mật và chạy `npm run db:migrate` trên DB được chọn. Redeploy, kiểm tra health và dữ liệu gửi qua form. Thư mục SQLite trên máy chạy Vercel không phải là nơi lưu dữ liệu của ứng dụng.
+
+## VPS
+
+Xem [hướng dẫn Docker, Nginx, SQLite và backup](docs/VPS.md). Không deploy tự động trong phiên này.

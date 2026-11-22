@@ -9,8 +9,8 @@ import { resolveCameraPosition, sampleCamera } from "../../vendor/motion-kit/cam
 import type { CameraKeyframe, SampledCamera } from "../../vendor/motion-kit/types";
 
 const graduation: readonly CameraKeyframe[] = [
-  { at: 0, fill: .85, fov: 36, azimuth: -6, elevation: 4, target: [0, 0, 0] },
-  { at: .5, fill: .88, fov: 36, azimuth: 5, elevation: 1, target: [.08, 0, 0] },
+  { at: 0, fill: .85, fov: 36, azimuth: -18, elevation: 9, target: [0, 0, 0] },
+  { at: .5, fill: .88, fov: 36, azimuth: 14, elevation: 3, target: [.08, 0, 0] },
   { at: 1, fill: .84, fov: 36, azimuth: 0, elevation: 0, target: [0, 0, 0] },
 ];
 const texturePaths = ["/images/vu-9516-960.webp", "/images/vu-9505-960.webp"];
@@ -65,8 +65,8 @@ function Postcards({ root, onReady, onFailure }: Props) {
     groups.current.forEach((group, index) => {
       if (!group) return;
       const direction = index === 0 ? -1 : 1;
-      group.position.set(direction * (.57 + p * .78), direction * (.24 - p * .18), index === 0 ? .35 * (1 - p) : -.12);
-      group.rotation.set(0, direction * .115 * (1 - p), direction * (.12 - p * .085));
+      group.position.set(direction * (.22 + p * 1.22), direction * (.42 - p * .3), index === 0 ? .65 * (1 - p) : -.22);
+      group.rotation.set(direction * .08 * (1 - p), direction * .32 * (1 - p), direction * (.22 - p * .15));
     });
   });
 

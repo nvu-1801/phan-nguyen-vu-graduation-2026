@@ -26,3 +26,9 @@ src/content/photos.generated.ts
 public/payments/vu-coffee-vietqr.png
 public/images/graduation-*.png
 next-env.d.ts
+# Local review captures and downloaded reference HTML/CSS (not product source)
+docs/local-mobile.png
+docs/audit-desktop.png
+docs/blue-*.png
+docs/reference/sample*
+public/images/backgrounds/

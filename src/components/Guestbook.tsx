@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState, type FormEvent } from "react";
+import { WishIdeas } from "./WishIdeas";
 import { event } from "@/content/event";
 
 type Entry = { id: string; name: string; attendance?: "yes" | "no"; message?: string };
@@ -43,17 +44,17 @@ function PublicEntries({ kind, revision }: { kind: Kind; revision: number }) {
   }, [load, revision]);
 
   return <div className="public-entries">
-    <h3>{kind === "rsvp" ? "Phản hồi công khai" : "Tường lời chúc"}</h3>
-    {counts && <p className="entry-counts">{counts.yes} sẽ đến · {counts.no} gửi lời chúc từ xa</p>}
+    <h3>{kind === "rsvp" ? "Những cuộc hẹn được chia sẻ" : "Tường lời chúc"}</h3>
+    {counts && <p className="entry-counts">{counts.yes} sẽ đến · {counts.no} chưa thể đến</p>}
     {items.length > 0 && <ul>{items.map(entry => <li key={entry.id}>
       <strong>{entry.name}</strong>
-      <span>{entry.message ?? (entry.attendance === "yes" ? "Sẽ đến" : "Gửi lời chúc từ xa")}</span>
+      <span>{entry.message ?? (entry.attendance === "yes" ? "Sẽ đến" : "Chưa thể đến")}</span>
     </li>)}</ul>}
     {loading && <p role="status">Đang tải…</p>}
     {error && <p role="status">{error} <button className="text-button" type="button" onClick={() => void load()}>Thử lại</button></p>}
     {!loading && !error && items.length === 0 && <p>{kind === "rsvp"
       ? "Chưa có phản hồi được chia sẻ công khai."
-      : "Chưa có lời chúc công khai."}</p>}
+      : "Trang giấy còn trống. Bạn muốn để lại vài dòng cho Vũ chứ?"}</p>}
     {!loading && !error && cursor && <button type="button" className="text-button" onClick={() => void load(cursor)}>Xem thêm</button>}
   </div>;
 }
@@ -64,6 +65,7 @@ export function Guestbook({ kind }: { kind: Kind }) {
   const [feedback, setFeedback] = useState("");
   const [pending, setPending] = useState(false);
   const [ready, setReady] = useState(false);
+  const messageInput = useRef<HTMLTextAreaElement>(null);
   const busy = useRef(false);
   const receipt = useRef<{ payload: string; key: string } | null>(null);
   useEffect(() => { const id = requestAnimationFrame(() => setReady(true)); return () => cancelAnimationFrame(id); }, []);
@@ -96,7 +98,7 @@ export function Guestbook({ kind }: { kind: Kind }) {
       }
       form.reset();
       receipt.current = null;
-      setFeedback(isRsvp ? "Vũ đã nhận được phản hồi của bạn." : "Đã nhận lời chúc, đang chờ duyệt.");
+      setFeedback(isRsvp ? "Vũ đã nhận được phản hồi của bạn." : values.get("consent") === "on" ? "Đã nhận lời chúc, đang chờ duyệt." : "Vũ đã nhận được lời nhắn riêng của bạn.");
       setRevision(previous => previous + 1);
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Chưa gửi được. Bạn thử lại nhé.");
@@ -112,10 +114,17 @@ export function Guestbook({ kind }: { kind: Kind }) {
         <legend className="sr-only">{isRsvp ? "Xác nhận tham dự" : "Gửi lời chúc"}</legend>
         {isRsvp && <div className="choices" role="group" aria-label="Bạn có tham dự được không?">
           <label><input type="radio" name="attendance" value="yes" defaultChecked required /> Mình sẽ đến</label>
-          <label><input type="radio" name="attendance" value="no" required /> Gửi lời chúc từ xa</label>
+          <label><input type="radio" name="attendance" value="no" required /> Mình chưa thể đến</label>
         </div>}
         <label>Tên của bạn<input name="name" autoComplete="name" required maxLength={80} placeholder="Tên của bạn" /></label>
-        <label>{isRsvp ? "Lời nhắn riêng (không bắt buộc)" : "Lời chúc của bạn"}<textarea name="message" rows={4} required={!isRsvp} maxLength={1000} placeholder={isRsvp ? "Lời nhắn cho Vũ" : "Lời chúc"} /></label>
+        {!isRsvp && <WishIdeas onChoose={message => {
+          const input = messageInput.current;
+          if (!input) return;
+          input.value = input.value.trim() ? `${input.value}\n\n${message}`.slice(0, 1000) : message;
+          input.focus();
+          input.setSelectionRange(input.value.length, input.value.length);
+        }} />}
+        <label>{isRsvp ? "Lời nhắn riêng (không bắt buộc)" : "Lời chúc của bạn"}<textarea ref={messageInput} name="message" rows={4} required={!isRsvp} maxLength={1000} placeholder={isRsvp ? "Lời nhắn cho Vũ" : "Lời chúc"} /></label>
         <div hidden><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
         <label className="checkbox"><input type="checkbox" name="consent" />{isRsvp
           ? "Cho phép hiển thị tên và trạng thái tham dự."

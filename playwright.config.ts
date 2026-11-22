@@ -14,6 +14,7 @@ export default defineConfig({
   },
   reporter: [["list"], ["html", { open: "never" }]],
   webServer: [
+    { command: "node scripts/serve-test.mjs 3219 --proxy", url: "http://127.0.0.1:3219/api/health", timeout: 45000 },
     { command: `node scripts/serve-test.mjs ${port}`, url: `http://127.0.0.1:${port}/api/health`, timeout: 45000 },
     { command: "node scripts/serve-test.mjs 3218 --without-db", url: "http://127.0.0.1:3218/", timeout: 45000 },
   ],

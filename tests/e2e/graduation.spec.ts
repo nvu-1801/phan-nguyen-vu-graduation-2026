@@ -151,3 +151,72 @@ test("loads the Three.js scene on scroll at phone width", async ({ page }) => {
   await page.mouse.wheel(0, -220);
   await expect(page.locator(".photo-stage-live canvas")).toBeVisible();
 });
+
+test("VPS accepts its configured HTTPS origin and rate limits each proxy IP separately", async ({ request }) => {
+  const submit = (ip: string, site = "https://invite.example.com") => request.post("http://127.0.0.1:3219/api/rsvps", {
+    headers: { Origin: site, "Idempotency-Key": randomUUID(), "X-Real-IP": ip },
+    data: { name: "VPS fixture", attendance: "yes", publicConsent: false },
+  });
+  for (let i = 0; i < 5; i++) expect((await submit("192.0.2.1")).status()).toBe(201);
+  expect((await submit("192.0.2.1")).status()).toBe(429);
+  expect((await submit("192.0.2.2")).status()).toBe(201);
+  expect((await submit("192.0.2.3", "https://untrusted.example.com")).status()).toBe(403);
+});
+
+test("scroll choreography reverses, survives resize and clears with reduced motion", async ({ page }) => {
+  await page.goto("/");
+  await expect(page.locator("html")).toHaveAttribute("data-motion-ready", "true");
+  const portrait = page.locator(".hero-frame");
+  await page.evaluate(() => { document.documentElement.style.scrollBehavior = "auto"; window.scrollTo(0, 0); });
+  await expect.poll(() => portrait.evaluate(el => Number(new DOMMatrix(getComputedStyle(el).transform).m42))).toBeLessThan(2);
+  await page.evaluate(() => window.scrollTo(0, 400));
+  await expect.poll(() => portrait.evaluate(el => Number(new DOMMatrix(getComputedStyle(el).transform).m42))).toBeGreaterThan(10);
+  await page.evaluate(() => window.scrollTo(0, 0));
+  await expect.poll(() => portrait.evaluate(el => Math.abs(new DOMMatrix(getComputedStyle(el).transform).m42))).toBeLessThan(2);
+  await page.setViewportSize({ width: 390, height: 844 });
+  await page.locator(".campus-window").scrollIntoViewIfNeeded();
+  expect(await page.evaluate(() => document.documentElement.scrollWidth)).toBe(390);
+  await page.emulateMedia({ reducedMotion: "reduce" });
+  await expect(page.locator("html")).not.toHaveAttribute("data-motion-ready", "true");
+  await expect(portrait).not.toHaveAttribute("style", /transform/);
+  await expect(page.locator("canvas")).toHaveCount(0);
+});
+
+test("background photographs load locally and the map is opt-in", async ({ page, request }) => {
+  await page.goto("/");
+  await expect(page.locator(".venue-map iframe")).toHaveCount(0);
+  await expect(page.getByRole("button", { name: "Hiển thị bản đồ" })).toBeVisible();
+  for (const name of ["fpt", "venue", "cafe"]) {
+    const response = await request.get(`/images/backgrounds/${name}-800.webp`);
+    expect(response.status()).toBe(200);
+    expect(response.headers()["content-type"]).toContain("image/webp");
+  }
+  await page.getByRole("button", { name: "Hiển thị bản đồ" }).click();
+  await expect(page.locator(".venue-map iframe")).toHaveAttribute("title", "Bản đồ Trung tâm Hội nghị tỉnh Gia Lai");
+});
+
+test("wish suggestions are editable drafts and never submit on selection", async ({ page }) => {
+  let writes = 0;
+  page.on("request", req => { if (req.method() === "POST" && req.url().includes("/api/wishes")) writes++; });
+  await page.goto("/");
+  const form = page.locator("#loi-chuc .guest-form");
+  await form.locator("summary").click();
+  await form.getByRole("button", { name: "Dùng gợi ý: Chân thành", exact: true }).click();
+  const message = form.getByLabel("Lời chúc của bạn");
+  await expect(message).toHaveValue(/Chúc mừng Vũ tốt nghiệp/);
+  await expect(message).toBeFocused();
+  await message.fill("Lời của riêng mình.");
+  await form.getByRole("button", { name: "Dùng gợi ý: Ngắn mà thật lòng", exact: true }).click();
+  await expect(message).toHaveValue(/^Lời của riêng mình\.\n\nChúc mừng Vũ nhé!/);
+  await expect(form.getByRole("checkbox")).not.toBeChecked();
+  expect(writes).toBe(0);
+});
+
+test("suggested wishes remain available without a database", async ({ page }) => {
+  await page.goto("http://127.0.0.1:3218/");
+  await expect(page.locator("#loi-chuc .wish-idea")).toHaveCount(6);
+  const links = page.locator("#loi-chuc .wish-idea a");
+  await expect(links).toHaveCount(6);
+  for (const link of await links.all()) await expect(link).toHaveAttribute("href", /^sms:/);
+  await expect(page.getByText("không phải lời chúc của khách đã gửi", { exact: false })).toBeVisible();
+});

@@ -63,7 +63,7 @@ function bucketFor(request: Request) {
   const secret = process.env.RATE_LIMIT_SECRET || "graduation-local-development";
   const ip = process.env.VERCEL
     ? request.headers.get("x-vercel-forwarded-for")?.split(",")[0]?.trim() || "unknown"
-    : "local";
+    : process.env.TRUST_PROXY === "1" ? request.headers.get("x-real-ip") || "unknown" : "local";
   return createHmac("sha256", secret).update(ip).digest("hex");
 }
 
@@ -74,7 +74,8 @@ export async function submit(request: Request, kind: Kind) {
     const url = new URL(request.url);
     const host = request.headers.get("host") || url.host;
     const protocol = process.env.VERCEL ? "https:" : url.protocol;
-    if (!origin || origin !== `${protocol}//${host}`) throw new ApiError(403, "Vui lòng gửi từ trang thiệp mời.");
+    const expectedOrigin = process.env.SITE_ORIGIN || `${protocol}//${host}`;
+    if (!origin || origin !== expectedOrigin) throw new ApiError(403, "Vui lòng gửi từ trang thiệp mời.");
     const key = request.headers.get("idempotency-key");
     if (!key || !/^[A-Za-z0-9_-]{16,100}$/.test(key)) throw new ApiError(400, "Mã gửi chưa hợp lệ.");
     const raw = await readBody(request);
