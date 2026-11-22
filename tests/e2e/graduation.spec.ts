@@ -135,7 +135,7 @@ test("deployed invitation without a database gives working contact links", async
   const requests: string[] = [];
   page.on("request", req => requests.push(req.url()));
   await page.goto("http://127.0.0.1:3218/");
-  await expect(page.getByRole("link", { name: "Mình sẽ đến" })).toHaveAttribute("href", /^sms:/);
+  await expect(page.getByRole("link", { name: "Mình sẽ đến qua SMS", exact: true })).toHaveAttribute("href", /^sms:/);
   await expect(page.getByRole("link", { name: /^Gọi / })).toHaveAttribute("href", /^tel:/);
   await expect(page.locator("main form")).toHaveCount(0);
   expect(requests.some(url => /\/api\/(guests|wishes|rsvps)$/.test(url))).toBe(false);
@@ -219,4 +219,15 @@ test("suggested wishes remain available without a database", async ({ page }) =>
   await expect(links).toHaveCount(6);
   for (const link of await links.all()) await expect(link).toHaveAttribute("href", /^sms:/);
   await expect(page.getByText("không phải lời chúc của khách đã gửi", { exact: false })).toBeVisible();
+});
+
+test("a failed RSVP keeps the guest's input and offers SMS", async ({ page }) => {
+  await page.route("**/api/rsvps", route => route.fulfill({ status: 503, json: { error: "Unavailable" } }));
+  await page.goto("/#xac-nhan");
+  const form = page.locator("#xac-nhan .guest-form");
+  await form.getByLabel("Tên của bạn").fill("Khách kiểm thử");
+  await form.getByRole("button", { name: "Gửi xác nhận" }).click();
+  await expect(form.getByRole("status")).toContainText("Chưa lưu được trên web");
+  await expect(form.getByLabel("Tên của bạn")).toHaveValue("Khách kiểm thử");
+  await expect(page.getByRole("link", { name: "Mình sẽ đến qua SMS", exact: true })).toHaveAttribute("href", /^sms:/);
 });

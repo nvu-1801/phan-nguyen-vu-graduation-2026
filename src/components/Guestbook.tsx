@@ -92,6 +92,9 @@ export function Guestbook({ kind }: { kind: Kind }) {
         headers: { "Content-Type": "application/json", "Idempotency-Key": receipt.current.key },
         body: payload,
       });
+      if (response.status >= 500) {
+        throw new Error("Chưa lưu được trên web. Bạn có thể thử lại hoặc nhắn Vũ qua SMS.");
+      }
       if (!response.ok) {
         const error = await response.json().catch(() => null) as { error?: string } | null;
         throw new Error(error?.error || "Chưa gửi được. Bạn thử lại nhé.");

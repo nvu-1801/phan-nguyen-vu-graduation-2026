@@ -9,24 +9,23 @@ export function ScrollEffects() {
     gsap.registerPlugin(ScrollTrigger);
     const media = gsap.matchMedia();
     let alive = true;
-    media.add("(prefers-reduced-motion: no-preference)", () => {
-      const compact = window.innerWidth < 768;
+    media.add({ desktop: "(min-width: 768px) and (prefers-reduced-motion: no-preference)", compact: "(max-width: 767px) and (prefers-reduced-motion: no-preference)" }, ({ conditions }) => {
+      const compact = Boolean(conditions?.compact);
       const context = gsap.context(() => {
-        gsap.from(".hero-copy > *", { y: 26, opacity: .35, stagger: .09, duration: .9, ease: "power3.out" });
-        gsap.to(".hero-frame", { y: compact ? 28 : 90, rotation: 3, ease: "none", scrollTrigger: { trigger: ".hero-surface", start: "top top", end: "bottom top", scrub: .6 } });
-        gsap.to(".hero-orbit", { rotation: 100, scale: 1.15, ease: "none", scrollTrigger: { trigger: ".hero-surface", start: "top top", end: "bottom top", scrub: .8 } });
+        if (!compact) gsap.from(".hero-art", { y: 18, opacity: .75, duration: .65, ease: "power2.out" });
+        if (!compact) gsap.to(".hero-frame", { y: 44, rotation: 3, ease: "none", scrollTrigger: { trigger: ".hero-surface", start: "top top", end: "bottom top", scrub: .6 } });
+        if (!compact) gsap.to(".hero-orbit", { rotation: 35, scale: 1.05, ease: "none", scrollTrigger: { trigger: ".hero-surface", start: "top top", end: "bottom top", scrub: .8 } });
         gsap.to(".scroll-progress", { scaleX: 1, ease: "none", scrollTrigger: { trigger: document.body, start: "top top", end: "bottom bottom", scrub: .2 } });
         gsap.utils.toArray<HTMLElement>("[data-reveal]").forEach(element => {
-          gsap.from(element, { y: compact ? 20 : 45, opacity: .3, duration: .8, ease: "power2.out", scrollTrigger: { trigger: element, start: "top 92%", toggleActions: "play none none reverse" } });
+          if (!compact) gsap.from(element, { y: 16, duration: .5, ease: "power2.out", scrollTrigger: { trigger: element, start: "top 92%", once: true } });
         });
         gsap.utils.toArray<HTMLElement>(".landscape").forEach(element => {
           const image = element.querySelector(".landscape-image");
-          if (image) gsap.fromTo(image, { yPercent: -7, scale: 1.12 }, { yPercent: 7, scale: 1.02, ease: "none", scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: .65 } });
+          if (image && !compact) gsap.fromTo(image, { yPercent: -7, scale: 1.12 }, { yPercent: 7, scale: 1.02, ease: "none", scrollTrigger: { trigger: element, start: "top bottom", end: "bottom top", scrub: .65 } });
         });
-        gsap.fromTo(".campus-window", { clipPath: compact ? "inset(0% 3% round 28px)" : "inset(0% 12% round 120px)" }, { clipPath: "inset(0% 0% round 24px)", ease: "none", scrollTrigger: { trigger: ".campus", start: "top 85%", end: "center center", scrub: .6 } });
-        gsap.fromTo(".event-ticket", { rotationX: 7, rotationY: -4, y: 45 }, { rotationX: 0, rotationY: 0, y: 0, ease: "none", scrollTrigger: { trigger: ".event-section", start: "top 85%", end: "center 55%", scrub: .5 } });
-        gsap.from(".letter-copy > p", { y: 30, opacity: .25, stagger: .14, duration: .9, scrollTrigger: { trigger: ".letter-copy", start: "top 85%", toggleActions: "play none none reverse" } });
-        gsap.to(".story-watermark", { xPercent: compact ? -8 : -22, ease: "none", scrollTrigger: { trigger: ".story", start: "top bottom", end: "bottom top", scrub: .8 } });
+        if (!compact) gsap.fromTo(".campus-window", { clipPath: compact ? "inset(0% 3% round 28px)" : "inset(0% 12% round 120px)" }, { clipPath: "inset(0% 0% round 24px)", ease: "none", scrollTrigger: { trigger: ".campus", start: "top 85%", end: "center center", scrub: .6 } });
+        if (!compact) gsap.fromTo(".event-ticket", { rotationX: 7, rotationY: -4, y: 45 }, { rotationX: 0, rotationY: 0, y: 0, ease: "none", scrollTrigger: { trigger: ".event-section", start: "top 85%", end: "center 55%", scrub: .5 } });
+        if (!compact) gsap.to(".story-watermark", { xPercent: -12, ease: "none", scrollTrigger: { trigger: ".story", start: "top bottom", end: "bottom top", scrub: .8 } });
       });
       document.documentElement.dataset.motionReady = "true";
       return () => { context.revert(); delete document.documentElement.dataset.motionReady; };
