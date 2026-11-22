@@ -47,3 +47,7 @@ Nạp các biến bằng kênh bảo mật và chạy `npm run db:migrate` trên
 ## VPS
 
 Xem [hướng dẫn Docker, Nginx, SQLite và backup](docs/VPS.md). Không deploy tự động trong phiên này.
+
+## Production local bằng Docker
+
+`npm run docker:local` chạy cả FE/API + SQLite volume tại http://localhost:3020. `npm run docker:smoke` kiểm tra ghi/đọc, quyền riêng tư và persistence sau recreate container. Xem [hướng dẫn VPS](docs/VPS.md) và [kết quả production](docs/PRODUCTION_VERIFICATION.md).

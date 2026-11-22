@@ -7,3 +7,10 @@ data
 test-results
 playwright-report
 *.log
+# review artifacts and background reference page are not needed in the runtime build
+.continue*
+docs/*preview*.png
+docs/blue-*.png
+docs/local-mobile.png
+docs/audit-desktop.png
+docs/reference/sample*
