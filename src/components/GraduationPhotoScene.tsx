@@ -22,6 +22,8 @@ function Postcards({ root, onReady, onFailure }: Props) {
   const position = useMemo(() => ({ x: 0, y: 0, z: 0, distance: 0 }), []);
   const textures = useLoader(TextureLoader, texturePaths);
   const { invalidate, gl } = useThree();
+  const firstFrame = useRef<number | null>(null);
+  const hasRendered = useRef(false);
   const props = useRef({ onReady, onFailure });
   useEffect(() => { props.current = { onReady, onFailure }; }, [onReady, onFailure]);
 
@@ -29,24 +31,27 @@ function Postcards({ root, onReady, onFailure }: Props) {
     const element = root.current;
     if (!element) return;
     gsap.registerPlugin(ScrollTrigger);
+    const sync = (self: ScrollTrigger) => {
+      progress.current = self.progress;
+      if (!document.hidden) invalidate();
+    };
     const trigger = ScrollTrigger.create({
       trigger: element,
-      start: "top 30%",
-      end: "bottom 55%",
-      onUpdate: self => {
-        progress.current = self.progress;
-        if (!document.hidden) invalidate();
-      },
+      start: "top bottom",
+      end: "bottom top",
+      onUpdate: sync,
+      onRefresh: sync,
     });
+    // Initialize from the actual scroll offset, including deep links/restored scroll.
+    trigger.refresh();
+    sync(trigger);
     const handleContextLoss = (e: Event) => { e.preventDefault(); props.current.onFailure(); };
     gl.domElement.addEventListener("webglcontextlost", handleContextLoss);
     const visibility = () => { if (!document.hidden) invalidate(); };
     document.addEventListener("visibilitychange", visibility);
-    props.current.onReady();
-    // Refresh after CSS switches the static poster to the sticky stage.
-    const animation = requestAnimationFrame(() => { trigger.refresh(); invalidate(); });
+    invalidate();
     return () => {
-      cancelAnimationFrame(animation);
+      if (firstFrame.current !== null) cancelAnimationFrame(firstFrame.current);
       trigger.kill();
       gl.domElement.removeEventListener("webglcontextlost", handleContextLoss);
       document.removeEventListener("visibilitychange", visibility);
@@ -65,9 +70,14 @@ function Postcards({ root, onReady, onFailure }: Props) {
     groups.current.forEach((group, index) => {
       if (!group) return;
       const direction = index === 0 ? -1 : 1;
-      group.position.set(direction * (.22 + p * 1.22), direction * (.42 - p * .3), index === 0 ? .65 * (1 - p) : -.22);
-      group.rotation.set(direction * .08 * (1 - p), direction * .32 * (1 - p), direction * (.22 - p * .15));
+      group.position.set(direction * (1.04 + p * .4), direction * (.15 - p * .05), index === 0 ? .22 * (1 - p) : -.12);
+      group.rotation.set(direction * .08 * (1 - p), direction * .22 * (1 - p), direction * (.12 - p * .08));
     });
+    // Keep HTML visible through texture upload and the first correctly positioned draw.
+    if (!hasRendered.current) {
+      hasRendered.current = true;
+      firstFrame.current = requestAnimationFrame(() => props.current.onReady());
+    }
   });
 
   return textures.map((texture, index) => {

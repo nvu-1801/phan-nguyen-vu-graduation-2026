@@ -10,6 +10,14 @@ function post(request: APIRequestContext, path: string, data: object, key = rand
   return request.post(path, { headers: { Origin: site, "Idempotency-Key": key }, data });
 }
 
+// External Google UI is not owned by this app. Keep app accessibility/screenshots
+// deterministic while verifying the real embed URL/title and always-visible Maps link.
+test.beforeEach(async ({ page }) => {
+  await page.route(/^https:\/\/www\.google\.com\/maps\?/, route => route.fulfill({
+    contentType: "text/html", body: '<!doctype html><html lang="vi"><head><title>Bản đồ</title></head><body><main aria-label="Bản đồ tham khảo"><p>Trung tâm Hội nghị tỉnh Gia Lai</p></main></body></html>',
+  }));
+});
+
 for (const [width, height] of [[360, 800], [390, 844], [768, 1024], [1440, 900]]) {
   test(`invitation works at ${width}px`, async ({ page }, info) => {
     await page.setViewportSize({ width, height });
@@ -42,6 +50,7 @@ test("the invitation and location work with JavaScript disabled", async ({ brows
     await expect(page.locator(".event-facts").getByText("Trung tâm Hội nghị tỉnh Gia Lai")).toBeVisible();
     await expect(page.locator("#xac-nhan noscript p").first()).toHaveText("Vui lòng bật JavaScript để gửi phản hồi.");
     await expect(page.getByRole("button", { name: "Gửi xác nhận" })).toBeDisabled();
+    await expect(page.getByRole("link", {name: "Mở mã QR cà phê"})).toHaveAttribute("href", "/payments/vu-coffee-vietqr.png");
   } finally { await context.close(); }
 });
 
@@ -136,7 +145,7 @@ test("deployed invitation without a database gives working contact links", async
   page.on("request", req => requests.push(req.url()));
   await page.goto("http://127.0.0.1:3218/");
   await expect(page.getByRole("link", { name: "Mình sẽ đến" })).toHaveAttribute("href", /^sms:/);
-  await expect(page.getByRole("link", { name: /^Gọi / })).toHaveAttribute("href", /^tel:/);
+  await expect(page.locator(".contact-card").getByRole("link", { name: /^Gọi / })).toHaveAttribute("href", /^tel:/);
   await expect(page.locator("main form")).toHaveCount(0);
   expect(requests.some(url => /\/api\/(guests|wishes|rsvps)$/.test(url))).toBe(false);
 });
@@ -182,17 +191,20 @@ test("scroll choreography reverses, survives resize and clears with reduced moti
   await expect(page.locator("canvas")).toHaveCount(0);
 });
 
-test("background photographs load locally and the map is opt-in", async ({ page, request }) => {
+test("background photographs load locally and the map is embedded directly", async ({ page, request }) => {
   await page.goto("/");
-  await expect(page.locator(".venue-map iframe")).toHaveCount(0);
-  await expect(page.getByRole("button", { name: "Hiển thị bản đồ" })).toBeVisible();
+  const map = page.locator(".venue-map iframe");
+  await expect(map).toHaveCount(1);
+  await expect(map).toHaveAttribute("title", "Bản đồ Trung tâm Hội nghị tỉnh Gia Lai");
+  await expect(map).toHaveAttribute("src", /^https:\/\/www\.google\.com\/maps\?.*output=embed&hl=vi$/);
+  await expect(map).toHaveAttribute("loading", "lazy");
+  await expect(page.getByRole("button", { name: "Hiển thị bản đồ" })).toHaveCount(0);
+  await expect(page.getByRole("link", { name: "Mở bản đồ lớn trên Google Maps" })).toHaveAttribute("href", /^https:\/\/www\.google\.com\/maps\/search/);
   for (const name of ["fpt", "venue", "cafe"]) {
     const response = await request.get(`/images/backgrounds/${name}-800.webp`);
     expect(response.status()).toBe(200);
     expect(response.headers()["content-type"]).toContain("image/webp");
   }
-  await page.getByRole("button", { name: "Hiển thị bản đồ" }).click();
-  await expect(page.locator(".venue-map iframe")).toHaveAttribute("title", "Bản đồ Trung tâm Hội nghị tỉnh Gia Lai");
 });
 
 test("wish suggestions are editable drafts and never submit on selection", async ({ page }) => {
@@ -219,4 +231,64 @@ test("suggested wishes remain available without a database", async ({ page }) =>
   await expect(links).toHaveCount(6);
   for (const link of await links.all()) await expect(link).toHaveAttribute("href", /^sms:/);
   await expect(page.getByText("không phải lời chúc của khách đã gửi", { exact: false })).toBeVisible();
+});
+
+for (const width of [390, 1440]) {
+  test(`floating contact actions stay usable at ${width}px`, async ({ page }) => {
+    await page.setViewportSize({ width, height: 844 });
+    await page.emulateMedia({ reducedMotion: "reduce" });
+    await page.goto("/");
+    const dock = page.getByRole("navigation", { name: "Liên hệ nhanh" });
+    await expect(dock).toBeVisible();
+    await expect(dock.getByRole("link", { name: "Gọi Vũ: 0343 628 267" })).toHaveAttribute("href", "tel:+84343628267");
+    await expect(dock.getByRole("link", { name: "Nhắn Zalo cho Vũ" })).toHaveAttribute("href", "https://zalo.me/0343628267");
+    const initial = (await dock.boundingBox())!;
+    await page.evaluate(() => window.scrollTo(0, document.documentElement.scrollHeight));
+    const final = (await dock.boundingBox())!;
+    expect(Math.abs(initial.y-final.y)).toBeLessThan(1);
+    expect(final.x).toBeGreaterThanOrEqual(0);
+    expect(final.x+final.width).toBeLessThanOrEqual(width);
+    expect(final.y+final.height).toBeLessThanOrEqual(844);
+    for (const control of await dock.locator(".dock-button").all()) {
+      const box = (await control.boundingBox())!;
+      expect(box.width).toBeGreaterThanOrEqual(44);
+      expect(box.height).toBeGreaterThanOrEqual(44);
+    }
+    await dock.getByRole("button", { name: "Mời Vũ cà phê" }).click();
+    await expect(page.getByRole("dialog")).toBeVisible();
+    await page.keyboard.press("Escape");
+    await expect(dock.getByRole("button", { name: "Mời Vũ cà phê" })).toBeFocused();
+    await dock.getByRole("link", { name: "Về đầu trang", exact: true }).click();
+    await expect.poll(() => page.evaluate(() => window.scrollY)).toBeLessThan(120);
+  });
+}
+
+test("photo scene keeps its poster during cold load and initializes when entered mid-scroll", async ({ page }) => {
+  test.skip(!photosRequired, "Original photos are required.");
+  await page.setViewportSize({ width: 1440, height: 900 });
+  await page.route("**/images/vu-*-960.webp", async route => {
+    await new Promise(resolve => setTimeout(resolve, 600));
+    await route.continue();
+  });
+  await page.goto("/");
+  await page.evaluate(() => {
+    document.documentElement.style.scrollBehavior = "auto";
+    const stage=document.querySelector(".photo-stage")!;
+    window.scrollTo(0, stage.getBoundingClientRect().top+window.scrollY-200);
+  });
+  const stage=page.locator(".photo-stage");
+  const canvas=page.locator(".photo-canvas canvas");
+  await expect(stage.locator(".photo-poster")).toHaveCSS("opacity", "1");
+  await expect(stage).toHaveClass(/photo-stage-live/, {timeout:15000});
+  await expect(canvas).toBeVisible();
+  const before=await stage.boundingBox();
+  await page.mouse.wheel(0,200);
+  await page.mouse.wheel(0,-200);
+  await expect(canvas).toBeVisible();
+  await page.setViewportSize({width:390,height:844});
+  await expect(canvas).toBeVisible();
+  expect(before!.height).toBeGreaterThan(0);
+  await canvas.evaluate((el:HTMLCanvasElement)=>el.getContext("webgl2")?.getExtension("WEBGL_lose_context")?.loseContext());
+  await expect(stage).not.toHaveClass(/photo-stage-live/);
+  await expect(stage.locator(".photo-poster")).toHaveCSS("opacity","1");
 });

@@ -4,6 +4,7 @@ const port = 3217;
 export default defineConfig({
   testDir: "./tests/e2e",
   workers: 1,
+  forbidOnly: Boolean(process.env.CI),
   use: {
     baseURL: `http://127.0.0.1:${port}`,
     trace: "retain-on-failure",

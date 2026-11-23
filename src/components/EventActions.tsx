@@ -1,26 +1,30 @@
 "use client";
 
-import { useEffect, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import { event } from "@/content/event";
 
-export function CoffeeQr() {
+export function CoffeeQr({ compact = false }: { compact?: boolean }) {
+  const headingId = useId();
   const dialog = useRef<HTMLDialogElement>(null);
   const trigger = useRef<HTMLButtonElement>(null);
   return <>
-    <button ref={trigger} type="button" className="button button-line" onClick={() => dialog.current?.showModal()}>
-      Mời Vũ cà phê
+    <button ref={trigger} type="button" className={compact ? "dock-button dock-coffee" : "button button-line"} aria-label="Mời Vũ cà phê" onClick={() => dialog.current?.showModal()}>
+      {compact ? <><svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" aria-hidden="true"><path d="M4 8h13v6a6 6 0 0 1-6 6h-1a6 6 0 0 1-6-6ZM17 9h2a3 3 0 1 1 0 6h-2M8 3v2M13 3v2" /></svg><span className="dock-label">Mời Vũ cà phê</span></> : "Mời Vũ cà phê"}
     </button>
-    <dialog ref={dialog} aria-labelledby="qr-heading" onClose={() => trigger.current?.focus()}>
+    <dialog ref={dialog} aria-labelledby={headingId} onClose={() => trigger.current?.focus()}>
       <div className="qr-dialog">
         <form method="dialog"><button className="dialog-close" aria-label="Đóng mã QR">×</button></form>
-        <h2 id="qr-heading">Mời Vũ một ly cà phê</h2>
+        <h2 id={headingId}>Mời Vũ một ly cà phê</h2>
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/payments/vu-coffee-vietqr.png" alt="Mã VietQR mời Vũ cà phê" />
         <p>Vui lòng kiểm tra tên người nhận trong ứng dụng ngân hàng trước khi chuyển.</p>
         <a className="button button-dark" href="/payments/vu-coffee-vietqr.png" download>Tải mã QR</a>
       </div>
     </dialog>
-    <noscript><p><a href="/payments/vu-coffee-vietqr.png">Mở ảnh mã QR</a></p></noscript>
+    <noscript>{compact ? <>
+      <style>{".dock-coffee{display:none}"}</style>
+      <a className="dock-button dock-coffee-static" href="/payments/vu-coffee-vietqr.png" aria-label="Mở mã QR cà phê">QR</a>
+    </> : <p><a href="/payments/vu-coffee-vietqr.png">Mở ảnh mã QR</a></p>}</noscript>
   </>;
 }
 
@@ -65,16 +69,11 @@ export function SmsLink({ children, message }: { children: string; message: stri
 }
 
 export function MapPreview() {
-  const [open, setOpen] = useState(false);
   const query = encodeURIComponent(event.venue + ", " + event.address);
   return <div className="venue-map">
-    {open ? <iframe title="Bản đồ Trung tâm Hội nghị tỉnh Gia Lai"
-      src={`https://maps.google.com/maps?q=${query}&output=embed`}
-      allowFullScreen referrerPolicy="strict-origin-when-cross-origin" /> : <div className="map-placeholder">
-      <svg viewBox="0 0 240 140" aria-hidden="true"><path d="M0 40L240 100M0 110L240 30M50 0L100 140M175 0L140 140" fill="none" stroke="currentColor" strokeWidth="12" opacity=".18" /><circle cx="125" cy="70" r="16" fill="currentColor" /><circle cx="125" cy="70" r="5" fill="white" /></svg>
-      <p>{event.venue}</p><span>{event.address}</span>
-      <button className="button button-line" type="button" onClick={() => setOpen(true)}>Hiển thị bản đồ</button>
-      <noscript><p>Dùng liên kết Google Maps để xem bản đồ.</p></noscript>
-    </div>}
+    <iframe title="Bản đồ Trung tâm Hội nghị tỉnh Gia Lai"
+      src={`https://www.google.com/maps?q=${query}&output=embed&hl=vi`}
+      loading="lazy" allowFullScreen referrerPolicy="no-referrer-when-downgrade" />
+    <a className="map-external" href={`https://www.google.com/maps/search/?api=1&query=${query}`} target="_blank" rel="noopener noreferrer">Mở bản đồ lớn trên Google Maps ↗</a>
   </div>;
 }

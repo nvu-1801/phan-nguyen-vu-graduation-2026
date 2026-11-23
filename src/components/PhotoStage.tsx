@@ -28,7 +28,7 @@ export function PhotoStage({ children, enabled }: { children: ReactNode; enabled
         setNearby(true);
         observer.disconnect();
       }
-    }, { rootMargin: "200px" });
+    }, { rootMargin: "1200px" });
     observer.observe(element);
     return () => observer.disconnect();
   }, [enabled, reduced]);

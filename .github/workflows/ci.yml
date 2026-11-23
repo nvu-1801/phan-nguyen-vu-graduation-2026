@@ -4,6 +4,11 @@ on:
   push:
     branches: [preview/graduation-2026, main]
   pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: graduation-ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
 
 permissions:
   contents: read
@@ -31,6 +36,13 @@ jobs:
       - run: npm run test:browser
       - run: npm run docker:local
       - run: npm run docker:smoke
+      - name: Capture Docker diagnostics on failure
+        if: failure() && hashFiles('.env.docker.local') != ''
+        continue-on-error: true
+        run: |
+          mkdir -p test-results/docker
+          docker compose --env-file .env.docker.local -p graduation-local logs --no-color > test-results/docker/container.log 2>&1
+          docker compose --env-file .env.docker.local -p graduation-local ps -a > test-results/docker/containers.txt 2>&1
       - name: Stop local production smoke environment
         if: always() && hashFiles('.env.docker.local') != ''
         run: docker compose --env-file .env.docker.local -p graduation-local down
@@ -43,4 +55,8 @@ jobs:
             test-results/**/*.png
             public/images/manifest.json
             test-results/docker/report.json
+            test-results/**/*.zip
+            test-results/docker/*.log
+            test-results/docker/*.txt
           if-no-files-found: ignore
+          retention-days: 7

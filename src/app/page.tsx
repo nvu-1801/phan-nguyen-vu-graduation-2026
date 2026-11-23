@@ -1,8 +1,9 @@
-import { CoffeeQr, CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
+import { CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
 import { copy, wishesForGuests } from "@/content/copy";
 import { WishIdeas } from "@/components/WishIdeas";
 import { Guestbook } from "@/components/Guestbook";
 import { PhotoStory } from "@/components/PhotoStory";
+import { FloatingActions } from "@/components/FloatingActions";
 import { ScrollEffects } from "@/components/ScrollEffects";
 import Image from "next/image";
 import { event, mapsUrl } from "@/content/event";
@@ -80,6 +81,7 @@ export default function Invitation() {
         <div className="venue-copy" data-reveal><p className="eyebrow">07 / ĐƯỜNG ĐẾN CUỘC HẸN</p><h2 id="venue-heading">Hẹn gặp bạn<br /><em>tại đây.</em></h2><h3>{event.venue}</h3><p>{event.address}</p><a className="button button-dark venue-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường đến lễ tốt nghiệp <span aria-hidden="true">↗</span></a><div className="venue-links"><a href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a><CopyAddress /></div></div><MapPreview />
       </div></section>
     </main>
-    <footer className="closing"><div className="wrap coffee-banner landscape"><div className="landscape-image coffee-image" aria-hidden="true" /><div className="coffee-copy"><p className="eyebrow">MỘT MÓN QUÀ NHỎ, NẾU BẠN MUỐN</p><h2>Một lời chúc thôi<br />cũng đã <em>rất quý.</em></h2><p>{copy.coffee}</p><CoffeeQr /></div></div><div className="wrap closing-message"><p>{copy.closing}</p></div><div className="wrap closing-inner"><p className="signature">Cảm ơn vì đã là một phần trong hành trình của Vũ.</p><a href={`tel:${event.tel}`}>{event.name} · {event.phone}</a><a href="#noi-dung">Về đầu trang ↑</a></div></footer>
+    <footer className="closing"><div className="wrap coffee-banner landscape"><div className="landscape-image coffee-image" aria-hidden="true" /><div className="coffee-copy"><p className="eyebrow">MỘT MÓN QUÀ NHỎ, NẾU BẠN MUỐN</p><h2>Một lời chúc thôi<br />cũng đã <em>rất quý.</em></h2><p>{copy.coffee}</p><p className="coffee-dock-note">Bạn có thể mở mã QR bằng nút ly cà phê ở góc màn hình.</p></div></div><div className="wrap closing-message"><p>{copy.closing}</p></div><div className="wrap closing-inner"><p className="signature">Cảm ơn vì đã là một phần trong hành trình của Vũ.</p></div></footer>
+    <FloatingActions />
   </>;
 }

@@ -7,6 +7,7 @@ export const event = {
   address: "01 Nguyễn Tất Thành, phường Quy Nhơn, tỉnh Gia Lai",
   phone: "0343 628 267",
   tel: "+84343628267",
+  zalo: "https://zalo.me/0343628267",
 } as const;
 
 export const mapsUrl = "https://www.google.com/maps/search/?api=1&query=" +

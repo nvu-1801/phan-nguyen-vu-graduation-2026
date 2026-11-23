@@ -1,10 +1,13 @@
 import assert from 'node:assert/strict';
 import { randomUUID } from 'node:crypto';
+import { setDefaultResultOrder } from 'node:dns';
 import { spawnSync } from 'node:child_process';
 import { mkdir, writeFile } from 'node:fs/promises';
 import { chromium } from '@playwright/test';
 
 // Deliberately fixed to a separate LOCAL Compose project; never target production.
+// Compose publishes IPv4 loopback only; avoid unrelated IPv6 localhost services.
+setDefaultResultOrder('ipv4first');
 const origin = 'http://localhost:3020';
 const compose = ['compose','--env-file','.env.docker.local','-p','graduation-local'];
 function docker(args) {
@@ -36,7 +39,7 @@ const tag = `docker-${randomUUID().slice(0,8)}`;
 const ids = {rsvps:[], wishes:[]};
 const checks=[];
 const ok = message => {checks.push(message);console.log('PASS',message);};
-const browser = await chromium.launch({args:['--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
+const browser = await chromium.launch({args:['--host-resolver-rules=MAP localhost 127.0.0.1','--use-gl=angle','--use-angle=swiftshader','--enable-unsafe-swiftshader']});
 try {
   assert.equal((await get('/api/health')).status,'ok');
   assert.equal(exec(['id','-u']).trim(),'1000');
