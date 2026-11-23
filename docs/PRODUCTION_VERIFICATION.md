@@ -39,3 +39,7 @@ Use docs/VPS.md for configuration and startup, deploy/production.env.example and
 - [Next.js output/standalone](https://nextjs.org/docs/app/api-reference/config/next-config-js/output): traced output and explicit copying of public/static assets.
 - [Docker volume lifecycle](https://docs.docker.com/engine/storage/volumes/): data persists independently of container recreation.
 - Upstream skill snapshots read at ui-motion-skills commit 48377973bd111a14f1fd5542bfecea1cf48ba5d1: release-deploy (+ deployment handoff), backend-nextjs, backend-api-contracts and github-actions. No unrelated services installed.
+
+### CI HTTP-body follow-up
+
+Initial run [45018266896](https://github.com/nvu-1801/phan-nguyen-vu-graduation-2026/actions/runs/45018266896) passed build, 17 browser tests, Docker build/start and persistence checks, then failed inside the Node24 HTTP parser with unread asset responses. Smoke HTTP requests now consume all body bytes, including errors/images, before reporting status. No product assertion was removed. Local lint and all six production smoke checks passed after this change; the fix is verified by its own matching CI run.

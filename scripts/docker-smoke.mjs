@@ -15,15 +15,22 @@ function docker(args) {
 const exec = args => docker([...compose,'exec','-T','invitation',...args]);
 const query = async (sql, args=[]) => JSON.parse(exec(['node','--input-type=module','-e',
   `import {createClient} from '@libsql/client';const db=createClient({url:process.env.DATABASE_URL});try{console.log(JSON.stringify((await db.execute({sql:${JSON.stringify(sql)},args:${JSON.stringify(args)}})).rows))}finally{db.close()}`]));
+// Drain every response, including image/error bodies. Checking only status left
+// Undici streams paused while connections closed after a container restart.
+async function request(path, options) {
+  const response = await fetch(origin+path, options);
+  const bytes = await response.arrayBuffer();
+  return { status: response.status, json: async () => JSON.parse(Buffer.from(bytes).toString('utf8')) };
+}
 async function read(path) {
   for (let attempt=0; ; attempt++) {
-    try { return await fetch(origin+path, {headers:{Connection:'close'},signal:AbortSignal.timeout(10000)}); }
+    try { return await request(path, {headers:{Connection:'close'},signal:AbortSignal.timeout(10000)}); }
     catch(error) { if(attempt>=3) throw error; await new Promise(resolve=>setTimeout(resolve,250)); }
   }
 }
 async function get(path) {const res=await read(path);assert.equal(res.status,200,path);return res.json();}
 async function post(path, data, key=randomUUID(), site=origin) {
-  return fetch(origin+path,{method:'POST',headers:{Origin:site,'Content-Type':'application/json','Idempotency-Key':key},body:JSON.stringify(data)});
+  return request(path,{method:'POST',headers:{Origin:site,'Content-Type':'application/json','Idempotency-Key':key},body:JSON.stringify(data)});
 }
 const tag = `docker-${randomUUID().slice(0,8)}`;
 const ids = {rsvps:[], wishes:[]};
