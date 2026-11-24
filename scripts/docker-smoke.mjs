@@ -55,7 +55,7 @@ try {
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(origin);await page.getByRole('heading',{name:'Phan Nguyên Vũ',exact:true}).waitFor();
-  const rsvp=page.locator('#xac-nhan .guest-form');
+  const rsvp=page.locator('#xac-nhan .guest-form').first();
   await rsvp.getByLabel('Tên của bạn').fill(`${tag}-private`);
   await rsvp.getByLabel('Lời nhắn riêng (không bắt buộc)').fill('Local container persistence fixture.');
   const savedRsvp=page.waitForResponse(r=>r.url().endsWith('/api/rsvps')&&r.request().method()==='POST');
