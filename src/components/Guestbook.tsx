@@ -44,7 +44,8 @@ function PublicEntries({ kind, revision }: { kind: Kind; revision: number }) {
   }, [load, revision]);
 
   return <div className="public-entries">
-    <h3>{kind === "rsvp" ? "Những cuộc hẹn được chia sẻ" : "Tường lời chúc"}</h3>
+    <h3>{kind === "rsvp" ? "Những cuộc hẹn được chia sẻ" : "Lời chúc bạn bè đã đồng ý chia sẻ"}</h3>
+    {kind === "wish" && <p className="public-wish-note">Lời chúc chỉ xuất hiện ở đây khi người gửi đồng ý công khai và Vũ đã duyệt.</p>}
     {counts && <p className="entry-counts">{counts.yes} sẽ đến · {counts.no} chưa thể đến</p>}
     {items.length > 0 && <ul>{items.map(entry => <li key={entry.id}>
       <strong>{entry.name}</strong>
@@ -126,9 +127,9 @@ export function Guestbook({ kind }: { kind: Kind }) {
         }} />}
         <label>{isRsvp ? "Lời nhắn riêng (không bắt buộc)" : "Lời chúc của bạn"}<textarea ref={messageInput} name="message" rows={4} required={!isRsvp} maxLength={1000} placeholder={isRsvp ? "Lời nhắn cho Vũ" : "Lời chúc"} /></label>
         <div hidden><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
-        <label className="checkbox"><input type="checkbox" name="consent" />{isRsvp
+        <label className="checkbox"><input type="checkbox" name="consent" /><span>{isRsvp
           ? "Cho phép hiển thị tên và trạng thái tham dự."
-          : "Cho phép hiển thị tên và lời chúc sau khi duyệt."}</label>
+          : <>Đồng ý công khai tên và lời chúc sau khi Vũ duyệt.<small>Bỏ chọn nghĩa là riêng tư; chỉ Vũ đọc được lời nhắn này.</small></>}</span></label>
         <button type="submit" className="button button-dark">{pending ? "Đang gửi…" : isRsvp ? "Gửi xác nhận" : "Gửi lời chúc"}</button>
       </fieldset>
       <p role="status" className="form-feedback">{feedback}</p>

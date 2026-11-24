@@ -36,6 +36,10 @@ npm run moderate -- cleanup
 
 Dùng cấu hình DB đúng môi trường khi chạy. Chỉ lời chúc đã duyệt và có consent mới xuất hiện. RSVP công khai chỉ hiện tên và trạng thái khi khách đồng ý, lời nhắn RSVP luôn riêng tư.
 
+## Quản lý lời chúc
+
+Mở `/admin` để xem lời chúc, kể cả lời riêng tư. Cấu hình `ADMIN_PASSWORD` (tối thiểu 16 ký tự) và `ADMIN_SESSION_SECRET` (tối thiểu 32 ký tự ngẫu nhiên) trong môi trường server. Không đưa hai giá trị này vào Git. Phiên đăng nhập dùng cookie HttpOnly và tự hết hạn sau 8 giờ. Bản đầu chỉ xem; duyệt/từ chối vẫn dùng lệnh `npm run moderate` ở trên.
+
 ## Vercel
 
 Có thể phát hành thiệp mời và liên hệ trực tiếp khi chưa cấu hình DB. Trang sẽ hiển thị nút SMS/gọi điện trong mục xác nhận. Khi kết nối DB, website hiển thị form RSVP và lời chúc như ở bản chạy cục bộ.

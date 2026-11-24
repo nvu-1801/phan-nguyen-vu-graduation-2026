@@ -307,3 +307,54 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .button,.memory-photo,.memory-photo-image,.campus-image,.venue-image,.dock-button{transition:none}
   .button:hover,.memory-photo:hover,.memory-photo--portrait:hover,.campus-window:hover .campus-image,.venue-photo:hover .venue-image,.dock-button:hover{transform:none}
 }
+
+/* Private wish viewer */
+.public-entries h3{color:var(--ink)}
+.public-wish-note{font-size:.75rem;color:#596457;margin-top:10px;line-height:1.55}
+.admin-page{min-height:100svh;padding:32px 20px 80px;background:radial-gradient(ellipse at 85% 4%,#e7efc8 0,transparent 32%),var(--paper)}
+.admin-shell{width:min(100%,940px);margin-inline:auto}
+.admin-back{display:inline-flex;min-height:44px;align-items:center;text-decoration:none;font-size:.82rem;font-weight:600;color:#176543}
+.admin-heading{max-width:680px;padding-block:50px 34px}
+.admin-heading h1{font-size:clamp(3.5rem,9vw,6.4rem);line-height:.9;color:#173e30}
+.admin-heading h1 em{color:var(--orange)}
+.admin-heading>p:last-child{margin-top:20px;color:#53695a;max-width:50ch}
+.admin-card{max-width:580px;padding:clamp(22px,5vw,38px);border:1px solid #e4dcc6;border-radius:24px;background:#fffdf6;box-shadow:0 24px 65px #183e3018}
+.admin-card h2,.admin-list-heading h2{font:500 clamp(1.8rem,5vw,2.8rem)/1.08 var(--serif);letter-spacing:-.04em;color:#173e30}
+.admin-config p{margin-top:14px;color:#53695a}
+.admin-config code{font-size:.85em;color:#6d361e;background:#f3e7cc;padding:2px 5px;border-radius:5px}
+.admin-login{display:grid;gap:18px}
+.admin-login label{display:grid;gap:7px;font-size:.8rem;font-weight:600;color:#415a4a}
+.admin-login input{width:100%;min-height:48px;border:1px solid #b8c6b4;border-radius:10px;background:#fffef9;padding:10px 13px;color:#173e30}
+.admin-login input:focus{outline:3px solid #b94d2844;outline-offset:2px}
+.admin-error{margin-top:12px;color:#9a301e;font-weight:600}
+.admin-notice{margin:18px 0;color:#176543;font-size:.85rem;font-weight:600}
+.admin-list{padding-top:20px}
+.admin-list-heading{display:flex;justify-content:space-between;align-items:start;gap:18px}
+.admin-list-heading p{margin-top:8px;color:#53695a;font-size:.85rem;max-width:56ch}
+.admin-list-heading .button{flex:0 0 auto}
+.admin-filters{display:flex;flex-wrap:wrap;gap:8px;margin-block:25px}
+.admin-filters button{min-height:42px;padding:8px 15px;border:1px solid #c5cfba;border-radius:24px;background:#fffdf6;color:#294a38;font-size:.76rem;font-weight:600}
+.admin-filters button[aria-pressed="true"]{border-color:#155b42;background:#155b42;color:#fff8e9}
+.admin-wishes{display:grid;gap:14px;margin-top:18px}
+.admin-wish{padding:22px;border:1px solid #e4dcc6;border-radius:18px;background:#fffdf6;box-shadow:0 10px 30px #183e3010;overflow-wrap:anywhere}
+.admin-wish>header{display:flex;justify-content:space-between;gap:15px;align-items:start}
+.admin-wish h3{font:600 1.15rem/1.3 var(--sans);color:#173e30}
+.admin-wish time{display:block;margin-top:4px;font-size:.71rem;color:#596457}
+.admin-badges{display:flex;justify-content:end;flex-wrap:wrap;gap:6px}
+.admin-badges span{display:inline-flex;padding:5px 9px;border-radius:20px;background:#eee8d9;color:#455346;font-size:.64rem;font-weight:700}
+.admin-badges .is-public{background:#e3efca;color:#245c39}
+.admin-badges .is-private{background:#f6e3d4;color:#783e22}
+.admin-wish>p{white-space:pre-wrap;margin-top:16px;color:#405748;line-height:1.8}
+.admin-empty,.admin-muted{padding:24px;border:1px dashed #b9c5a9;border-radius:16px;color:#53695a;text-align:center}
+.admin-more{margin-top:20px}
+@media(max-width:600px){
+  .admin-page{padding:17px 16px 52px}
+  .admin-heading{padding-block:38px 27px}
+  .admin-list-heading{flex-direction:column}
+  .admin-list-heading .button{align-self:start}
+  .admin-wish{padding:17px}
+  .admin-wish>header{flex-direction:column}
+  .admin-badges{justify-content:start}
+  .admin-filters{gap:7px}
+  .admin-filters button{padding-inline:12px}
+}
