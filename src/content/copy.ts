@@ -11,6 +11,7 @@ export const copy = {
     "Cảm ơn bạn vì đã dành thời gian cho mình. Dù gặp nhau ở buổi lễ hay qua một lời chúc từ xa, mình vẫn rất vui vì có bạn cùng chia sẻ cột mốc này.",
   ],
   rsvp: "Bạn cho mình biết có thể đến không nhé. Nếu chưa chắc lịch, bạn cứ liên hệ trực tiếp với mình. Không đến được cũng không sao — lời nhắn ở đây chỉ gửi riêng cho Vũ.",
+  response: "Một lời hẹn đến chung vui, một lời nhắn để giữ lại. Bạn chọn cách nào cũng được — mình đều trân trọng.",
   wishes: "Bạn có thể chọn một gợi ý bên dưới hoặc viết bằng lời của riêng mình. Lời nhắn mặc định là riêng tư; nếu muốn chia sẻ với mọi người, bạn có thể chủ động đồng ý công khai. Vũ sẽ duyệt trước khi lời chúc hiện lên trang.",
   photo: "Hai tấm hình này vẫn còn thiếu một điều: một tấm có bạn đứng cạnh. Nếu hôm ấy gặp nhau, nhớ gọi mình lại chụp hình nhé. Mình muốn giữ cả niềm vui của cuộc gặp trong tấm ảnh ấy.",
   coffee: "Bạn đến chung vui hoặc gửi một lời nhắn thôi đã là một món quà rồi. Nếu vẫn muốn mời mình một ly cà phê cho chặng đường mới, mình xin nhận và cảm ơn bạn thật nhiều. Hoàn toàn tùy bạn nhé.",
@@ -18,12 +19,46 @@ export const copy = {
 } as const;
 
 export const wishIdeas = [
-  { label: "Chân thành", message: "Chúc mừng Vũ tốt nghiệp nhé! Chúc bạn bước vào chặng đường mới với thật nhiều niềm vui, giữ được sự tử tế và tìm thấy công việc mình yêu thích." },
-  { label: "Nhẹ nhàng", message: "Chúc Vũ đủ bình tĩnh trước những điều chưa biết, đủ can đảm để thử và đủ dịu dàng với chính mình khi mọi thứ chưa như ý. Mừng ngày tốt nghiệp của bạn!" },
-  { label: "Vui một chút", message: "Chúc mừng tân cử nhân Vũ! Mong những ngày tới có việc hay để làm, có tiền đi cà phê và có nhiều lý do để cười. Hôm nào gặp nhớ chụp chung một tấm nhé!" },
-  { label: "Gửi từ xa", message: "Hôm ấy mình chưa thể đến, nhưng vẫn muốn gửi Vũ một lời chúc thật vui. Chúc mừng bạn tốt nghiệp! Hẹn một dịp gần nhất để nghe bạn kể về ngày này nhé." },
-  { label: "Cho chặng đường mới", message: "Mong Vũ sẽ gặp những người đồng hành tốt, có cơ hội học điều mới và dần xây được cuộc sống mình mong muốn. Cứ đi từng bước thôi nhé. Chúc mừng bạn!" },
-  { label: "Ngắn mà thật lòng", message: "Chúc mừng Vũ nhé! Mình vui vì được chia sẻ cột mốc này với bạn. Chúc bạn khỏe, bình an và luôn có điều để mong chờ ở phía trước." },
+  {
+    label: "Chân thành",
+    message: "Chúc mừng Vũ đã đi hết một chặng đường thật đẹp! Mình mong những ngày sau sẽ mang đến cho bạn những công việc khiến bạn thấy hào hứng, những người đồng nghiệp tử tế và đủ thời gian cho những điều mình yêu. Cứ giữ sự chân thành như bây giờ, rồi mọi thứ sẽ dần về đúng chỗ.",
+  },
+  {
+    label: "Ấm áp",
+    message: "Hôm nay bạn là tân cử nhân rồi đó! Mình chúc Vũ có những buổi sáng không phải vội, những bữa cơm ngon và một vòng tay để trở về sau ngày dài. Thành công lớn lao thì tốt, nhưng mình mong bạn luôn thấy đủ đầy với những điều nhỏ bé.",
+  },
+  {
+    label: "Nhẹ nhàng",
+    message: "Chúc Vũ bước vào chặng mới với một trái tim bình tĩnh. Nếu có lúc mọi thứ rối bời, mong bạn nhớ rằng mình đã từng hoàn thành những điều khó hơn thế. Đi chậm một chút cũng được, miễn là vẫn là chính mình.",
+  },
+  {
+    label: "Vui một chút",
+    message: "Chúc mừng tân cử nhân Vũ! Từ hôm nay, bạn chính thức có quyền ngủ nướng mà không thấy áy náy, có quyền thử những việc mình chưa từng làm và có quyền rủ bạn bè đi cà phê ăn mừng. Mong tài khoản ngân hàng cũng vui theo tấm bằng này!",
+  },
+  {
+    label: "Gửi từ xa",
+    message: "Hôm ấy mình không đến được, nhưng vẫn muốn chen vào một chút để nói: chúc mừng Vũ! Mình biết ngày này không đến một cách dễ dàng, nên càng mong bạn được vui trọn vẹn. Khi nào có dịp gần nhau, nhớ kể mình nghe về ngày tốt nghiệp của bạn nhé.",
+  },
+  {
+    label: "Chặng đường mới",
+    message: "Một cánh cửa vừa mở ra, và mình tin Vũ sẽ bước qua nó theo cách rất riêng. Mong bạn gặp được người thầy tốt, người bạn tốt và những cơ hội khiến mình phải mỉm cười. Đừng sợ thử, cũng đừng quên nghỉ ngơi.",
+  },
+  {
+    label: "Biết ơn",
+    message: "Cảm ơn Vũ vì đã là một phần trong những năm tháng này. Mình chúc bạn mang theo những ký ức đẹp, nhưng đừng mang theo áp lực phải hoàn hảo. Mong chặng đường phía trước rộng mở và có nhiều người thương bạn như bạn xứng đáng.",
+  },
+  {
+    label: "Can đảm",
+    message: "Ra trường rồi, thế giới sẽ rộng hơn và cũng nhiều điều chưa biết hơn. Mình chúc Vũ đủ can đảm để chọn con đường mình muốn, đủ kiên nhẫn để đi tiếp khi mọi thứ chậm lại, và đủ dịu dàng để tha thứ cho chính mình khi cần.",
+  },
+  {
+    label: "Bình an",
+    message: "Không cần phải thành công thật nhanh đâu. Mình chúc Vũ có một cuộc sống bình an, một công việc mình không ghét, vài người bạn có thể gọi lúc nửa đêm và một trái tim còn biết rung động trước điều đẹp. Chúc mừng bạn!",
+  },
+  {
+    label: "Ngắn mà thật lòng",
+    message: "Chúc mừng Vũ tốt nghiệp! Mình vui vì được thấy bạn đi đến ngày này. Mong bạn khỏe, bình an và luôn có điều để mong chờ ở phía trước.",
+  },
 ] as const;
 
 export const wishesForGuests = [

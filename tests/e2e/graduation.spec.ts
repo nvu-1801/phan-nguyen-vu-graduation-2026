@@ -215,22 +215,49 @@ test("wish suggestions are editable drafts and never submit on selection", async
   await form.locator("summary").click();
   await form.getByRole("button", { name: "Dùng gợi ý: Chân thành", exact: true }).click();
   const message = form.getByLabel("Lời chúc của bạn");
-  await expect(message).toHaveValue(/Chúc mừng Vũ tốt nghiệp/);
+  await expect(message).toHaveValue(/Chúc mừng Vũ đã đi hết một chặng đường/);
   await expect(message).toBeFocused();
   await message.fill("Lời của riêng mình.");
   await form.getByRole("button", { name: "Dùng gợi ý: Ngắn mà thật lòng", exact: true }).click();
-  await expect(message).toHaveValue(/^Lời của riêng mình\.\n\nChúc mừng Vũ nhé!/);
+  await expect(message).toHaveValue(/^Lời của riêng mình\.\n\nChúc mừng Vũ tốt nghiệp!/);
   await expect(form.getByRole("checkbox")).not.toBeChecked();
   expect(writes).toBe(0);
 });
 
 test("suggested wishes remain available without a database", async ({ page }) => {
   await page.goto("http://127.0.0.1:3218/");
-  await expect(page.locator("#loi-chuc .wish-idea")).toHaveCount(6);
+  await expect(page.locator("#loi-chuc .wish-idea")).toHaveCount(10);
   const links = page.locator("#loi-chuc .wish-idea a");
-  await expect(links).toHaveCount(6);
+  await expect(links).toHaveCount(10);
   for (const link of await links.all()) await expect(link).toHaveAttribute("href", /^sms:/);
   await expect(page.getByText("không phải lời chúc của khách đã gửi", { exact: false })).toBeVisible();
+});
+
+test("admin signs in and sees private wishes and RSVP messages", async ({ page, request }) => {
+  const stamp = Date.now();
+  const rsvpName = `RSVP riêng ${stamp}`;
+  const rsvpMessage = `Lời nhắn RSVP riêng ${stamp}`;
+  const wishName = `Wish riêng ${stamp}`;
+  const wishMessage = `Lời chúc riêng ${stamp}`;
+  const db = new DatabaseSync(fixture);
+  try {
+    db.prepare("INSERT INTO rsvps (id,guest_name,attendance,public_consent,idempotency_key,request_hash,message) VALUES (?,?,?,?,?,?,?)")
+      .run(randomUUID(), rsvpName, "no", 0, randomUUID(), "test", rsvpMessage);
+    db.prepare("INSERT INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash) VALUES (?,?,?,?,?,?)")
+      .run(randomUUID(), wishName, wishMessage, 0, randomUUID(), "test");
+  } finally { db.close(); }
+  expect((await request.get("/api/admin/rsvps")).status()).toBe(401);
+
+  await page.goto("/admin");
+  await page.getByLabel("Mật khẩu quản lý").fill("graduation-test-admin");
+  await page.getByRole("button", { name: "Đăng nhập" }).click();
+  await expect(page.getByRole("heading", { name: "Lời nhắn của bạn bè" })).toBeVisible();
+  await expect(page.getByText(wishMessage)).toBeVisible();
+
+  await page.getByRole("button", { name: "Xác nhận tham dự", exact: true }).click();
+  await expect(page.getByRole("heading", { name: "Xác nhận tham dự", exact: true })).toBeVisible();
+  await expect(page.getByRole("heading", { name: rsvpName, exact: true })).toBeVisible();
+  await expect(page.getByText(rsvpMessage, { exact: true })).toBeVisible();
 });
 
 for (const width of [390, 1440]) {

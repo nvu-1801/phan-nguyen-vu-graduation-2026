@@ -17,7 +17,7 @@
 @media(prefers-reduced-motion:reduce){*,*::before,*::after{scroll-behavior:auto!important;transition:none!important}.photo-stage{height:auto;margin-block:30px}.stage-sticky{position:relative;top:auto;height:auto}.photo-poster{position:static}.postcards{height:auto;padding:25px 10px 40px}.hero-orbit{display:none}}
 
 
-.hero-greeting{font-size:.86rem;font-weight:600;color:var(--blue);margin-top:22px}.hero-greeting+.hero-tagline{margin-top:10px}.guest-wishes{padding-block:70px;background:#e2f5ef}.guest-wishes-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.guest-wishes article{padding:28px;background:var(--white);border:1px solid var(--line);border-radius:18px}.guest-wishes h3{font-size:1.45rem;line-height:1.3;text-wrap:balance}.guest-wishes article p{font-size:.85rem;color:var(--muted);margin-top:16px}.wish-ideas{border:1px solid var(--line);border-radius:12px;padding:16px;margin-block:10px}.wish-ideas summary{font-size:.8rem;font-weight:600;cursor:pointer;min-height:44px;align-content:center}.wish-ideas-note{font-size:.72rem;color:var(--muted);margin-block:10px 18px}.wish-ideas-grid{display:grid;gap:14px}.wish-idea{padding-top:14px;border-top:1px solid var(--line)}.wish-idea h4{font-size:.8rem;margin:0 0 8px}.wish-idea p{font-size:.8rem;color:var(--muted)}.wish-idea button{font-size:.72rem;text-align:left}.wish-idea .button{margin-top:12px}.closing-message{padding-top:34px;max-width:760px;text-align:center}.closing-message p{font-size:.95rem;color:var(--muted)}
+.hero-greeting{font-size:.86rem;font-weight:600;color:var(--blue);margin-top:22px}.hero-greeting+.hero-tagline{margin-top:10px}.guest-wishes{padding-block:70px;background:#e2f5ef}.guest-wishes-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:24px}.guest-wishes article{padding:28px;background:var(--white);border:1px solid var(--line);border-radius:18px}.guest-wishes h3{font-size:1.45rem;line-height:1.3;text-wrap:balance}.guest-wishes article p{font-size:.85rem;color:var(--muted);margin-top:16px}.wish-ideas{border:1px solid var(--line);border-radius:12px;padding:16px;margin-block:10px}.wish-ideas summary{font-size:.8rem;font-weight:600;cursor:pointer;min-height:44px;align-content:center}.wish-ideas-note{font-size:.72rem;color:var(--muted);margin-block:10px 18px}.wish-ideas-grid{display:grid;gap:14px}.wish-idea{padding-top:16px;border-top:1px solid var(--line)}.wish-idea h4{font-size:.84rem;margin:0 0 8px}.wish-idea p{font-size:.83rem;line-height:1.7;color:var(--muted)}.wish-idea-button{display:flex;width:100%;min-height:50px;align-items:center;justify-content:center;margin-top:14px;padding:12px 16px;border:1px solid #b9c9b1;border-radius:12px;background:#f6faef;color:#155b42;font-size:.82rem;font-weight:600;line-height:1.4;text-align:center;cursor:pointer;transition:background-color .2s,border-color .2s,transform .2s}.wish-idea-button:hover{background:#e7efc8;border-color:#8fae82;transform:translateY(-1px)}.wish-idea-button:focus-visible{outline:3px solid #b94d2866;outline-offset:2px}.wish-idea .button{width:100%;margin-top:14px}.closing-message{padding-top:34px;max-width:760px;text-align:center}.closing-message p{font-size:.95rem;color:var(--muted)}
 @media(max-width:760px){.guest-wishes{padding-block:55px}.guest-wishes-grid{grid-template-columns:1fr;gap:16px}.guest-wishes article{padding:24px}.closing-message{text-align:left}}
 /* Floating contact actions: outside animated sections so fixed positioning stays stable. */
 .floating-actions{position:fixed;z-index:30;right:max(18px,env(safe-area-inset-right));bottom:max(18px,env(safe-area-inset-bottom));display:flex;flex-direction:column;gap:10px;padding:8px;border-radius:40px;background:#fbfefff0;border:1px solid var(--line);box-shadow:0 10px 36px #12394c20;backdrop-filter:blur(12px)}
@@ -84,6 +84,8 @@ nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .button-dark:hover{background:#105a3f;box-shadow:0 12px 27px #145a3f3d}
 .button-line{border-color:#9eb69b;background:#fffdf6}
 .button-line:hover{background:#eff3d8}
+.hero-wish{min-height:56px;padding:13px 24px;border:1px solid #9eb69b;border-radius:14px;background:#fffdf6;color:#173e30;font-size:.86rem;box-shadow:0 8px 20px #173e3012;transition:transform .25s ease,background-color .25s ease,border-color .25s ease}
+.hero-wish:hover{background:#eff3d8;border-color:#7f9c7a;color:#173e30;transform:translateY(-2px)}
 .hero-meta{border-color:#cdd8bd;color:#53695a}
 .hero-art{min-height:600px;display:flex;align-items:center;justify-content:center;padding:0 0 28px}
 .hero-frame{width:min(92%,510px);height:610px;margin:auto;isolation:isolate;border:1px solid #fff9;border-radius:48% 48% 34px 34px;background:linear-gradient(155deg,#e5efbb55,#f1aa5a16);box-shadow:0 26px 80px #173e3030;overflow:hidden}
@@ -152,12 +154,21 @@ nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .guest-wishes article{min-height:210px;padding:26px;border:1px solid #d3dcad;border-radius:20px;background:#fffdf5;box-shadow:0 14px 32px #244a2610}
 .guest-wishes article h3{margin-bottom:12px;color:#1c6746}
 .guest-wishes article p{color:#586958;font-size:.91rem}
-.response-section{background:#155b42;color:#fff8e9}
+.response-section{background:#155b42;color:#fff8e9;scroll-margin-top:80px}
 .response-inner{padding-block:100px}
 .response-heading .eyebrow{color:#d6ef72}
 .response-heading h2{color:#fff8e9}
 .response-heading h2 em{color:#d6ef72}
 .response-heading>p:last-child{color:#e1eadc}
+.response-columns{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:clamp(28px,4vw,54px);align-items:start}
+.response-block{min-width:0;scroll-margin-top:96px}
+.response-block+.response-block{border-left:1px solid #ffffff24;padding-left:clamp(28px,4vw,54px)}
+.response-block-heading{margin-bottom:22px}
+.response-label{margin-bottom:9px;font-size:.64rem;font-weight:700;letter-spacing:.18em;color:#d6ef72}
+.response-block-heading h3{font:500 clamp(1.7rem,2.6vw,2.3rem)/1.12 var(--serif);letter-spacing:-.035em;color:#fff8e9;text-wrap:balance}
+.response-block-heading p:last-child{margin-top:10px;max-width:46ch;color:#e1eadc;font-size:.84rem;line-height:1.75}
+.response-columns .guestbook-grid{grid-template-columns:1fr;gap:26px}
+.response-columns .public-entries{padding-top:24px}
 .guestbook-grid{gap:45px}
 .guest-form,.contact-card{background:#fffdf6;border:1px solid #e4e6d5;border-radius:24px;color:#173e30;box-shadow:0 24px 60px #08271c28}
 .guest-form label,.guest-form p,.contact-card p{color:#425b4c}
@@ -169,12 +180,6 @@ nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .response-section .public-entries li span{color:#53695a}
 .guest-form input,.guest-form textarea{border-color:#cbd5c4;background:#fffef9;color:#173e30}
 .guest-form input:focus,.guest-form textarea:focus{outline-color:#ed7543}
-.wishes-section{background:#f3e7cc}
-.wishes-section .response-heading .eyebrow{color:#176543}
-.wishes-section .response-heading h2,.wishes-section .response-heading{color:#183e30}
-.wishes-section .response-heading h2 em{color:var(--orange)}
-.wishes-section .response-heading>p:last-child{color:#596a5c}
-.wishes-section .guest-form{box-shadow:0 20px 45px #72593414}
 .venue{padding-bottom:95px;background:#fff8e9}
 .venue-photo{height:clamp(390px,54vw,710px);background:#264f3a}
 .venue-image{background-image:linear-gradient(90deg,#102f22ac 0%,#102f2260 46%,#102f2210 100%),linear-gradient(0deg,#102f2255,transparent 55%),url('/images/backgrounds/venue-1600.webp');background-position:center 58%;transition:transform .9s cubic-bezier(.2,.7,.2,1)}
@@ -217,6 +222,8 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .hero-frame{height:530px}
   .guest-wishes-grid{gap:12px}
   .guest-wishes article{padding:21px}
+  .response-columns{grid-template-columns:1fr;gap:34px}
+  .response-block+.response-block{border-left:0;border-top:1px solid #ffffff24;padding-left:0;padding-top:34px}
 }
 @media(max-width:760px){
   .masthead{background:#fff8e9f5}
@@ -335,6 +342,11 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
 .admin-filters{display:flex;flex-wrap:wrap;gap:8px;margin-block:25px}
 .admin-filters button{min-height:42px;padding:8px 15px;border:1px solid #c5cfba;border-radius:24px;background:#fffdf6;color:#294a38;font-size:.76rem;font-weight:600}
 .admin-filters button[aria-pressed="true"]{border-color:#155b42;background:#155b42;color:#fff8e9}
+.admin-tabs{display:flex;flex-wrap:wrap;gap:6px;width:fit-content;max-width:100%;margin-top:24px;padding:6px;border:1px solid #d7ddbf;border-radius:16px;background:#fffdf6}
+.admin-tabs button{min-height:44px;padding:9px 18px;border:0;border-radius:11px;background:transparent;color:#294a38;font-size:.8rem;font-weight:600}
+.admin-tabs button[aria-pressed="true"]{background:#155b42;color:#fff8e9}
+.admin-counts{margin:-8px 0 18px;color:#53695a;font-size:.8rem;font-weight:600}
+.admin-rsvp-message{white-space:pre-wrap;margin-top:16px;padding-top:14px;border-top:1px dashed #d7ddbf;color:#405748;line-height:1.8}
 .admin-wishes{display:grid;gap:14px;margin-top:18px}
 .admin-wish{padding:22px;border:1px solid #e4dcc6;border-radius:18px;background:#fffdf6;box-shadow:0 10px 30px #183e3010;overflow-wrap:anywhere}
 .admin-wish>header{display:flex;justify-content:space-between;gap:15px;align-items:start}

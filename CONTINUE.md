@@ -127,4 +127,15 @@ Added `.github/workflows/deploy.yml`: after "Graduation CI" succeeds on `main` (
 
 Repo variables set: `VPS_HOST=phannguyenvu.duckdns.org`, `VPS_USER=vu`, `VPS_PORT=22`, `VPS_APP_DIR=/home/vu/apps/phan-nguyen-vu-graduation-2026`, `DEPLOY_ENABLED=false`. Deploy is intentionally disabled until the owner adds the `VPS_SSH_KEY` secret; then set `DEPLOY_ENABLED=true`. Instructions in `docs/VPS.md` (generate key locally, public key to VPS `authorized_keys`, private key only as GitHub secret).
 
-`actionlint` (Docker) passed on the new workflow. No VPS access used; VPS still runs old commit `2d99b13` with `SITE_ORIGIN=https://invite.example.com`, so its `/admin` and admin API are still 404 and form/admin Origin checks will fail until the owner pulls/edits env. Owner must set a real domain in `.env.production` and rebuild; the workflow does not modify env.
+`actionlint` (Docker) passed on the new workflow. No VPS access used. The owner manually deployed later in the session: external checks returned `/admin` 200, `/api/admin/session` `{"configured":true,...}` and health ok at `https://phannguyenvu.duckdns.org`, so the domain now serves the admin build with secrets configured. The workflow was never triggered (still disabled).
+
+## Merge response sections, richer wishes, RSVP admin — 24/11/2026
+
+User asked to show anonymous/private RSVPs in admin, merge sections 05 and 06, add longer/better wish suggestions, and enlarge suggestion and "Khám phá lời mời" buttons; then push to `main`.
+
+- Merged the former RSVP and wish sections into one `#xac-nhan` section with a shared heading and two columns. `#loi-chuc` remains as an anchor on the wish column so nav/deep links/tests still work. Venue renumbered 07→06. Dark-green section now contains both forms and both public lists; stacks at ≤900px with a divider.
+- Added `/api/admin/rsvps` (session-protected, read-only) with consent/attendance filters, pagination and yes/no counts. Admin now has "Lời chúc" / "Xác nhận tham dự" tabs; RSVP tab shows private RSVP messages and consent state. No mutation/approve endpoint added.
+- Expanded `wishIdeas` from 6 to 10 longer Vietnamese wishes (new labels "Ấm áp", "Biết ơn", "Can đảm", "Bình an"), updated copy, made "Dùng gợi ý" full-width 50px buttons, and made the hero "Khám phá lời mời" an outlined 56px button.
+- Tests: added `--admin` flag to `scripts/serve-test.mjs` (test-only credentials), an admin login test covering a private wish and a private RSVP message inserted via SQLite, updated wish-suggestion counts/text. Full suite: 21 passed (59.1s) on Node 24; lint and typecheck pass. Desktop 1440 and mobile 390 screenshots of the merged section and admin tabs inspected; mobile dock still overlays the top of forms as before, and the wish block appears faded in a static capture only because reveal animations were mid-flight.
+- Unrelated flake: the existing photo-scene test failed once with `photo-stage-live` not appearing, then passed on rerun and in the final full suite; no related code changed.
+- Auto-deploy workflow remains disabled (`DEPLOY_ENABLED=false`); VPS still needs a manual `git pull` + `docker compose up -d --build --wait` (or enabling the workflow after adding `VPS_SSH_KEY`).

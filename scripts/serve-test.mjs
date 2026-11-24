@@ -3,10 +3,15 @@ import { mkdirSync, rmSync } from "node:fs";
 import { resolve } from "node:path";
 
 const proxy = process.argv.includes("--proxy");
+const admin = process.argv.includes("--admin");
 const data = resolve(proxy ? "test-results/proxy-fixture" : "test-results/fixture");
 const file = resolve(data, "graduation.db");
 const env = { ...process.env };
 if (proxy) Object.assign(env, { SITE_ORIGIN: "https://invite.example.com", TRUST_PROXY: "1" });
+if (admin) Object.assign(env, {
+  ADMIN_PASSWORD: "graduation-test-admin",
+  ADMIN_SESSION_SECRET: "graduation-e2e-admin-session-secret-0123456789",
+});
 if (process.argv.includes("--without-db")) {
   Object.assign(env, { VERCEL: "1", DATABASE_URL: "", DATABASE_AUTH_TOKEN: "", TURSO_DATABASE_URL: "", TURSO_AUTH_TOKEN: "", RATE_LIMIT_SECRET: "" });
 } else {

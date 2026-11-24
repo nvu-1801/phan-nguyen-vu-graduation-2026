@@ -71,7 +71,7 @@ Nginx template kiểm tra được cú pháp trong container, nhưng TLS/DNS/fir
 ## Xác minh sau mở domain
 
 - Ảnh/OG/font/lịch không 404, mobile không tràn ngang.
-- `https://YOUR_DOMAIN/admin` đăng nhập được bằng `ADMIN_PASSWORD`; sai mật khẩu bị từ chối và không lộ danh sách lời chúc. Danh sách có cả lời riêng tư.
+- `https://YOUR_DOMAIN/admin` đăng nhập được bằng `ADMIN_PASSWORD`; sai mật khẩu bị từ chối và không lộ danh sách. Danh sách có cả lời chúc riêng tư và mục "Xác nhận tham dự" hiển thị cả phản hồi không đồng ý công khai cùng lời nhắn RSVP.
 - Gửi một RSVP không công khai; xác minh không hiện public.
 - Gửi lời chúc có đồng ý công khai; xác minh chưa hiện trước khi duyệt.
 - Duyệt và kiểm tra chỉ nội dung có consent mới hiện. Tránh dùng fixture giả trên production; dùng phản hồi thật hoặc xóa dữ liệu kiểm tra theo đúng ID.
