@@ -57,7 +57,7 @@ html{scroll-padding-bottom:90px}
 @media(prefers-reduced-motion:reduce){.memory-photo-image{transition:none}}
 
 /* Photo-led invitation refresh: warm paper, garden green, and citrus accents. */
-:root{color-scheme:light;--paper:#fff8e9;--paper-deep:#f3e6c9;--white:#fffdf6;--ink:#153b2d;--muted:#53695a;--blue:#177b55;--blue-deep:#105a3f;--line:#d7ddbf;--lime:#d6ef72;--orange:#ef7544}
+:root{color-scheme:light;--paper:#fff8e9;--paper-deep:#f3e6c9;--white:#fffdf6;--ink:#153b2d;--muted:#53695a;--blue:#177b55;--blue-deep:#105a3f;--line:#d7ddbf;--lime:#d6ef72;--orange:#b94d28}
 body{background:var(--paper);color:var(--ink)}
 :focus-visible{outline-color:var(--orange)}
 .masthead{background:#fff8e9ed;backdrop-filter:blur(14px)}
