@@ -46,7 +46,7 @@ html{scroll-padding-bottom:90px}
 .coffee-banner{perspective:1200px}
 
 @media(max-width:760px){
-  .memory-gallery{display:flex;gap:13px;width:calc(100% + 20px);margin-top:18px;overflow-x:auto;padding:2px 20px 15px 0;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
+  .memory-gallery{display:flex;gap:13px;width:calc(100% - 40px);margin-top:18px;overflow-x:auto;padding:2px 0 15px;scroll-snap-type:x mandatory;overscroll-behavior-inline:contain;-webkit-overflow-scrolling:touch;scrollbar-width:thin}
   .memory-photo{flex:0 0 min(76vw,310px);scroll-snap-align:start}
   .memory-photo-image{height:205px}
   .memory-photo figcaption{padding:11px 7px 13px}
