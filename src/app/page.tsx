@@ -45,7 +45,7 @@ export default function Invitation() {
 
       <section className="campus" aria-labelledby="campus-title">
         <div className="wrap section-intro" data-reveal><p className="eyebrow">01 / NƠI BẮT ĐẦU</p><h2 id="campus-title">Một chặng đường.<br /><em>Nhiều điều để nhớ.</em></h2><p>{copy.campus}</p></div>
-        <div className="wrap campus-window landscape"><div className="landscape-image campus-image" role="img" aria-label="Khuôn viên Đại học FPT Quy Nhơn" /><div className="landscape-caption"><span>ĐẠI HỌC FPT QUY NHƠN</span><span>Những ngày đã qua, những điều ở lại.</span></div></div>
+        <div className="wrap campus-window landscape"><div className="landscape-image campus-image" role="img" aria-label="Khuôn viên Đại học FPT Quy Nhơn" /><div className="landscape-caption"><span>ĐẠI HỌC FPT QUY NHƠN</span><span>Những ngày đã qua, những điều ở lại.</span></div><span className="image-index" aria-hidden="true">01 — 03</span></div>
         <div className="wrap memory-gallery" role="group" aria-label="Ảnh về quãng đường tốt nghiệp" tabIndex={0}>
           <figure className="memory-photo memory-photo--campus" data-memory-card><div className="memory-photo-image" role="img" aria-label="Một góc khuôn viên Đại học FPT Quy Nhơn" /><figcaption><span>01 / NƠI BẮT ĐẦU</span><strong>Những buổi đến trường.</strong></figcaption></figure>
           <figure className="memory-photo memory-photo--portrait" data-memory-card><div className="memory-photo-image" role="img" aria-label="Phan Nguyên Vũ trong lễ phục tốt nghiệp" /><figcaption><span>02 / NGÀY ĐẶC BIỆT</span><strong>Một cột mốc mình mong chờ.</strong></figcaption></figure>
@@ -63,7 +63,7 @@ export default function Invitation() {
 
       <PhotoStory />
       <section id="thu-moi" className="letter-section" aria-labelledby="letter-title"><div className="wrap letter-inner">
-        <div data-reveal><p className="eyebrow">04 / VÀI DÒNG GỬI BẠN</p><h2 id="letter-title">Niềm vui sẽ đầy hơn<br /><em>khi có bạn.</em></h2><span className="letter-flower" aria-hidden="true">✳</span></div>
+        <div className="letter-heading" data-reveal><p className="eyebrow">04 / VÀI DÒNG GỬI BẠN</p><h2 id="letter-title">Niềm vui sẽ đầy hơn<br /><em>khi có bạn.</em></h2><figure className="letter-photo-stamp"><div role="img" aria-label="Khuôn viên Đại học FPT Quy Nhơn trong nắng" /><figcaption>Một nơi mình sẽ nhớ.</figcaption></figure></div>
         <div className="letter-copy">{copy.letter.map(paragraph => <p key={paragraph}>{paragraph}</p>)}<p className="signature">Thân mến,<br />Vũ</p></div>
       </div></section>
 
@@ -82,7 +82,7 @@ export default function Invitation() {
         {online ? <Guestbook kind="wish" /> : <div><SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink><WishIdeas /></div>}
       </div></section>
 
-      <section id="duong-di" className="venue" aria-labelledby="venue-heading"><div className="venue-photo landscape"><div className="landscape-image venue-image" role="img" aria-label="Ảnh trung tâm hội nghị, bảng tên cũ tỉnh Bình Định" /><div className="venue-photo-caption">Ảnh tham khảo địa điểm · bảng tên cũ trong ảnh</div></div><div className="wrap venue-grid">
+      <section id="duong-di" className="venue" aria-labelledby="venue-heading"><div className="venue-photo landscape"><div className="landscape-image venue-image" role="img" aria-label="Ảnh trung tâm hội nghị, bảng tên cũ tỉnh Bình Định" /><div className="venue-photo-title"><p>ĐIỂM HẸN · QUY NHƠN</p><h2>Hẹn bạn<br /><em>ở đây.</em></h2><span>{event.venue}</span></div><div className="venue-photo-caption">Ảnh tham khảo địa điểm · bảng tên cũ trong ảnh</div></div><div className="wrap venue-grid">
         <div className="venue-copy" data-reveal><p className="eyebrow">07 / ĐƯỜNG ĐẾN CUỘC HẸN</p><h2 id="venue-heading">Hẹn gặp bạn<br /><em>tại đây.</em></h2><h3>{event.venue}</h3><p>{event.address}</p><a className="button button-dark venue-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường đến lễ tốt nghiệp <span aria-hidden="true">↗</span></a><div className="venue-links"><a href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a><CopyAddress /></div></div><MapPreview />
       </div></section>
     </main>
