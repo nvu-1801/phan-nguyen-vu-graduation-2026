@@ -1,6 +1,7 @@
 "use client";
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
+import Link from "next/link";
 
 type Wish = { id: string; name: string; message: string; publicConsent: boolean; status: "pending" | "approved" | "rejected"; createdAt: string };
 type Filter = "all" | "pending" | "approved" | "rejected";
@@ -96,7 +97,7 @@ export function AdminPanel() {
   }
 
   return <div className="admin-shell">
-    <a className="admin-back" href="/#loi-chuc">← Về thiệp mời</a>
+    <Link className="admin-back" href="/#loi-chuc">← Về thiệp mời</Link>
     <header className="admin-heading">
       <p className="eyebrow">KHU VỰC RIÊNG CỦA VŨ</p>
       <h1>Lời chúc<br /><em>gửi đến mình.</em></h1>
