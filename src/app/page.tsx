@@ -46,6 +46,11 @@ export default function Invitation() {
       <section className="campus" aria-labelledby="campus-title">
         <div className="wrap section-intro" data-reveal><p className="eyebrow">01 / NƠI BẮT ĐẦU</p><h2 id="campus-title">Một chặng đường.<br /><em>Nhiều điều để nhớ.</em></h2><p>{copy.campus}</p></div>
         <div className="wrap campus-window landscape"><div className="landscape-image campus-image" role="img" aria-label="Khuôn viên Đại học FPT Quy Nhơn" /><div className="landscape-caption"><span>ĐẠI HỌC FPT QUY NHƠN</span><span>Những ngày đã qua, những điều ở lại.</span></div></div>
+        <div className="wrap memory-gallery" role="group" aria-label="Ảnh về quãng đường tốt nghiệp" tabIndex={0}>
+          <figure className="memory-photo memory-photo--campus" data-memory-card><div className="memory-photo-image" role="img" aria-label="Một góc khuôn viên Đại học FPT Quy Nhơn" /><figcaption><span>01 / NƠI BẮT ĐẦU</span><strong>Những buổi đến trường.</strong></figcaption></figure>
+          <figure className="memory-photo memory-photo--portrait" data-memory-card><div className="memory-photo-image" role="img" aria-label="Phan Nguyên Vũ trong lễ phục tốt nghiệp" /><figcaption><span>02 / NGÀY ĐẶC BIỆT</span><strong>Một cột mốc mình mong chờ.</strong></figcaption></figure>
+          <figure className="memory-photo memory-photo--venue" data-memory-card><div className="memory-photo-image" role="img" aria-label="Trung tâm Hội nghị tỉnh Gia Lai tại Quy Nhơn" /><figcaption><span>03 / CUỘC HẸN</span><strong>Hẹn gặp bạn ở Quy Nhơn.</strong></figcaption></figure>
+        </div>
       </section>
 
       <section id="dia-diem" className="event-section" aria-labelledby="event-title"><div className="wrap event-inner">
