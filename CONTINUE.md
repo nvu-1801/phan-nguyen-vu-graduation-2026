@@ -120,3 +120,11 @@ Ran the executable, non-VPS part of `docs/graduation/VPS_ACTIVATION_PLAN.md`.
 - Quota: no `get_usage_limits` tool is available in this session, so Codex quota could not be read; work proceeded as authorized.
 - Committed as `3e115d6` ("Document VPS activation and admin configuration") and pushed to `origin/main` after the user authorized push/deploy. GitHub Actions run 45403585110 passed lint, typecheck, SQLite test, build, full Playwright, Docker build/smoke. The push used the `nvu-1801` GitHub CLI account; `vupn-sdt-ai` was denied. No VPS/SSH access was used, so remote deployment is still pending user commands.
 - Next: user runs Phase 2–3 on the VPS (commands and acceptance checks already in the plan). Remaining optional engineering work is admin approve/reject buttons, explicitly deferred until production is stable; it needs a session+Origin-protected mutation endpoint, audit columns, confirmation UI and privacy tests.
+
+## VPS auto-deploy workflow — 24/11/2026
+
+Added `.github/workflows/deploy.yml`: after "Graduation CI" succeeds on `main` (or manual dispatch), it SSHes to the VPS, refuses if tracked files were edited on the server, pulls `main` fast-forward, backs up SQLite to `backups/auto-*` (keeps 10), rebuilds Compose, checks `/api/health`, and prints the deployed short SHA. Action pinned to `appleboy/ssh-action` v1.2.5 SHA `0ff4204d59e8e51228ff73bce53f80d53301dee2`.
+
+Repo variables set: `VPS_HOST=phannguyenvu.duckdns.org`, `VPS_USER=vu`, `VPS_PORT=22`, `VPS_APP_DIR=/home/vu/apps/phan-nguyen-vu-graduation-2026`, `DEPLOY_ENABLED=false`. Deploy is intentionally disabled until the owner adds the `VPS_SSH_KEY` secret; then set `DEPLOY_ENABLED=true`. Instructions in `docs/VPS.md` (generate key locally, public key to VPS `authorized_keys`, private key only as GitHub secret).
+
+`actionlint` (Docker) passed on the new workflow. No VPS access used; VPS still runs old commit `2d99b13` with `SITE_ORIGIN=https://invite.example.com`, so its `/admin` and admin API are still 404 and form/admin Origin checks will fail until the owner pulls/edits env. Owner must set a real domain in `.env.production` and rebuild; the workflow does not modify env.

@@ -85,6 +85,78 @@ docker compose --env-file .env.production exec invitation node scripts/moderate.
 docker compose --env-file .env.production exec invitation node scripts/moderate.mjs cleanup
 ```
 
+## Tự động deploy bằng GitHub Actions
+
+Workflow `.github/workflows/deploy.yml` chạy sau khi **Graduation CI** pass trên `main` (hoặc chạy tay bằng `workflow_dispatch`): SSH vào VPS, pull `main`, backup SQLite vào `backups/auto-*`, rebuild Compose rồi kiểm tra `/api/health`. Workflow mặc định tắt cho tới khi bạn đặt biến `DEPLOY_ENABLED=true`. Nó không sửa `.env.production` và sẽ dừng nếu VPS có file tracked bị chỉnh tay.
+
+### 1. Tạo SSH key riêng cho deploy
+
+Nên tạo trên máy local (Windows/macOS/Linux), chỉ đưa **public key** lên VPS:
+
+```sh
+ssh-keygen -t ed25519 -a 100 -C "gha-deploy" -f ~/.ssh/gha_graduation -N ""
+```
+
+### 2. Thêm public key vào VPS
+
+Trên VPS, thêm nội dung file `gha_graduation.pub`:
+
+```sh
+mkdir -p ~/.ssh && chmod 700 ~/.ssh
+echo "ssh-ed25519 AAAA... gha-deploy" >> ~/.ssh/authorized_keys
+chmod 600 ~/.ssh/authorized_keys
+```
+
+Thử từ máy local:
+
+```sh
+ssh -i ~/.ssh/gha_graduation vu@phannguyenvu.duckdns.org \
+  'cd ~/apps/phan-nguyen-vu-graduation-2026 && git rev-parse --short HEAD'
+```
+
+### 3. Cấu hình GitHub
+
+Repo → Settings → Secrets and variables → Actions.
+
+| Loại | Tên | Giá trị |
+| --- | --- | --- |
+| Secret | `VPS_SSH_KEY` | Toàn bộ nội dung **private key** `gha_graduation` |
+| Variable | `VPS_HOST` | `phannguyenvu.duckdns.org` |
+| Variable | `VPS_USER` | `vu` |
+| Variable | `VPS_PORT` | `22` |
+| Variable | `VPS_APP_DIR` | `/home/vu/apps/phan-nguyen-vu-graduation-2026` |
+| Variable | `DEPLOY_ENABLED` | `true` (đặt sau khi đã thêm secret) |
+
+Có thể dùng `gh` từ máy local:
+
+```sh
+gh secret set VPS_SSH_KEY < ~/.ssh/gha_graduation
+gh variable set VPS_HOST --body phannguyenvu.duckdns.org
+gh variable set VPS_USER --body vu
+gh variable set VPS_PORT --body 22
+gh variable set VPS_APP_DIR --body /home/vu/apps/phan-nguyen-vu-graduation-2026
+gh variable set DEPLOY_ENABLED --body true
+```
+
+Không commit private key, không dán vào chat/log. Repo phải để VPS tự `git fetch` được (SSH hoặc credential helper còn hiệu lực).
+
+### 4. Chạy thử
+
+```sh
+gh workflow run deploy.yml
+gh run watch
+```
+
+Hoặc push một commit vào `main` sau khi CI pass. Kiểm tra lại trên VPS:
+
+```sh
+docker compose --env-file .env.production ps
+curl --fail http://127.0.0.1:3000/api/health
+curl --fail https://phannguyenvu.duckdns.org/api/health
+```
+
+Workflow giữ 10 bản backup gần nhất trong `backups/auto-*`; vẫn nên copy định kỳ ra ngoài VPS. Nếu deploy lỗi giữa chừng, container cũ vẫn còn (Compose chỉ thay khi build xong); sửa lỗi rồi chạy lại workflow.
+
 ## Sao lưu và cập nhật
 
 Backup phải nhất quán: dừng app rồi copy toàn bộ thư mục data, sau đó bật lại. Dùng thư mục backup mới theo ngày/lần phát hành.

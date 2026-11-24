@@ -1,0 +1,63 @@
+name: Deploy VPS
+
+on:
+  workflow_run:
+    workflows: ["Graduation CI"]
+    types: [completed]
+    branches: [main]
+  workflow_dispatch:
+
+concurrency:
+  group: deploy-vps-production
+  cancel-in-progress: false
+
+permissions:
+  contents: read
+
+jobs:
+  deploy:
+    if: vars.DEPLOY_ENABLED == 'true' && (github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - name: Pull, back up SQLite and rebuild on the VPS
+        uses: appleboy/ssh-action@0ff4204d59e8e51228ff73bce53f80d53301dee2 # v1.2.5
+        with:
+          host: ${{ vars.VPS_HOST }}
+          username: ${{ vars.VPS_USER }}
+          key: ${{ secrets.VPS_SSH_KEY }}
+          port: ${{ vars.VPS_PORT || 22 }}
+          command_timeout: 20m
+          script_stop: true
+          script: |
+            set -euo pipefail
+            cd "${{ vars.VPS_APP_DIR }}"
+
+            if [ ! -f .env.production ]; then
+              echo "Missing .env.production on the VPS." >&2
+              exit 1
+            fi
+            if [ -n "$(git status --porcelain --untracked-files=no)" ]; then
+              echo "Refusing to deploy: tracked files on the VPS have local changes." >&2
+              git status --short >&2
+              exit 1
+            fi
+
+            git fetch --prune origin
+            git checkout main
+            git pull --ff-only
+
+            container_id="$(docker compose --env-file .env.production ps -aq invitation)"
+            if [ -n "$container_id" ]; then
+              backup="backups/auto-$(date -u +%Y%m%d-%H%M%S)"
+              mkdir -p "$backup"
+              docker compose --env-file .env.production stop invitation
+              docker compose --env-file .env.production cp invitation:/app/data/. "$backup/"
+              echo "Database backup: $backup"
+            fi
+
+            docker compose --env-file .env.production up -d --build --wait
+            curl --fail --silent --show-error --retry 6 --retry-delay 5 http://127.0.0.1:3000/api/health
+            echo "Deployed $(git rev-parse --short HEAD)."
+
+            ls -1dt backups/auto-* 2>/dev/null | tail -n +11 | xargs -r rm -rf
