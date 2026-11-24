@@ -125,9 +125,9 @@ nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .ticket-top span+span,.ticket-date strong{color:#168157}
 .ticket-date strong{font-size:8.7rem}
 .event-facts>div{border-color:#e2dbc7}
-.event-facts dt,.event-facts small,.ticket-date small{color:#6d796d}
+.event-facts dt,.event-facts small,.ticket-date small{color:#596457}
 .ticket-perforation{border-color:#d8cbaa}
-.ticket-footer{color:#6f7b6a}
+.ticket-footer{color:#596457}
 .story{padding:100px 0 76px;background:#14583f;color:#fff8e9}
 .story .eyebrow{color:#d6ef72}
 .story-intro h2{max-width:18ch;color:#fff8e9}
@@ -163,10 +163,14 @@ nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .guest-form label,.guest-form p,.contact-card p{color:#425b4c}
 .entry-counts{color:#3c5445}
 .response-section .entry-counts{color:#e1eadc}
+.response-section .public-entries>p{color:#e1eadc}
+.response-section .public-entries>h3{color:#fff8e9}
+.response-section .public-entries li strong{color:#153b2d}
+.response-section .public-entries li span{color:#53695a}
 .guest-form input,.guest-form textarea{border-color:#cbd5c4;background:#fffef9;color:#173e30}
 .guest-form input:focus,.guest-form textarea:focus{outline-color:#ed7543}
 .wishes-section{background:#f3e7cc}
-.wishes-section .response-heading .eyebrow{color:#25835b}
+.wishes-section .response-heading .eyebrow{color:#176543}
 .wishes-section .response-heading h2,.wishes-section .response-heading{color:#183e30}
 .wishes-section .response-heading h2 em{color:var(--orange)}
 .wishes-section .response-heading>p:last-child{color:#596a5c}
