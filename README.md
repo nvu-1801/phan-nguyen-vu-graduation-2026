@@ -50,7 +50,7 @@ Nạp các biến bằng kênh bảo mật và chạy `npm run db:migrate` trên
 
 ## VPS
 
-Xem [hướng dẫn Docker, Nginx, SQLite và backup](docs/VPS.md). Không deploy tự động trong phiên này.
+Xem [hướng dẫn Docker, Nginx, SQLite và backup](docs/VPS.md). Template `deploy/production.env.example` có sẵn chỗ điền `ADMIN_PASSWORD`/`ADMIN_SESSION_SECRET` (bỏ comment khi cấu hình). Không deploy tự động trong phiên này.
 
 ## Production local bằng Docker
 

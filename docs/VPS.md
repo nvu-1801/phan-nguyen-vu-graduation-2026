@@ -33,6 +33,15 @@ openssl rand -hex 32
 
 Repo private: dùng SSH hoặc đăng nhập Git bằng tài khoản được cấp quyền. Không ghi token vào URL hay tài liệu. Sửa `.env.production`: thay cả SITE_ORIGIN và NEXT_PUBLIC_SITE_URL bằng origin HTTPS thật **không có dấu `/` cuối**; thay RATE_LIMIT_SECRET bằng kết quả ngẫu nhiên vừa sinh. Giữ APP_PORT=3000, APP_ENV_FILE=.env.production và TRUST_PROXY=1 khi dùng Nginx bên dưới. Không bật VERCEL. DATABASE_URL local được Compose đặt tới volume; không cần Turso token.
 
+### Cấu hình `/admin`
+
+`/admin` chỉ bật khi có đủ hai biến trong `.env.production` (Compose chuyển chúng vào container qua `env_file`):
+
+- `ADMIN_PASSWORD`: mật khẩu riêng dài tối thiểu 16 ký tự, lưu trong password manager.
+- `ADMIN_SESSION_SECRET`: chuỗi ngẫu nhiên riêng, tối thiểu 32 ký tự, sinh bằng `openssl rand -hex 32`; dùng để ký cookie phiên.
+
+Bỏ comment hai dòng mẫu trong `.env.production` rồi điền giá trị thật trên VPS. Không dùng lại `RATE_LIMIT_SECRET` cho `ADMIN_SESSION_SECRET`, không gửi các giá trị này vào chat/log và không chụp màn hình file env. Nếu thiếu một trong hai, trang vẫn tải nhưng đăng nhập trả `503` và không đọc được dữ liệu. Sau khi thêm hoặc đổi biến, chạy `up -d --wait` để container được tạo lại với cấu hình mới; volume dữ liệu vẫn giữ nguyên. Đăng nhập sai quá 5 lần trong 15 phút từ cùng một IP sẽ bị `429`, nên cần `TRUST_PROXY=1` khi đứng sau Nginx để rate limit dùng đúng IP khách.
+
 ## Build và khởi động
 
 ```sh
@@ -62,6 +71,7 @@ Nginx template kiểm tra được cú pháp trong container, nhưng TLS/DNS/fir
 ## Xác minh sau mở domain
 
 - Ảnh/OG/font/lịch không 404, mobile không tràn ngang.
+- `https://YOUR_DOMAIN/admin` đăng nhập được bằng `ADMIN_PASSWORD`; sai mật khẩu bị từ chối và không lộ danh sách lời chúc. Danh sách có cả lời riêng tư.
 - Gửi một RSVP không công khai; xác minh không hiện public.
 - Gửi lời chúc có đồng ý công khai; xác minh chưa hiện trước khi duyệt.
 - Duyệt và kiểm tra chỉ nội dung có consent mới hiện. Tránh dùng fixture giả trên production; dùng phản hồi thật hoặc xóa dữ liệu kiểm tra theo đúng ID.
@@ -87,5 +97,7 @@ docker compose --env-file .env.production up -d --wait
 ```
 
 Giữ bản sao ngoài VPS. Trước cập nhật, backup, ghi commit/image hiện tại, rồi `git pull --ff-only` và chạy lại lệnh up --build --wait. Không dùng `down -v`; lệnh đó xóa volume. Rollback code/image không tự rollback schema. Restore DB chỉ thực hiện có chủ đích khi app đã dừng và đã backup DB hiện tại, vì restore sẽ thay dữ liệu phát sinh sau snapshot.
+
+Sao lưu `.env.production` riêng, mã hóa, tách khỏi bản backup database công khai: file chứa mật khẩu admin và secret ký phiên. Không đưa file này vào Git, ảnh chụp màn hình hay báo cáo.
 
 Bằng chứng kiểm chứng local và các giới hạn còn lại: `docs/PRODUCTION_VERIFICATION.md`.
