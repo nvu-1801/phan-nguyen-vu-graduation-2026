@@ -62,7 +62,7 @@ body{background:var(--paper);color:var(--ink)}
 :focus-visible{outline-color:var(--orange)}
 .masthead{background:#fff8e9ed;backdrop-filter:blur(14px)}
 .header-inner{border-color:#d7ddbf}
-.wordmark-star,.scroll-progress{color:var(--orange);background:var(--orange)}
+.wordmark-star{color:var(--orange);background:transparent}.scroll-progress{background:var(--orange)}
 nav a:hover,.hero-wish:hover,.venue-links a:hover{color:var(--orange)}
 .nav-rsvp{border-color:var(--ink);background:var(--ink);color:#fff8e9}
 .nav-rsvp:hover{color:var(--lime);background:var(--blue-deep)}
