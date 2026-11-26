@@ -46,12 +46,12 @@ Trước đây chỉ duyệt bằng CLI trong container. Nay Vũ duyệt đượ
 - Xác minh: 22/22 Playwright pass (53,7s), gồm 401, 403 sai Origin, 409 duyệt lại, lời bị từ chối/riêng tư không lọt `/api/wishes`; `npm run lint`, `npm run typecheck`, `npm run build` pass; test SQLite pass với 3 migration; ảnh chụp admin 1440/390 đã xem.
 - `/api/health` giờ yêu cầu schema version ≥3, nên lần deploy kế tiếp bắt buộc container chạy migration trước khi healthy.
 
-### P2 — Vận hành: backup, giám sát, danh sách khách
+### P2 — Vận hành: backup, giám sát, danh sách khách — ĐÃ TRIỂN KHAI 26/11/2026
 
-- **Backup:** cron trên VPS chạy `docker compose stop → cp volume → start` hằng ngày, giữ N bản, kèm script copy ra ngoài VPS. Kiểm tra restore một lần.
-- **Uptime:** theo dõi `https://phannguyenvu.duckdns.org/api/health` mỗi 5 phút + cảnh báo (email/Telegram). Không thêm dịch vụ trả phí.
-- **Danh sách khách:** nút "Xuất CSV" trong tab RSVP (client-side từ dữ liệu đã tải hoặc endpoint `?format=csv` có phiên) để Vũ điểm danh ngày 20/12.
-- Nghiệm thu: xoá thử một bản backup đọc được; CSV mở đúng tiếng Việt trong Excel/Google Sheets; cảnh báo bắn khi health fail.
+- **Backup:** `scripts/vps-backup.sh` + `deploy/graduation-backup.timer` chạy 03:30 hằng ngày, dừng container vài giây để copy SQLite nhất quán, giữ 14 bản `backups/daily-*`, tự bật lại và kiểm tra health. Cần chủ VPS cài timer một lần (lệnh trong `docs/VPS.md`). Chưa có bản sao ngoài VPS.
+- **Uptime:** `.github/workflows/uptime.yml` kiểm tra `/api/health` và trang chủ mỗi 30 phút; run fail sẽ khiến GitHub gửi email. Không cần tài khoản dịch vụ ngoài.
+- **Danh sách khách:** tab "Xác nhận tham dự" có nút **Xuất CSV** theo bộ lọc hiện tại, UTF-8 BOM cho Excel, chống CSV injection; endpoint `GET /api/admin/rsvps/export` yêu cầu phiên admin.
+- Nghiệm thu còn lại: cài timer backup trên VPS, thử restore một bản, copy ra ngoài VPS, và xác nhận email cảnh báo khi uptime fail.
 
 ### P3 — Chốt nội dung cuối (chặn bởi thông tin từ Vũ)
 

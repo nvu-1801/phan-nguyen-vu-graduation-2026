@@ -71,7 +71,10 @@ function RsvpList({ onExpired }: { onExpired: () => void }) {
     <div className="admin-filters admin-visibility-filters" role="group" aria-label="Lọc theo quyền riêng tư">
       {(["all", "public", "private"] as const).map(value => <button key={value} type="button" aria-pressed={visibility === value} onClick={() => pickVisibility(value)}>{value === "all" ? "Công khai và riêng tư" : value === "public" ? "Đồng ý công khai" : "Chỉ Vũ đọc"}</button>)}
     </div>
-    {counts && <p className="admin-counts" role="status">{counts.yes} sẽ đến · {counts.no} chưa thể đến</p>}
+    <div className="admin-rsvp-toolbar">
+      {counts ? <p className="admin-counts" role="status">{counts.yes} sẽ đến · {counts.no} chưa thể đến</p> : <span />}
+      <a className="button button-line admin-export" href={`/api/admin/rsvps/export?consent=${visibility}&attendance=${attendance}`} download>Xuất CSV</a>
+    </div>
     {error && <p className="admin-error" role="alert">{error} <button className="text-button" type="button" onClick={() => void load(visibility, attendance)}>Thử lại</button></p>}
     {loading && <p className="admin-muted" role="status">Đang tải xác nhận tham dự…</p>}
     {!loading && !error && items.length === 0 && <p className="admin-empty">Chưa có xác nhận tham dự trong mục này.</p>}

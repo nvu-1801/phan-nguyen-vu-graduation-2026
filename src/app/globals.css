@@ -346,6 +346,9 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
 .admin-tabs button{min-height:44px;padding:9px 18px;border:0;border-radius:11px;background:transparent;color:#294a38;font-size:.8rem;font-weight:600}
 .admin-tabs button[aria-pressed="true"]{background:#155b42;color:#fff8e9}
 .admin-counts{margin:-8px 0 18px;color:#53695a;font-size:.8rem;font-weight:600}
+.admin-rsvp-toolbar{display:flex;flex-wrap:wrap;align-items:center;justify-content:space-between;gap:10px;margin:-8px 0 18px}
+.admin-rsvp-toolbar .admin-counts{margin:0}
+.admin-export{min-height:40px;padding:8px 16px;font-size:.76rem}
 .admin-rsvp-message{white-space:pre-wrap;margin-top:16px;padding-top:14px;border-top:1px dashed #d7ddbf;color:#405748;line-height:1.8}
 .admin-wishes{display:grid;gap:14px;margin-top:18px}
 .admin-wish{padding:22px;border:1px solid #e4dcc6;border-radius:18px;background:#fffdf6;box-shadow:0 10px 30px #183e3010;overflow-wrap:anywhere}

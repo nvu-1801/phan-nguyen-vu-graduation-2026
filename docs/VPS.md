@@ -179,7 +179,7 @@ gh workflow run deploy.yml
 gh run watch
 ```
 
-Hoặc chạy tay bằng `gh workflow run deploy.yml`; workflow không tự chạy sau CI. Kiểm tra lại trên VPS:
+Workflow không tự chạy sau CI. Kiểm tra lại trên VPS:
 
 ```sh
 docker compose --env-file .env.production ps
@@ -199,6 +199,32 @@ docker compose --env-file .env.production stop invitation
 docker compose --env-file .env.production cp invitation:/app/data/. ./backups/before-release
 docker compose --env-file .env.production up -d --wait
 ```
+
+### Backup hằng ngày tự động
+
+`scripts/vps-backup.sh` dừng container trong vài giây, copy SQLite vào `backups/daily-*`, bật lại và kiểm tra health; giữ 14 bản gần nhất (`DAILY_KEEP`). Cài một lần:
+
+```sh
+cd ~/apps/phan-nguyen-vu-graduation-2026
+sudo cp deploy/graduation-backup.service deploy/graduation-backup.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now graduation-backup.timer
+systemctl list-timers graduation-backup.timer
+```
+
+Chạy thử và xem log:
+
+```sh
+sudo systemctl start graduation-backup.service
+sudo journalctl -u graduation-backup.service -n 40 --no-pager
+ls -1dt backups/daily-* | head -3
+```
+
+Timer chạy 03:30 hằng ngày theo múi giờ VPS, `Persistent=true` nên nếu VPS tắt lúc 03:30 thì lần bật sau sẽ chạy bù. Backup vẫn nằm trên cùng ổ của VPS — nên copy định kỳ ra ngoài (rclone/scp) hoặc tải qua SFTP; chưa cấu hình đích ngoài VPS.
+
+### Giám sát uptime
+
+`.github/workflows/uptime.yml` chạy mỗi 30 phút, kiểm tra `/api/health` trả `{"status":"ok"}` và trang chủ còn chứa tên Vũ; run fail sẽ khiến GitHub gửi email cho chủ repo. Có thể chạy tay bằng `gh workflow run uptime.yml`.
 
 Giữ bản sao ngoài VPS. Trước cập nhật, backup, ghi commit/image hiện tại, rồi `git pull --ff-only` và chạy lại lệnh up --build --wait. Migration mới (ví dụ bản schema 3 thêm cột `moderated_at`/`moderated_by`) tự chạy khi container khởi động; `/api/health` trả 503 nếu DB chưa đạt phiên bản yêu cầu, nên kiểm tra health sau mỗi lần cập nhật. Không dùng `down -v`; lệnh đó xóa volume. Rollback code/image không tự rollback schema. Restore DB chỉ thực hiện có chủ đích khi app đã dừng và đã backup DB hiện tại, vì restore sẽ thay dữ liệu phát sinh sau snapshot.
 

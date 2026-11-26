@@ -1,0 +1,11 @@
+[Unit]
+Description=Daily graduation SQLite backup at 03:30
+
+[Timer]
+OnCalendar=*-*-* 03:30:00
+Persistent=true
+RandomizedDelaySec=120s
+Unit=graduation-backup.service
+
+[Install]
+WantedBy=timers.target

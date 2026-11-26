@@ -1,0 +1,29 @@
+name: Uptime check
+
+# GitHub emails the repository owner when a scheduled run fails.
+on:
+  schedule:
+    - cron: "*/30 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: uptime-check
+  cancel-in-progress: false
+
+jobs:
+  health:
+    runs-on: ubuntu-latest
+    timeout-minutes: 8
+    steps:
+      - name: Check the public health endpoint and homepage
+        run: |
+          set -euo pipefail
+          health="$(curl --fail --silent --show-error --retry 6 --retry-delay 20 --retry-all-errors https://phannguyenvu.duckdns.org/api/health)"
+          echo "$health"
+          printf '%s' "$health" | grep -q '"status":"ok"'
+          page="$(curl --fail --silent --show-error --retry 6 --retry-delay 20 --retry-all-errors https://phannguyenvu.duckdns.org/)"
+          printf '%s' "$page" | grep -q 'Phan Nguyên Vũ'
+          echo "Health and homepage OK."

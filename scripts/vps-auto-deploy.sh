@@ -85,6 +85,12 @@ trap finish EXIT
 trap 'exit 130' INT
 trap 'exit 143' TERM
 
+git merge --ff-only "origin/$BRANCH"
+
+# Build while the old container keeps serving, so a build failure leaves the
+# current site online and downtime is limited to the container recreate.
+$COMPOSE build
+
 container_id="$($COMPOSE ps -aq invitation || true)"
 if [ -n "$container_id" ]; then
   mkdir -p "$backup"
@@ -94,8 +100,7 @@ if [ -n "$container_id" ]; then
   log "Database backup: $backup"
 fi
 
-git merge --ff-only "origin/$BRANCH"
-$COMPOSE up -d --build --wait
+$COMPOSE up -d --wait
 curl --fail --silent --show-error --retry 6 --retry-delay 5 http://127.0.0.1:3000/api/health
 
 printf '%s\n' "$(git rev-parse HEAD)" > "$STATE_FILE"

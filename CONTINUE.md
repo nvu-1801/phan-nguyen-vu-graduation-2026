@@ -191,3 +191,14 @@ Second blocker: the owner had also run `chmod +x scripts/vps-auto-deploy.sh`, wh
 - External checks: HTML now contains the merged `#xac-nhan` with two `response-block` columns, the new wish ideas (Ấm áp, Biết ơn, Can đảm, Bình an), and the mobile CSS (hero `16vw` clamp, sticky `.masthead`). `/api/admin/rsvps` returns 401 without a session; `PATCH /api/admin/wishes/<uuid>` returns 401 same-origin without session and 403 with a foreign Origin.
 - Health requires schema version ≥3, so migration `0003_wish_moderation.sql` ran during the deploy; the SQLite volume was preserved and a `backups/auto-*` copy was written before the stop/copy.
 - Future pushes: CI runs first, then the timer deploys within about two minutes. Docs-only commits still rebuild the image. The SSH-based workflow stays manual-only and disabled, and real-phone rendering/safe areas remain unverified.
+
+## P2 operations work — 26/11/2026
+
+Self-driven continuation of `docs/graduation/COMPLETION_PLAN.md` P2, with build/tests/push/CI checked by the agent.
+
+- **RSVP CSV export**: `GET /api/admin/rsvps/export` (session-protected) returns the filtered guest list as UTF-8 CSV with a BOM, a stable header, `ORDER BY guest_name`, a 10,000-row cap, and formula-injection prefixing. The admin RSVP tab now has an **Xuất CSV** button that follows the active consent/attendance filters.
+- **Daily backups**: `scripts/vps-backup.sh` + `deploy/graduation-backup.service`/`.timer` stop the container for a consistent SQLite copy into `backups/daily-*`, restart and health-check it, and keep 14 copies. One-time install commands are in `docs/VPS.md`; not yet installed by the owner.
+- **Uptime**: `.github/workflows/uptime.yml` checks `/api/health` and the homepage every 30 minutes; a failed run triggers GitHub’s failure email. No external account needed.
+- **Deploy downtime**: `scripts/vps-auto-deploy.sh` now builds the new image before stopping the container, so a build failure keeps the current site online and downtime is only the recreate step; the SQLite backup still happens before the new container runs migrations.
+- Verified locally: `npm run lint`, `npm run typecheck`, `npm run build` (new `/api/admin/rsvps/export` route) and the full Playwright suite 22/22 (2.5m), including BOM bytes, CSV header, private RSVP message, formula prefix and the authenticated link. Push/CI and the resulting timer deploy are recorded in the completion message.
+- Still open: install the backup timer on the VPS and test a restore, copy a backup off the VPS, and confirm a real uptime failure email. P3 (official ceremony time) still needs the owner’s confirmation.

@@ -233,20 +233,24 @@ test("suggested wishes remain available without a database", async ({ page }) =>
   await expect(page.getByText("không phải lời chúc của khách đã gửi", { exact: false })).toBeVisible();
 });
 
-test("admin signs in and sees private wishes and RSVP messages", async ({ page, request }) => {
+test("admin signs in and sees private wishes, RSVP messages and exports CSV", async ({ page, request }) => {
   const stamp = Date.now();
   const rsvpName = `RSVP riêng ${stamp}`;
   const rsvpMessage = `Lời nhắn RSVP riêng ${stamp}`;
+  const formulaName = `Công thức ${stamp}`;
+  const formulaMessage = `=HYPERLINK("https://example.com","x")`;
   const wishName = `Wish riêng ${stamp}`;
   const wishMessage = `Lời chúc riêng ${stamp}`;
   const db = new DatabaseSync(fixture);
   try {
-    db.prepare("INSERT INTO rsvps (id,guest_name,attendance,public_consent,idempotency_key,request_hash,message) VALUES (?,?,?,?,?,?,?)")
-      .run(randomUUID(), rsvpName, "no", 0, randomUUID(), "test", rsvpMessage);
+    const insertRsvp = db.prepare("INSERT INTO rsvps (id,guest_name,attendance,public_consent,idempotency_key,request_hash,message) VALUES (?,?,?,?,?,?,?)");
+    insertRsvp.run(randomUUID(), rsvpName, "no", 0, randomUUID(), "test", rsvpMessage);
+    insertRsvp.run(randomUUID(), formulaName, "yes", 1, randomUUID(), "test", formulaMessage);
     db.prepare("INSERT INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash) VALUES (?,?,?,?,?,?)")
       .run(randomUUID(), wishName, wishMessage, 0, randomUUID(), "test");
   } finally { db.close(); }
   expect((await request.get("/api/admin/rsvps")).status()).toBe(401);
+  expect((await request.get("/api/admin/rsvps/export")).status()).toBe(401);
 
   await page.goto("/admin");
   await page.getByLabel("Mật khẩu quản lý").fill("graduation-test-admin");
@@ -258,6 +262,27 @@ test("admin signs in and sees private wishes and RSVP messages", async ({ page, 
   await expect(page.getByRole("heading", { name: "Xác nhận tham dự", exact: true })).toBeVisible();
   await expect(page.getByRole("heading", { name: rsvpName, exact: true })).toBeVisible();
   await expect(page.getByText(rsvpMessage, { exact: true })).toBeVisible();
+  await expect(page.getByRole("link", { name: "Xuất CSV" })).toHaveAttribute("href", "/api/admin/rsvps/export?consent=all&attendance=all");
+
+  const csv = await page.evaluate(async () => {
+    const response = await fetch("/api/admin/rsvps/export?consent=all&attendance=all", { cache: "no-store" });
+    const buffer = await response.arrayBuffer();
+    return {
+      status: response.status,
+      type: response.headers.get("content-type") || "",
+      bom: Array.from(new Uint8Array(buffer).slice(0, 3)),
+      body: new TextDecoder("utf-8").decode(buffer),
+    };
+  });
+  expect(csv.status).toBe(200);
+  expect(csv.type).toContain("text/csv");
+  expect(csv.bom).toEqual([0xEF, 0xBB, 0xBF]);
+  expect(csv.body).toContain("Tên,Tham dự,Lời nhắn,Đồng ý công khai,Thời gian gửi");
+  expect(csv.body).toContain(rsvpName);
+  expect(csv.body).toContain(rsvpMessage);
+  expect(csv.body).toContain(formulaName);
+  expect(csv.body).toContain("'=HYPERLINK");
+  expect(csv.body).not.toContain(`\n${formulaMessage}`);
 });
 
 test("admin approves or rejects wishes and private wishes stay private", async ({ page, request }) => {
