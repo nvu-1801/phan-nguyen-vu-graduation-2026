@@ -113,7 +113,7 @@ git rev-parse --short HEAD
 curl --fail http://127.0.0.1:3000/api/health
 ```
 
-Script `scripts/vps-auto-deploy.sh` chỉ deploy khi `origin/main` khác HEAD hiện tại hoặc SHA đã deploy (`.deploy-state`) khác HEAD — nhờ vậy nó vẫn rebuild sau khi ai đó `git pull` tay mà chưa build lại. Script từ chối nếu có file tracked bị sửa trên server; dừng container để copy SQLite vào `backups/auto-*` (giữ 10 bản); fast-forward; `docker compose up -d --build --wait`; kiểm tra `/api/health`. Nếu bước sau lỗi, trap bật lại container cũ để site không chết và ghi `.deploy-failed`; lần thử tiếp theo chờ 15 phút (`COOLDOWN_SECONDS`). Log nằm trong journald.
+Script `scripts/vps-auto-deploy.sh` chỉ deploy khi `origin/main` khác HEAD hiện tại hoặc SHA đã deploy (`.deploy-state`) khác HEAD — nhờ vậy nó vẫn rebuild sau khi ai đó `git pull` tay mà chưa build lại. Script đặt `core.fileMode=false` để thay đổi quyền file trên server (ví dụ `chmod +x`) không bị coi là sửa nội dung; nội dung tracked bị sửa vẫn bị từ chối. Script dừng container để copy SQLite vào `backups/auto-*` (giữ 10 bản); fast-forward; `docker compose up -d --build --wait`; kiểm tra `/api/health`. Nếu bước sau lỗi, trap bật lại container cũ để site không chết và ghi `.deploy-failed`; lần thử tiếp theo chờ 15 phút (`COOLDOWN_SECONDS`). Log nằm trong journald.
 
 Điều kiện: user `vu` phải `git fetch` được repo private (credential đã có sẵn trên VPS) và chạy được `docker compose`. Nếu `git fetch` lỗi, xem `journalctl` rồi cấu hình lại credential; không dán token vào chat hay file trong repo.
 

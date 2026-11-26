@@ -16,6 +16,10 @@ COOLDOWN_SECONDS="${COOLDOWN_SECONDS:-900}"
 cd "$APP_DIR"
 mkdir -p backups
 
+# A chmod on the server must not look like a content edit; the script is run
+# through /bin/sh, so the executable bit is not needed for deployment.
+git config core.fileMode false
+
 if ! command -v flock >/dev/null 2>&1; then
   echo "flock (util-linux) is required for the deploy lock."
   exit 1
