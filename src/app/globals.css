@@ -376,3 +376,143 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .admin-filters{gap:7px}
   .admin-filters button{padding-inline:12px}
 }
+
+/* Mobile polish — 26/11/2026. Desktop rules above stay untouched. */
+@media(max-width:760px){
+  .wrap{width:calc(100% - 36px)}
+  .header-inner{min-height:64px;gap:10px}
+  .masthead{position:sticky;top:0;z-index:20}
+  .wordmark{font-size:1.65rem}
+  .wordmark-star{font-size:1rem;margin-left:3px}
+  .wordmark-year{font-size:.64rem}
+  nav{gap:8px}
+  nav a{font-size:.72rem;min-height:44px;display:inline-flex;align-items:center}
+  .nav-rsvp{padding:0 13px;min-height:40px;font-size:.71rem}
+
+  .hero{padding-block:26px 8px;gap:14px}
+  .hero h1{font-size:clamp(3.75rem,16vw,5.3rem)}
+  .hero-greeting{font-size:.95rem;margin-top:12px}
+  .hero-tagline{font-size:1.3rem;line-height:1.35;margin-top:12px}
+  .invitation{font-size:.94rem;line-height:1.72;max-width:34ch;margin-top:12px}
+  .hero-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:20px;width:100%}
+  .hero-actions .button,.hero-wish{width:100%;justify-content:center;min-height:52px;padding:0 18px;font-size:.9rem}
+  .hero-meta{font-size:.74rem;gap:5px 14px;padding-top:13px;margin-top:20px}
+  .hero-art{width:100%;padding:0 0 26px;margin-top:2px}
+  .hero-surface::before{background:linear-gradient(180deg,#fff8e9f5 0%,#fff8e9c4 5%,#fff8e900 24%),linear-gradient(0deg,#143c2e51,#fff8e900 78%),url('/images/backgrounds/fpt-800.webp') center 56%/cover}
+  .hero-frame{width:89%;height:clamp(370px,104vw,430px)}
+  .hero-year{font-size:9rem;left:-2%;top:1%}
+  .photo-label{left:0;bottom:5%;padding:11px 15px;font-size:.72rem}
+  .photo-label strong{display:block;margin-top:2px}
+  .hero-note{font-size:.8rem;right:4px}
+  .hero-bottom{font-size:.65rem;padding-block:10px;letter-spacing:.12em}
+
+  .eyebrow,.school{font-size:.71rem;letter-spacing:.13em;margin-bottom:1rem}
+  .section-intro>p:last-child,.response-heading>p:last-child{font-size:.92rem;line-height:1.72}
+  .invitation,.letter-copy p,.response-block-heading p,.story-captions,.guest-wishes article p{text-wrap:pretty}
+
+  .campus{padding-block:50px 34px}
+  .section-intro{gap:10px;margin-bottom:22px}
+  .campus-window{height:clamp(310px,96vw,400px)}
+  .landscape-caption{font-size:.66rem}
+  .landscape-caption span+span{font-size:1.3rem}
+  .image-index{font-size:.66rem}
+  .memory-gallery{margin-top:18px;gap:12px}
+  .memory-photo{flex-basis:min(78vw,320px)}
+  .memory-photo-image{height:210px}
+  .memory-photo figcaption{padding:11px 6px 10px}
+  .memory-photo figcaption span{font-size:.7rem;letter-spacing:.1em}
+  .memory-photo figcaption strong{display:block;font-size:.86rem;margin-top:4px;line-height:1.45}
+
+  .event-section{padding-block:50px 56px}
+  .event-heading>p:last-child{font-size:.92rem;margin-top:14px}
+  .event-ticket{padding:20px}
+  .ticket-top{font-size:.7rem;padding-bottom:14px}
+  .ticket-date{gap:18px;margin:16px 0}
+  .ticket-date strong{font-size:6.4rem}
+  .ticket-date p{font-size:1.2rem}
+  .ticket-date small{font-size:.76rem;margin-top:2px}
+  .event-facts{margin:14px 0 20px}
+  .event-facts>div{padding:10px 0;grid-template-columns:68px 1fr;gap:9px}
+  .event-facts dt{font-size:.76rem}
+  .event-facts dd{font-size:.86rem}
+  .event-facts small{font-size:.8rem;margin-top:3px;line-height:1.6}
+  .event-ticket .actions{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+  .event-ticket .actions .button{min-height:50px;padding:0 10px;font-size:.8rem;gap:6px}
+  .ticket-perforation{margin:22px -20px 14px}
+  .ticket-footer{font-size:.66rem;line-height:1.6;letter-spacing:.08em}
+
+  .story{padding:50px 0 34px}
+  .story-intro h2{font-size:clamp(2.5rem,10.5vw,3.5rem)}
+  .photo-stage{height:70svh;min-height:470px}
+  .stage-sticky{height:60svh;min-height:390px;top:8svh}
+  .postcards{width:94%;max-width:520px;gap:12px}
+  .postcards figcaption{font-size:.8rem;padding:10px 1px 6px}
+  .story-captions{font-size:.92rem;line-height:1.7;margin-top:6px}
+
+  .letter-inner{padding-block:52px;gap:24px}
+  .letter-copy{font-size:1rem;line-height:1.82}
+  .letter-copy p+p{margin-top:18px}
+  .letter-photo-stamp{width:min(235px,64%);margin:20px auto 0}
+  .letter-photo-stamp div{height:140px}
+
+  .guest-wishes{padding-block:50px}
+  .guest-wishes-grid{gap:14px;margin-top:22px}
+  .guest-wishes article{padding:20px}
+  .guest-wishes article p{font-size:.92rem;line-height:1.7}
+  .guest-wishes h3{font-size:1.42rem}
+
+  .response-inner{padding-block:50px}
+  .response-heading{margin-bottom:22px}
+  .response-columns{gap:26px}
+  .response-label{font-size:.7rem;letter-spacing:.15em}
+  .response-block-heading h3{font-size:1.55rem}
+  .response-block-heading p{font-size:.92rem;line-height:1.7}
+  .response-block+.response-block{padding-top:26px}
+  .guest-form{padding:20px;border-radius:18px}
+  .guest-form fieldset{gap:16px}
+  .guest-form label{font-size:.82rem;gap:6px}
+  .guest-form input:not([type=checkbox],[type=radio]),.guest-form textarea{padding:12px 13px;min-height:50px}
+  .guest-form .checkbox{font-size:.78rem;line-height:1.55}
+  .guest-form .checkbox small{font-size:.95em}
+  .choices{gap:10px 16px}
+  .guest-form .button{width:100%;justify-self:stretch;min-height:52px;font-size:.86rem}
+  .form-feedback{font-size:.85rem}
+  .form-note{font-size:.78rem;line-height:1.6}
+  .public-entries{padding-top:18px}
+  .public-entries>p{font-size:.86rem}
+  .public-entries li{padding:16px}
+  .public-entries li strong{font-size:.9rem}
+  .public-entries li span{font-size:.9rem;line-height:1.7}
+  .guest-form{scroll-margin-bottom:110px}
+
+  .venue{padding-bottom:50px}
+  .venue-photo{height:clamp(360px,112vw,480px)}
+  .venue-photo-title{left:20px;bottom:46px}
+  .venue-photo-title h2{font-size:clamp(3.9rem,15.5vw,5rem)}
+  .venue-photo-title p{font-size:.7rem}
+  .venue-photo-title>span{font-size:.9rem;margin-top:10px}
+  .venue-photo-caption{font-size:.62rem;padding:4px 10px}
+  .venue-grid{padding-top:42px;gap:24px}
+  .venue-copy>p:not(.eyebrow){font-size:.92rem;line-height:1.7;margin-top:8px}
+  .venue h3{font-size:1.05rem;margin-top:18px}
+  .venue-directions{margin-top:20px;width:100%;min-height:52px;justify-content:center}
+  .venue-links{gap:8px 18px;margin-top:12px;font-size:.8rem}
+  .venue-links a{display:inline-flex;align-items:center;min-height:46px;padding:0 16px;border:1px solid #c5cfba;border-radius:14px;background:#fffdf6;font-weight:600;text-decoration:none}
+  .venue-links button{font-size:.8rem;padding:0 16px;min-height:46px}
+  .venue-links [role=status]{font-size:.8rem}
+  .venue-map{padding:6px;border-radius:16px}
+  .venue-map iframe{height:340px;border-radius:11px}
+  .map-external{font-size:.8rem;padding:12px 8px 6px}
+  .venue-photo-caption{font-size:.68rem}
+
+  .coffee-banner{min-height:0;border-radius:20px}
+  .coffee-copy{padding:26px 20px 64px}
+  .coffee-copy .eyebrow{font-size:.7rem}
+  .coffee-copy h2{font-size:clamp(2.5rem,10.5vw,3.6rem)}
+  .coffee-copy>p:not(.eyebrow){font-size:.92rem;line-height:1.75;margin-top:18px}
+  .coffee-copy .button{margin-top:20px;width:100%;min-height:50px}
+  .closing-message{padding-top:28px;font-size:.95rem;text-align:left}
+  .closing-inner{padding-block:20px 92px;gap:14px}
+  .closing-inner .signature{font-size:1.35rem;line-height:1.5}
+  .floating-actions{gap:6px;padding:5px;border-radius:34px}
+}

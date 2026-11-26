@@ -12,3 +12,19 @@ Verification: lint and production build/TypeScript passed. Full Playwright suite
 Local actionlint/zizmor unavailable as previously recorded. Actual workflow syntax and runner behavior are validated by matching GitHub Actions run after push, not inferred from local test success.
 
 Docker production build/start and all 6 BE/FE/persistence smoke checks passed. Live Google iframe rendered actual map tiles in the desktop screenshot; QR dialog and two separated postcards were visually inspected. Local Docker harness now forces IPv4 for localhost because an unrelated development app was listening on IPv6 at the same port; that unrelated app was left untouched.
+
+## Mobile layout and readability polish — 26/11/2026
+
+Scope requested: make the invitation look and read better on phones. Desktop rules were left untouched; all changes live in one `@media(max-width:760px)` layer at the end of `src/app/globals.css`.
+
+- Header: sticky cream bar on phones with readable 11.5px nav links, 44px link targets, 40px RSVP pill and slightly larger wordmark. Desktop stays non-sticky.
+- Hero: one-line meta kept readable by fading the campus band under it; both CTAs are full-width 52px buttons; body copy 15px/1.72, tighter top spacing, larger portrait frame.
+- Type floor: removed most sub-11px text. Nav, eyebrows, ticket top/footer, event facts, landscape captions, memory captions, response labels, form notes and the consent explanation were raised; `small` inside the consent label no longer shrinks below ~11.9px.
+- Rhythm: campus, ticket, story, letter, guest wishes, response and venue paddings tightened; total mobile height dropped from ~11,346px to ~10,537px at 390 without removing content.
+- Ticket: full-width two-column action row; footer is now legible.
+- Forms: labels 13px, inputs stay 16px (no iOS zoom), checkbox copy 12.5px, submit buttons full width and 52px tall, larger scroll margin under the floating dock.
+- Venue: full-width directions button; "Mở Google Maps" is now an outlined pill matching "Sao chép địa chỉ".
+- Footer: extra padding so the floating dock no longer covers the coffee/QR note; dock itself keeps 44px targets and only tightens gaps.
+- Story stage reduced from 85svh/530px to 70svh/470px so the 3D scene does not leave a full empty screen on phones.
+
+Verified: lint passed, production build passed, 22/22 Playwright tests passed (51.9s) at 360/390/768/1440 including axe, no-JS, dock, form, moderation, scroll and 3D checks; `scrollWidth === clientWidth` at 360/390/1440; screenshots at 360/390 and desktop 1440 inspected under ignored `test-results/mobile-audit` and `test-results/mobile-final`. Real-device font rendering and iOS safe areas were not re-tested on hardware.
