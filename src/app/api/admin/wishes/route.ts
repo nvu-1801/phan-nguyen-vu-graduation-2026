@@ -27,12 +27,12 @@ export async function GET(request: Request) {
     if (visibility !== "all") { conditions.push("public_consent = ?"); args.push(visibility === "public" ? 1 : 0); }
     if (cursor) { conditions.push("rowid < ?"); args.push(Number(cursor)); }
     const result = await getDb().execute({
-      sql: `SELECT rowid AS row_id, id, guest_name AS name, message, public_consent, status, created_at FROM wishes${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY rowid DESC LIMIT ?`,
+      sql: `SELECT rowid AS row_id, id, guest_name AS name, message, public_consent, status, created_at, moderated_at FROM wishes${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY rowid DESC LIMIT ?`,
       args: [...args, pageSize + 1],
     });
     const rows = result.rows.slice(0, pageSize);
     return Response.json({
-      items: rows.map(row => ({ id: row.id, name: row.name, message: row.message, publicConsent: Number(row.public_consent) === 1, status: row.status, createdAt: row.created_at })),
+      items: rows.map(row => ({ id: row.id, name: row.name, message: row.message, publicConsent: Number(row.public_consent) === 1, status: row.status, createdAt: row.created_at, moderatedAt: row.moderated_at ?? null })),
       nextCursor: result.rows.length > pageSize ? String(rows.at(-1)?.row_id) : null,
     }, { headers: { "Cache-Control": "no-store, private", "Vary": "Cookie" } });
   } catch {

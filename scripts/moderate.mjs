@@ -17,7 +17,10 @@ try {
     console.log("Expired buckets removed:", result.rowsAffected);
   } else {
     const status = action === "approve" ? "approved" : "rejected";
-    const result = await db.execute({ sql: "UPDATE wishes SET status = ? WHERE id = ?", args: [status, id] });
+    const result = await db.execute({
+      sql: "UPDATE wishes SET status = ?, moderated_at = ?, moderated_by = 'cli' WHERE id = ?",
+      args: [status, new Date().toISOString(), id],
+    });
     if (!result.rowsAffected) throw new Error("Wish not found.");
     console.log("Wish updated.");
   }

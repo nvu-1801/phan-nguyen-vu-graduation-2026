@@ -74,9 +74,11 @@ Nginx template kiểm tra được cú pháp trong container, nhưng TLS/DNS/fir
 - `https://YOUR_DOMAIN/admin` đăng nhập được bằng `ADMIN_PASSWORD`; sai mật khẩu bị từ chối và không lộ danh sách. Danh sách có cả lời chúc riêng tư và mục "Xác nhận tham dự" hiển thị cả phản hồi không đồng ý công khai cùng lời nhắn RSVP.
 - Gửi một RSVP không công khai; xác minh không hiện public.
 - Gửi lời chúc có đồng ý công khai; xác minh chưa hiện trước khi duyệt.
-- Duyệt và kiểm tra chỉ nội dung có consent mới hiện. Tránh dùng fixture giả trên production; dùng phản hồi thật hoặc xóa dữ liệu kiểm tra theo đúng ID.
+- Duyệt ngay trong `/admin` bằng nút **Duyệt** / **Từ chối** (có bước xác nhận), rồi tải lại thiệp để kiểm tra chỉ nội dung có consent mới hiện. Tránh dùng fixture giả trên production; dùng phản hồi thật hoặc xóa dữ liệu kiểm tra theo đúng ID.
 - Restart/recreate container, xác minh dữ liệu vẫn còn và health OK.
 - Quét QR bằng điện thoại, kiểm tra tên người nhận. Ngày lễ vẫn ghi dự kiến, giờ chưa cập nhật.
+
+Duyệt bằng web là cách chính. Khi không mở được trình duyệt, dùng CLI trong container:
 
 ```sh
 docker compose --env-file .env.production exec invitation node scripts/moderate.mjs pending
@@ -84,6 +86,8 @@ docker compose --env-file .env.production exec invitation node scripts/moderate.
 docker compose --env-file .env.production exec invitation node scripts/moderate.mjs reject ID
 docker compose --env-file .env.production exec invitation node scripts/moderate.mjs cleanup
 ```
+
+Cả hai cách đều ghi `moderated_at` và `moderated_by`; chỉ lời đang `pending` mới chuyển được trạng thái.
 
 ## Tự động deploy bằng GitHub Actions
 
@@ -168,7 +172,7 @@ docker compose --env-file .env.production cp invitation:/app/data/. ./backups/be
 docker compose --env-file .env.production up -d --wait
 ```
 
-Giữ bản sao ngoài VPS. Trước cập nhật, backup, ghi commit/image hiện tại, rồi `git pull --ff-only` và chạy lại lệnh up --build --wait. Không dùng `down -v`; lệnh đó xóa volume. Rollback code/image không tự rollback schema. Restore DB chỉ thực hiện có chủ đích khi app đã dừng và đã backup DB hiện tại, vì restore sẽ thay dữ liệu phát sinh sau snapshot.
+Giữ bản sao ngoài VPS. Trước cập nhật, backup, ghi commit/image hiện tại, rồi `git pull --ff-only` và chạy lại lệnh up --build --wait. Migration mới (ví dụ bản schema 3 thêm cột `moderated_at`/`moderated_by`) tự chạy khi container khởi động; `/api/health` trả 503 nếu DB chưa đạt phiên bản yêu cầu, nên kiểm tra health sau mỗi lần cập nhật. Không dùng `down -v`; lệnh đó xóa volume. Rollback code/image không tự rollback schema. Restore DB chỉ thực hiện có chủ đích khi app đã dừng và đã backup DB hiện tại, vì restore sẽ thay dữ liệu phát sinh sau snapshot.
 
 Sao lưu `.env.production` riêng, mã hóa, tách khỏi bản backup database công khai: file chứa mật khẩu admin và secret ký phiên. Không đưa file này vào Git, ảnh chụp màn hình hay báo cáo.
 

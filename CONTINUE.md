@@ -140,3 +140,22 @@ User asked to show anonymous/private RSVPs in admin, merge sections 05 and 06, a
 - Unrelated flake: the existing photo-scene test failed once with `photo-stage-live` not appearing, then passed on rerun and in the final full suite; no related code changed.
 - Auto-deploy workflow remains disabled (`DEPLOY_ENABLED=false`); VPS still needs a manual `git pull` + `docker compose up -d --build --wait` (or enabling the workflow after adding `VPS_SSH_KEY`).
 - First CI run for `74beab4` failed only in Docker smoke: `#xac-nhan .guest-form` now matched two forms. Fixed by scoping the RSVP form with `.first()`; rebuilt the local production image and all 6 Docker smoke checks passed again.
+
+## Completion audit and plan — 26/11/2026
+
+Read-only audit; no code, VPS or Git changes beyond documentation. Local tree clean at `main` = `origin/main` = `3c263e4`; CI run `45417800003` green; `https://phannguyenvu.duckdns.org/api/health` returns `{"status":"ok"}`; `/admin` returns `{"configured":true,"authenticated":false}`.
+
+Key finding: the live VPS serves a build older than `74beab4` — its HTML has separate RSVP and wish sections and none of the new wish-idea labels, so the merged `#xac-nhan` section, 10 wish ideas and admin RSVP tab are not live yet. Deploy cannot be done from this session: SSH to `phannguyenvu.duckdns.org:22` is refused and `gh secret list` shows no `VPS_SSH_KEY`, and `DEPLOY_ENABLED` is still `false`.
+
+Remaining work to done: P0 deploy the two pending commits; P1 env-only admin approve/reject with session+Origin protection, `moderated_at/by` migration and privacy tests; P2 daily backup + offsite copy, uptime alert, RSVP CSV export; P3 official ceremony time in `src/content/event.ts` plus timed `.ics`; P4 Lighthouse, real-device QR/map/form check and release sign-off. Full detail, acceptance criteria and blockers: `docs/graduation/COMPLETION_PLAN.md`. Not yet implemented; user decision required on deploy access, whether to build P1, official time and alert channel.
+
+## P1 web moderation implemented — 26/11/2026
+
+User chose P1 (approve/reject wishes in `/admin`) and, separately, auto-deploy via SSH key. P1 is done locally; nothing pushed or deployed yet.
+
+- New `src/app/api/admin/wishes/[id]/route.ts`: `PATCH` with `{action:"approve"|"reject"}`. Origin check runs before the session check (403 cross-origin), then HttpOnly admin session (401), JSON-only body capped at 2 KB, UUID validation, single conditional update `WHERE status='pending'`; already-moderated returns 409, missing returns 404. Approving never changes `public_consent`, so private wishes stay private.
+- `db/migrations/0003_wish_moderation.sql` adds `moderated_at`/`moderated_by`. `/api/health` now requires schema version ≥3, and `npm run moderate` also stamps both audit columns (`moderated_by='cli'`). `scripts/migrate-local.mjs` now applies every `db/migrations/*.sql` file instead of only `0001`, so `npm test` actually covers migrations 2 and 3.
+- Admin UI adds Duyệt / Từ chối with a second confirmation step, per-card busy state, removal from a filtered pending list, "Đã xử lý lúc …", and a privacy hint for wishes without public consent. New CSS classes `admin-moderation*`.
+- Verification: `npm run lint` pass; `npm run typecheck` pass; `npm run build` pass with `/api/admin/wishes/[id]` dynamic; Node 24 `node --test tests/db/*.test.mjs` 1/1 pass (3 migrations, new columns); full Playwright 22/22 pass (53.7s) including new test for 401/403/409, approve, reject and private-stays-private; admin screenshots at 1440 and 390 inspected (`test-results/admin-moderation-*.png`, ignored). Test server on port 3217 stopped afterwards; no other listener touched.
+- Docs updated: README admin section, `docs/VPS.md` (web moderation primary, CLI fallback, schema-3 note), `docs/graduation/WISHES_ADMIN_PLAN.md`, `docs/graduation/VPS_ACTIVATION_PLAN.md`, `docs/graduation/COMPLETION_PLAN.md`.
+- Next: P2 (backup/uptime/CSV), then generate the deploy SSH key, add `VPS_SSH_KEY`, set `DEPLOY_ENABLED=true`, push `main` and watch the Deploy VPS workflow. Health will be 503 until the new container runs migration 3, so do not call the release healthy before that check passes.

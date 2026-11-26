@@ -3,7 +3,7 @@
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
 
-type Wish = { id: string; name: string; message: string; publicConsent: boolean; status: "pending" | "approved" | "rejected"; createdAt: string };
+type Wish = { id: string; name: string; message: string; publicConsent: boolean; status: "pending" | "approved" | "rejected"; createdAt: string; moderatedAt: string | null };
 type Rsvp = { id: string; name: string; attendance: "yes" | "no"; message: string | null; publicConsent: boolean; createdAt: string };
 type Filter = "all" | "pending" | "approved" | "rejected";
 type Visibility = "all" | "public" | "private";
@@ -13,7 +13,8 @@ type View = "wishes" | "rsvps";
 const statusLabels: Record<Wish["status"], string> = { pending: "Chờ duyệt", approved: "Đã duyệt", rejected: "Đã từ chối" };
 
 function formatDate(value: string) {
-  return new Date(`${value.replace(" ", "T")}Z`).toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" });
+  const iso = value.includes("T") ? value : `${value.replace(" ", "T")}Z`;
+  return new Date(iso).toLocaleString("vi-VN", { dateStyle: "medium", timeStyle: "short" });
 }
 
 function RsvpList({ onExpired }: { onExpired: () => void }) {
@@ -94,6 +95,8 @@ export function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
+  const [armed, setArmed] = useState<{ id: string; action: "approve" | "reject" } | null>(null);
+  const [busyId, setBusyId] = useState<string | null>(null);
 
   const loadWishes = useCallback(async (status: Filter, after: string | null = null, access: Visibility = "all") => {
     setLoading(true);
@@ -163,6 +166,41 @@ export function AdminPanel() {
     setItems([]);
   }, []);
 
+  async function moderate(wish: Wish, action: "approve" | "reject") {
+    if (armed?.id !== wish.id || armed.action !== action) {
+      setArmed({ id: wish.id, action });
+      return;
+    }
+    setBusyId(wish.id);
+    setError("");
+    setNotice("");
+    try {
+      const response = await fetch(`/api/admin/wishes/${wish.id}`, {
+        method: "PATCH",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ action }),
+      });
+      if (response.status === 401) { expireSession(); return; }
+      const data = await response.json().catch(() => ({})) as { error?: string; status?: Wish["status"]; moderatedAt?: string };
+      if (!response.ok) throw new Error(data.error || "Chưa cập nhật được lời chúc.");
+      const nextStatus = data.status ?? (action === "approve" ? "approved" : "rejected");
+      const moderatedAt = data.moderatedAt ?? new Date().toISOString();
+      setItems(previous => previous.flatMap(item => {
+        if (item.id !== wish.id) return [item];
+        const next = { ...item, status: nextStatus, moderatedAt };
+        return filter === "all" || filter === nextStatus ? [next] : [];
+      }));
+      setNotice(action === "approve"
+        ? "Đã duyệt lời chúc. Lời chỉ hiện công khai nếu người gửi đã đồng ý."
+        : "Đã từ chối lời chúc. Lời này không hiện ở trang công khai.");
+    } catch (reason) {
+      setError(reason instanceof Error ? reason.message : "Chưa cập nhật được lời chúc.");
+    } finally {
+      setBusyId(null);
+      setArmed(null);
+    }
+  }
+
   function selectFilter(next: Filter) {
     setFilter(next);
     setItems([]);
@@ -211,6 +249,26 @@ export function AdminPanel() {
         <div className="admin-wishes">{items.map(wish => <article key={wish.id} className="admin-wish">
           <header><div><h3>{wish.name}</h3><time dateTime={new Date(`${wish.createdAt.replace(" ", "T")}Z`).toISOString()}>{formatDate(wish.createdAt)}</time></div><div className="admin-badges"><span>{statusLabels[wish.status]}</span><span className={wish.publicConsent ? "is-public" : "is-private"}>{wish.publicConsent ? "Đồng ý công khai" : "Riêng tư"}</span></div></header>
           <p>{wish.message}</p>
+          {wish.status === "pending" ? <div className="admin-moderation">
+            {armed?.id === wish.id ? <>
+              <p className="admin-moderation-question" role="status">
+                {armed.action === "approve" ? "Duyệt lời chúc này?" : "Từ chối lời chúc này?"}
+                {!wish.publicConsent && " Người gửi chọn riêng tư nên lời vẫn không hiện công khai."}
+              </p>
+              <div className="admin-moderation-actions">
+                <button className="button button-dark" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, armed.action)}>
+                  {busyId === wish.id ? "Đang lưu…" : armed.action === "approve" ? "Xác nhận duyệt" : "Xác nhận từ chối"}
+                </button>
+                <button className="button button-line" type="button" disabled={busyId === wish.id} onClick={() => setArmed(null)}>Huỷ</button>
+              </div>
+            </> : <>
+              <div className="admin-moderation-actions">
+                <button className="button button-dark" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, "approve")}>Duyệt</button>
+                <button className="button button-line" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, "reject")}>Từ chối</button>
+              </div>
+              {!wish.publicConsent && <p className="admin-moderation-hint">Người gửi chọn riêng tư: duyệt cũng không hiện ở trang công khai.</p>}
+            </>}
+          </div> : wish.moderatedAt ? <p className="admin-moderated">Đã xử lý lúc {formatDate(wish.moderatedAt)}</p> : null}
         </article>)}</div>
         {cursor && <button type="button" className="button button-line admin-more" disabled={loading} onClick={() => void loadWishes(filter, cursor, visibility)}>Xem thêm lời chúc</button>}
       </> : <RsvpList onExpired={expireSession} />}

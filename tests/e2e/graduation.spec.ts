@@ -260,6 +260,63 @@ test("admin signs in and sees private wishes and RSVP messages", async ({ page, 
   await expect(page.getByText(rsvpMessage, { exact: true })).toBeVisible();
 });
 
+test("admin approves or rejects wishes and private wishes stay private", async ({ page, request }) => {
+  const stamp = Date.now();
+  const names = {
+    approved: `Duyệt công khai ${stamp}`,
+    rejected: `Từ chối công khai ${stamp}`,
+    privateWish: `Duyệt riêng tư ${stamp}`,
+  };
+  const ids = { approved: randomUUID(), rejected: randomUUID(), privateWish: randomUUID() };
+  const db = new DatabaseSync(fixture);
+  try {
+    const insert = db.prepare("INSERT INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash) VALUES (?,?,?,?,?,?)");
+    insert.run(ids.approved, names.approved, "Lời chúc sẽ được duyệt công khai.", 1, randomUUID(), "test");
+    insert.run(ids.rejected, names.rejected, "Lời chúc sẽ bị từ chối.", 1, randomUUID(), "test");
+    insert.run(ids.privateWish, names.privateWish, "Lời chúc riêng được duyệt.", 0, randomUUID(), "test");
+  } finally { db.close(); }
+
+  expect((await request.patch(`/api/admin/wishes/${ids.approved}`, { headers: { Origin: origin }, data: { action: "approve" } })).status()).toBe(401);
+  expect((await request.patch(`/api/admin/wishes/${ids.approved}`, { headers: { Origin: "https://evil.example" }, data: { action: "approve" } })).status()).toBe(403);
+
+  await page.goto("/admin");
+  await page.getByLabel("Mật khẩu quản lý").fill("graduation-test-admin");
+  await page.getByRole("button", { name: "Đăng nhập" }).click();
+  await expect(page.getByRole("heading", { name: "Lời nhắn của bạn bè" })).toBeVisible();
+
+  const card = (name: string) => page.locator(".admin-wish").filter({ has: page.getByRole("heading", { name, exact: true }) });
+
+  await card(names.approved).getByRole("button", { name: "Duyệt", exact: true }).click();
+  await expect(card(names.approved).getByText("Duyệt lời chúc này?")).toBeVisible();
+  await card(names.approved).getByRole("button", { name: "Xác nhận duyệt" }).click();
+  await expect(card(names.approved).getByText("Đã duyệt")).toBeVisible();
+
+  await card(names.rejected).getByRole("button", { name: "Từ chối", exact: true }).click();
+  await card(names.rejected).getByRole("button", { name: "Xác nhận từ chối" }).click();
+  await expect(card(names.rejected).getByText("Đã từ chối")).toBeVisible();
+
+  await expect(card(names.privateWish).getByText(/duyệt cũng không hiện/)).toBeVisible();
+  await card(names.privateWish).getByRole("button", { name: "Duyệt", exact: true }).click();
+  await expect(card(names.privateWish).getByText(/vẫn không hiện công khai/)).toBeVisible();
+  await card(names.privateWish).getByRole("button", { name: "Xác nhận duyệt" }).click();
+  await expect(card(names.privateWish).getByText("Đã duyệt")).toBeVisible();
+
+  const publicItems = (await (await request.get("/api/wishes")).json()).items as { name: string }[];
+  expect(publicItems.some(item => item.name === names.approved)).toBe(true);
+  expect(publicItems.some(item => item.name === names.rejected)).toBe(false);
+  expect(publicItems.some(item => item.name === names.privateWish)).toBe(false);
+
+  const conflict = await page.evaluate(async id => {
+    const response = await fetch(`/api/admin/wishes/${id}`, {
+      method: "PATCH",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ action: "reject" }),
+    });
+    return response.status;
+  }, ids.approved);
+  expect(conflict).toBe(409);
+});
+
 for (const width of [390, 1440]) {
   test(`floating contact actions stay usable at ${width}px`, async ({ page }) => {
     await page.setViewportSize({ width, height: 844 });

@@ -10,7 +10,7 @@ Chạy website, RSVP, lưu lời chúc, khu vực xem lời chúc riêng tư và
 - Thiếu `ADMIN_PASSWORD`/`ADMIN_SESSION_SECRET` khiến đăng nhập admin chưa cấu hình, nhưng không phải nguyên nhân trực tiếp khiến health trả `503`.
 - VPS Compose đã gắn volume `graduation-data` vào `/app/data`; `DATABASE_URL` được đặt trong Compose thành `file:/app/data/graduation.db`. Không đặt database vào filesystem của container hoặc chạy `docker compose down -v`.
 - Container tự chạy migration idempotent khi khởi động. VPS env mẫu hiện có domain, rate-limit secret và proxy; cần bổ sung admin credentials khi chuẩn bị production.
-- Lời chúc công khai chỉ hiện sau khi người gửi đồng ý và lời chúc được duyệt. Admin web hiện là trang xem; duyệt/từ chối đang dùng script CLI trong container.
+- Lời chúc công khai chỉ hiện sau khi người gửi đồng ý và lời chúc được duyệt. Admin web có nút duyệt/từ chối trên điện thoại và desktop; script CLI trong container vẫn là phương án dự phòng.
 
 ## Phase 1 — Chuẩn bị mã nguồn và cấu hình
 
@@ -45,7 +45,7 @@ Health mong đợi `{"status":"ok"}`. Nếu `503`, kiểm tra log container, vol
 1. Mở `https://YOUR_DOMAIN/admin`, đăng nhập; kiểm tra phiên dùng cookie bảo mật và danh sách có cả lời riêng tư.
 2. Gửi một RSVP và xác nhận dữ liệu còn sau khi container được recreate nhưng volume được giữ nguyên.
 3. Gửi một lời chúc riêng tư: thấy trong admin, không xuất hiện ở trang công khai.
-4. Gửi một lời chúc đồng ý công khai: vẫn ẩn khi chờ duyệt; dùng lệnh duyệt có sẵn:
+4. Gửi một lời chúc đồng ý công khai: vẫn ẩn khi chờ duyệt; mở `/admin`, bấm **Duyệt** rồi **Xác nhận duyệt** trên điện thoại để kiểm tra luồng thực tế. Dự phòng bằng CLI:
 
    ```sh
    docker compose --env-file .env.production exec invitation node scripts/moderate.mjs pending
@@ -58,7 +58,7 @@ Health mong đợi `{"status":"ok"}`. Nếu `503`, kiểm tra log container, vol
 ## Phase 4 — Vận hành và cải thiện admin
 
 - Thiết lập backup SQLite định kỳ và một bản sao ngoài VPS; trước mỗi release, backup trước khi cập nhật image. Giữ nguyên Compose project/volume và tuyệt đối không dùng `down -v`.
-- Sau khi production ổn định, có thể bổ sung nút duyệt/từ chối trong `/admin`. Trước khi làm cần endpoint mutation được bảo vệ bởi session + Origin/CSRF, ghi `moderated_at`/người duyệt, có xác nhận thao tác và test quyền riêng tư. Không làm việc này như một phần bắt buộc để admin hiện tại xem được lời chúc.
+- Nút duyệt/từ chối trong `/admin` đã hoàn thành ngày 26/11/2026: endpoint `PATCH /api/admin/wishes/[id]` yêu cầu phiên admin + Origin, chỉ chuyển `pending → approved|rejected`, ghi `moderated_at`/`moderated_by`, có bước xác nhận và test quyền riêng tư. Hoàn tác quyết định duyệt chưa có; nếu cần thì phải thêm trạng thái và kiểm toán riêng.
 - Nếu sau này chuyển provider, lập migration/export-import riêng, backup và đối chiếu số dòng trước/sau. Không cho Vercel và VPS ghi vào hai database production khác nhau cùng lúc.
 
 ## Tiêu chí hoàn tất

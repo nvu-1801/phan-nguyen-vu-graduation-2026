@@ -38,7 +38,7 @@ Dùng cấu hình DB đúng môi trường khi chạy. Chỉ lời chúc đã du
 
 ## Quản lý lời chúc
 
-Mở `/admin` để xem lời chúc và xác nhận tham dự, kể cả nội dung riêng tư. Cấu hình `ADMIN_PASSWORD` (tối thiểu 16 ký tự) và `ADMIN_SESSION_SECRET` (tối thiểu 32 ký tự ngẫu nhiên) trong môi trường server. Không đưa hai giá trị này vào Git. Phiên đăng nhập dùng cookie HttpOnly và tự hết hạn sau 8 giờ. Bản hiện tại chỉ xem; duyệt/từ chối vẫn dùng lệnh `npm run moderate` ở trên.
+Mở `/admin` để xem lời chúc và xác nhận tham dự, kể cả nội dung riêng tư. Cấu hình `ADMIN_PASSWORD` (tối thiểu 16 ký tự) và `ADMIN_SESSION_SECRET` (tối thiểu 32 ký tự ngẫu nhiên) trong môi trường server. Không đưa hai giá trị này vào Git. Phiên đăng nhập dùng cookie HttpOnly và tự hết hạn sau 8 giờ. Trong tab "Lời chúc", nút **Duyệt** / **Từ chối** cập nhật trạng thái qua `PATCH /api/admin/wishes/[id]`; yêu cầu phải có phiên admin và `Origin` cùng site. Duyệt không tự mở công khai: lời chúc vẫn chỉ hiện khi người gửi đã đồng ý công khai. Lệnh `npm run moderate` phía trên vẫn dùng được như phương án dự phòng khi không mở được trình duyệt.
 
 ## Vercel
 

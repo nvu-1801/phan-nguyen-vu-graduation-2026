@@ -1,4 +1,4 @@
-import { mkdirSync, readFileSync } from 'node:fs';
+import { mkdirSync, readFileSync, readdirSync } from 'node:fs';
 import { dirname, resolve } from 'node:path';
 import { pathToFileURL } from 'node:url';
 import { DatabaseSync } from 'node:sqlite';
@@ -8,9 +8,13 @@ export function migrateLocal(path) {
   try {
     db.exec('PRAGMA busy_timeout = 5000; BEGIN IMMEDIATE');
     db.exec('CREATE TABLE IF NOT EXISTS schema_migrations (version INTEGER PRIMARY KEY)');
-    if (!db.prepare('SELECT version FROM schema_migrations WHERE version = 1').get()) {
-      db.exec(readFileSync(new URL('../db/migrations/0001_initial.sql', import.meta.url), 'utf8'));
-      db.exec('INSERT INTO schema_migrations (version) VALUES (1)');
+    const directory = new URL('../db/migrations/', import.meta.url);
+    const files = readdirSync(directory).filter(file => /^\d{4}_.+\.sql$/.test(file)).sort();
+    for (const file of files) {
+      const version = Number(file.slice(0, 4));
+      if (db.prepare('SELECT version FROM schema_migrations WHERE version = ?').get(version)) continue;
+      db.exec(readFileSync(new URL(file, directory), 'utf8'));
+      db.prepare('INSERT INTO schema_migrations (version) VALUES (?)').run(version);
     }
     db.exec('COMMIT');
   } finally {

@@ -358,6 +358,12 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
 .admin-badges .is-private{background:#f6e3d4;color:#783e22}
 .admin-wish>p{white-space:pre-wrap;margin-top:16px;color:#405748;line-height:1.8}
 .admin-empty,.admin-muted{padding:24px;border:1px dashed #b9c5a9;border-radius:16px;color:#53695a;text-align:center}
+.admin-moderation{margin-top:18px;padding-top:16px;border-top:1px solid #e7dfcc}
+.admin-moderation-question{margin:0 0 10px;font-size:.8rem;color:#4a5c4f}
+.admin-moderation-actions{display:flex;flex-wrap:wrap;gap:10px}
+.admin-moderation-actions .button{min-height:44px;padding:0 20px;font-size:.8rem}
+.admin-moderation-hint{margin:10px 0 0;font-size:.72rem;color:#6a705f}
+.admin-moderated{margin-top:14px;font-size:.72rem;color:#6a705f}
 .admin-more{margin-top:20px}
 @media(max-width:600px){
   .admin-page{padding:17px 16px 52px}
