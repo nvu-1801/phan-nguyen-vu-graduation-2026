@@ -178,3 +178,7 @@ User reported the Deploy VPS workflow still failing and asked that every `main` 
 - `.github/workflows/deploy.yml` is now manual-only (`workflow_dispatch`) and was renamed "Deploy VPS (SSH fallback)" so pushes no longer produce red runs while SSH is closed. `DEPLOY_ENABLED` set to `false`.
 - `docs/VPS.md` now documents the timer install, verification commands, failure behaviour and the SSH fallback prerequisites. No secrets added.
 - Not yet verified on the VPS: the timer is not installed until the owner runs the one-time commands; the next push is expected to go live within ~2 minutes after that. Until then the live site remains on the older build.
+
+### Follow-up: state-aware rebuild
+
+The owner installed the timer but had run `git pull --ff-only` manually first, so HEAD already equalled `origin/main`; the first script version saw “nothing new” and skipped the image rebuild, leaving the live site on the old build while `git rev-parse` reported `01b6533`. The script now records the deployed SHA in `.deploy-state` and deploys when either `origin/main` or that file differs from HEAD, which also fixes rebuilds after manual pulls. Failed deploys write `.deploy-failed` and wait `COOLDOWN_SECONDS` (900s) before retrying; both files are gitignored. The timer will pick this change up on its next run and rebuild the container.

@@ -34,3 +34,7 @@ docs/reference/sample*
 public/images/backgrounds/
 
 backups/
+
+# VPS auto-deploy state (written by scripts/vps-auto-deploy.sh)
+.deploy-state
+.deploy-failed
