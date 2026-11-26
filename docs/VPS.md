@@ -220,7 +220,25 @@ sudo journalctl -u graduation-backup.service -n 40 --no-pager
 ls -1dt backups/daily-* | head -3
 ```
 
-Timer chạy 03:30 hằng ngày theo múi giờ VPS, `Persistent=true` nên nếu VPS tắt lúc 03:30 thì lần bật sau sẽ chạy bù. Backup vẫn nằm trên cùng ổ của VPS — nên copy định kỳ ra ngoài (rclone/scp) hoặc tải qua SFTP; chưa cấu hình đích ngoài VPS.
+Timer chạy 03:30 hằng ngày theo múi giờ VPS, `Persistent=true` nên nếu VPS tắt lúc 03:30 thì lần bật sau sẽ chạy bù. Lần đầu bật timer sẽ chạy bù ngay, nên có thể thấy hai bản backup liên tiếp nếu bạn vừa `systemctl start` — bình thường.
+
+Kiểm tra một bản backup đọc được (dùng Node 24 có sẵn SQLite, mount read-only):
+
+```sh
+docker run --rm -v "$PWD/backups/daily-YYYYMMDD-HHMMSS:/data:ro" node:24-bookworm-slim \
+  node -e "const {DatabaseSync}=require('node:sqlite');const db=new DatabaseSync('/data/graduation.db');console.log(db.prepare('PRAGMA integrity_check').get());console.log(db.prepare('SELECT count(*) AS n FROM rsvps').get());"
+```
+
+Copy ra ngoài VPS (tùy chọn): cài `rclone`, cấu hình remote, rồi đặt biến cho service:
+
+```sh
+sudo systemctl edit graduation-backup.service
+# [Service]
+# Environment=BACKUP_REMOTE=gdrive:graduation-backups
+sudo systemctl daemon-reload
+```
+
+Khi có `BACKUP_REMOTE` và `rclone`, script tự copy thư mục backup mới lên remote; nếu copy lỗi thì bản local vẫn giữ và log ghi rõ. Chưa cấu hình remote nào trong phiên này.
 
 ### Giám sát uptime
 

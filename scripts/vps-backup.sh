@@ -62,4 +62,11 @@ curl --fail --silent --show-error --retry 6 --retry-delay 5 http://127.0.0.1:300
 trap - EXIT INT TERM
 
 log "Backup written: $directory"
+if [ -n "${BACKUP_REMOTE:-}" ] && command -v rclone >/dev/null 2>&1; then
+  if rclone copy "$directory" "$BACKUP_REMOTE" --quiet; then
+    log "Offsite copy sent to $BACKUP_REMOTE."
+  else
+    log "Offsite copy failed; the local backup is still available."
+  fi
+fi
 ls -1dt backups/daily-* 2>/dev/null | tail -n +$((KEEP + 1)) | xargs -r rm -rf || true

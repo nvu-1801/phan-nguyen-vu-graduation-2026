@@ -203,6 +203,8 @@ Self-driven continuation of `docs/graduation/COMPLETION_PLAN.md` P2, with build/
 - Verified locally: `npm run lint`, `npm run typecheck`, `npm run build` (new `/api/admin/rsvps/export` route) and the full Playwright suite 22/22 (2.5m), including BOM bytes, CSV header, private RSVP message, formula prefix and the authenticated link. Push/CI and the resulting timer deploy are recorded in the completion message.
 - Still open: install the backup timer on the VPS and test a restore, copy a backup off the VPS, and confirm a real uptime failure email. P3 (official ceremony time) still needs the owner’s confirmation.
 
+Owner follow-up (26/11/2026): the backup timer was installed and the first run wrote `backups/daily-20261126-141814` (and a second copy from the manual start), stopping the container for about a second and returning `{"status":"ok"}`. The initial double run is expected from `Persistent=true` plus the manual start. Added an optional `BACKUP_REMOTE` rclone copy (only when rclone and the variable exist; local backup is kept if the copy fails) and documented a read-only Node 24 integrity check. No offsite remote configured yet.
+
 ### CTA polish — 26/11/2026
 
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.
