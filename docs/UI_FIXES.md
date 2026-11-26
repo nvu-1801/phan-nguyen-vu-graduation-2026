@@ -27,4 +27,9 @@ Scope requested: make the invitation look and read better on phones. Desktop rul
 - Footer: extra padding so the floating dock no longer covers the coffee/QR note; dock itself keeps 44px targets and only tightens gaps.
 - Story stage reduced from 85svh/530px to 70svh/470px so the 3D scene does not leave a full empty screen on phones.
 
+### CTA polish — 26/11/2026
+
+- Removed the inherited link underline on the hero secondary CTA; it is now a cream gradient pill with the down arrow in a dark circular badge (orange on hover/focus), full-width on phones with the badge pushed to the right.
+- Wish suggestion buttons became dashed soft-green rows with a sparkle badge and a trailing plus. Decorative spans are `aria-hidden`, so the accessible name and the exact-name test are unchanged.
+
 Verified: lint passed, production build passed, 22/22 Playwright tests passed (51.9s) at 360/390/768/1440 including axe, no-JS, dock, form, moderation, scroll and 3D checks; `scrollWidth === clientWidth` at 360/390/1440; screenshots at 360/390 and desktop 1440 inspected under ignored `test-results/mobile-audit` and `test-results/mobile-final`. Real-device font rendering and iOS safe areas were not re-tested on hardware.

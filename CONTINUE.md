@@ -202,3 +202,9 @@ Self-driven continuation of `docs/graduation/COMPLETION_PLAN.md` P2, with build/
 - **Deploy downtime**: `scripts/vps-auto-deploy.sh` now builds the new image before stopping the container, so a build failure keeps the current site online and downtime is only the recreate step; the SQLite backup still happens before the new container runs migrations.
 - Verified locally: `npm run lint`, `npm run typecheck`, `npm run build` (new `/api/admin/rsvps/export` route) and the full Playwright suite 22/22 (2.5m), including BOM bytes, CSV header, private RSVP message, formula prefix and the authenticated link. Push/CI and the resulting timer deploy are recorded in the completion message.
 - Still open: install the backup timer on the VPS and test a restore, copy a backup off the VPS, and confirm a real uptime failure email. P3 (official ceremony time) still needs the owner’s confirmation.
+
+### CTA polish — 26/11/2026
+
+- `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.
+- Wish suggestion buttons are now dashed soft-green rows with a sparkle badge on the left and a plus on the right. Icon spans are `aria-hidden`, so the accessible name remains exactly “Dùng gợi ý: <label>” and the existing exact-name test still passes.
+- Verified: lint, production build, full Playwright 22/22 (2.1m); screenshots at 390 and 1440 inspected (`test-results/cta-polish`, ignored).

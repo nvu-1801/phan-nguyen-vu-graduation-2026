@@ -380,6 +380,15 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .admin-filters button{padding-inline:12px}
 }
 
+/* CTA polish — 26/11/2026 */
+.hero-wish{justify-content:space-between;gap:16px;padding:12px 18px 12px 24px;border-color:#a7bd9f;background:linear-gradient(180deg,#fffdf6 0%,#f2f6e4 100%);box-shadow:0 10px 24px #173e3014;text-decoration:none}
+.hero-wish>span[aria-hidden]{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:#173e30;color:#fff8e9;font-size:.9rem;line-height:1;transition:background-color .25s ease,transform .25s ease}
+.hero-wish:hover>span[aria-hidden],.hero-wish:focus-visible>span[aria-hidden]{background:var(--orange);transform:translateY(2px)}
+.wish-idea-button{justify-content:flex-start;gap:12px;min-height:54px;padding:12px 14px;border:1px dashed #a7bd9f;border-radius:14px;background:linear-gradient(180deg,#fbfdf4,#f1f6e3);text-align:left;text-decoration:none}
+.wish-idea-button:hover{background:linear-gradient(180deg,#f4f8e7,#e9f1d4);border-style:solid;border-color:#8fae82}
+.wish-idea-icon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:#e4f0c9;color:#1c6746;font-size:.9rem;line-height:1}
+.wish-idea-add{margin-left:auto;font-size:1rem;font-weight:500;color:#4f7b60;line-height:1}
+
 /* Mobile polish — 26/11/2026. Desktop rules above stay untouched. */
 @media(max-width:760px){
   .wrap{width:calc(100% - 36px)}
@@ -398,7 +407,8 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .hero-tagline{font-size:1.3rem;line-height:1.35;margin-top:12px}
   .invitation{font-size:.94rem;line-height:1.72;max-width:34ch;margin-top:12px}
   .hero-actions{display:grid;grid-template-columns:1fr;gap:9px;margin-top:20px;width:100%}
-  .hero-actions .button,.hero-wish{width:100%;justify-content:center;min-height:52px;padding:0 18px;font-size:.9rem}
+  .hero-actions .button{width:100%;justify-content:center;min-height:52px;padding:0 18px;font-size:.9rem}
+  .hero-wish{width:100%;justify-content:space-between;min-height:56px;padding:0 16px 0 20px;font-size:.9rem}
   .hero-meta{font-size:.74rem;gap:5px 14px;padding-top:13px;margin-top:20px}
   .hero-art{width:100%;padding:0 0 26px;margin-top:2px}
   .hero-surface::before{background:linear-gradient(180deg,#fff8e9f5 0%,#fff8e9c4 5%,#fff8e900 24%),linear-gradient(0deg,#143c2e51,#fff8e900 78%),url('/images/backgrounds/fpt-800.webp') center 56%/cover}
