@@ -89,9 +89,37 @@ docker compose --env-file .env.production exec invitation node scripts/moderate.
 
 Cả hai cách đều ghi `moderated_at` và `moderated_by`; chỉ lời đang `pending` mới chuyển được trạng thái.
 
-## Tự động deploy bằng GitHub Actions
+## Tự động deploy trên VPS (cách đang dùng)
 
-Workflow `.github/workflows/deploy.yml` chạy sau khi **Graduation CI** pass trên `main` (hoặc chạy tay bằng `workflow_dispatch`): SSH vào VPS, pull `main`, backup SQLite vào `backups/auto-*`, rebuild Compose rồi kiểm tra `/api/health`. Workflow mặc định tắt cho tới khi bạn đặt biến `DEPLOY_ENABLED=true`. Nó không sửa `.env.production` và sẽ dừng nếu VPS có file tracked bị chỉnh tay.
+VPS không mở SSH ra Internet — cổng 22 bị `connection refused` từ GitHub runner và từ máy ngoài — nên GitHub Actions không thể SSH vào. Cách chạy hiện tại: VPS tự kiểm tra `origin/main` mỗi 2 phút bằng systemd timer. Push lên `main` → CI xanh → tối đa khoảng 2 phút sau VPS pull, backup SQLite, rebuild và health check. Không cần mở SSH inbound.
+
+Cài một lần trên VPS:
+
+```sh
+cd ~/apps/phan-nguyen-vu-graduation-2026
+chmod +x scripts/vps-auto-deploy.sh
+sudo cp deploy/graduation-deploy.service deploy/graduation-deploy.timer /etc/systemd/system/
+sudo systemctl daemon-reload
+sudo systemctl enable --now graduation-deploy.timer
+systemctl list-timers graduation-deploy.timer
+```
+
+Chạy thử và kiểm tra:
+
+```sh
+sudo systemctl start graduation-deploy.service
+journalctl -u graduation-deploy.service -n 60 --no-pager
+git rev-parse --short HEAD
+curl --fail http://127.0.0.1:3000/api/health
+```
+
+Script `scripts/vps-auto-deploy.sh` chỉ deploy khi `origin/main` khác HEAD hiện tại; từ chối nếu có file tracked bị sửa trên server; dừng container để copy SQLite vào `backups/auto-*` (giữ 10 bản); fast-forward; `docker compose up -d --build --wait`; kiểm tra `/api/health`. Nếu bước sau lỗi, trap bật lại container cũ để site không chết. Log nằm trong journald.
+
+Điều kiện: user `vu` phải `git fetch` được repo private (credential đã có sẵn trên VPS) và chạy được `docker compose`. Nếu `git fetch` lỗi, xem `journalctl` rồi cấu hình lại credential; không dán token vào chat hay file trong repo.
+
+## Tùy chọn: deploy bằng SSH từ GitHub Actions
+
+Chỉ dùng khi VPS thật sự mở SSH ra Internet (hoặc allowlist dải IP runner). Workflow `.github/workflows/deploy.yml` hiện chỉ chạy tay bằng `workflow_dispatch` và cần biến `DEPLOY_ENABLED=true`; nó không còn tự chạy sau CI để tránh run đỏ khi SSH đóng. Workflow pull `main`, backup SQLite, rebuild Compose và kiểm tra `/api/health`; không sửa `.env.production` và dừng nếu VPS có file tracked bị chỉnh tay.
 
 ### 1. Tạo SSH key riêng cho deploy
 
@@ -151,7 +179,7 @@ gh workflow run deploy.yml
 gh run watch
 ```
 
-Hoặc push một commit vào `main` sau khi CI pass. Kiểm tra lại trên VPS:
+Hoặc chạy tay bằng `gh workflow run deploy.yml`; workflow không tự chạy sau CI. Kiểm tra lại trên VPS:
 
 ```sh
 docker compose --env-file .env.production ps

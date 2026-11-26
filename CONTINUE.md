@@ -168,3 +168,13 @@ User asked to improve the phone layout/UI, then to push to `main`.
 - Verification: `npm run lint` pass, `npm run build` pass, 22/22 Playwright pass (51.9s) at 360/390/768/1440 including axe and no-JS; no horizontal overflow at 360/390/1440; 360/390/1440 screenshots inspected (`test-results/mobile-audit`, `test-results/mobile-final`, ignored). Real iOS/Android hardware and safe-area behavior not re-verified.
 - Docs: `docs/UI_FIXES.md` records details and limits.
 - Deploy note: `DEPLOY_ENABLED=true` and `VPS_SSH_KEY` are set, but the last Deploy VPS run failed because the old key had a passphrase and SSH port 22 was refused from GitHub runners. The key has since been regenerated without a passphrase and the secret updated; the new public key still needs to be added on the VPS and the real SSH port confirmed. Until then, pushes update `main` and CI but do not reach the live site.
+
+## Pull-based auto deploy — 26/11/2026
+
+User reported the Deploy VPS workflow still failing and asked that every `main` push be checked. Root cause is infrastructure, not app code: `103.90.225.95:22` is refused from GitHub runners and from this machine; 222/2222/2022/2200/2201/22022/1022 are also closed, while the site stays healthy on 80/443. Inbound SSH is not available, so an SSH-based runner deploy cannot succeed.
+
+- Added `scripts/vps-auto-deploy.sh`: VPS-side pull deploy with `flock`, tracked-file guard, `git checkout main`, fast-forward merge, SQLite backup to `backups/auto-*` before stopping the container, `docker compose up -d --build --wait`, health check, and a trap that restarts the previous container if the rebuild fails. Keeps the last 10 backups. POSIX `sh`, LF enforced via `.gitattributes`.
+- Added `deploy/graduation-deploy.service` and `deploy/graduation-deploy.timer` (user `vu`, every 2 minutes, boot + 3 minutes).
+- `.github/workflows/deploy.yml` is now manual-only (`workflow_dispatch`) and was renamed "Deploy VPS (SSH fallback)" so pushes no longer produce red runs while SSH is closed. `DEPLOY_ENABLED` set to `false`.
+- `docs/VPS.md` now documents the timer install, verification commands, failure behaviour and the SSH fallback prerequisites. No secrets added.
+- Not yet verified on the VPS: the timer is not installed until the owner runs the one-time commands; the next push is expected to go live within ~2 minutes after that. Until then the live site remains on the older build.
