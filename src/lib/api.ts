@@ -15,7 +15,12 @@ const rsvpSchema = z.strictObject({
 const wishSchema = z.strictObject({ ...common, message: z.string().trim().min(1).max(1000) });
 const maxBytes = 8192;
 const windowSeconds = 600;
-const writeLimit = 5;
+// Shared venue Wi-Fi puts many guests behind one IP, so the default is higher
+// than the strict anti-spam minimum and stays configurable per deployment.
+const configuredWriteLimit = Number(process.env.WRITE_LIMIT_PER_10_MIN);
+const writeLimit = Number.isInteger(configuredWriteLimit) && configuredWriteLimit >= 1 && configuredWriteLimit <= 100
+  ? configuredWriteLimit
+  : 30;
 const pageSize = 20;
 type Kind = "rsvp" | "wish";
 

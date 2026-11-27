@@ -31,7 +31,7 @@ chmod 600 .env.production
 openssl rand -hex 32
 ```
 
-Repo private: dùng SSH hoặc đăng nhập Git bằng tài khoản được cấp quyền. Không ghi token vào URL hay tài liệu. Sửa `.env.production`: thay cả SITE_ORIGIN và NEXT_PUBLIC_SITE_URL bằng origin HTTPS thật **không có dấu `/` cuối**; thay RATE_LIMIT_SECRET bằng kết quả ngẫu nhiên vừa sinh. Giữ APP_PORT=3000, APP_ENV_FILE=.env.production và TRUST_PROXY=1 khi dùng Nginx bên dưới. Không bật VERCEL. DATABASE_URL local được Compose đặt tới volume; không cần Turso token.
+Repo private: dùng SSH hoặc đăng nhập Git bằng tài khoản được cấp quyền. Không ghi token vào URL hay tài liệu. Sửa `.env.production`: thay cả SITE_ORIGIN và NEXT_PUBLIC_SITE_URL bằng origin HTTPS thật **không có dấu `/` cuối**; thay RATE_LIMIT_SECRET bằng kết quả ngẫu nhiên vừa sinh. Giữ APP_PORT=3000, APP_ENV_FILE=.env.production và TRUST_PROXY=1 khi dùng Nginx bên dưới. Không bật VERCEL. DATABASE_URL local được Compose đặt tới volume; không cần Turso token. `WRITE_LIMIT_PER_10_MIN` mặc định 30 lượt ghi/IP/10 phút; nếu khách dùng chung Wi-Fi tại hội trường, tăng lên (tối đa 100) để tránh chặn nhầm.
 
 ### Cấu hình `/admin`
 

@@ -17,7 +17,7 @@ if (process.argv.includes("--without-db")) {
 } else {
   rmSync(data, { recursive: true, force: true });
   mkdirSync(data, { recursive: true });
-  Object.assign(env, { DATABASE_URL: `file:${file}`, DATABASE_AUTH_TOKEN: "", RATE_LIMIT_SECRET: "graduation-e2e-only" });
+  Object.assign(env, { DATABASE_URL: `file:${file}`, DATABASE_AUTH_TOKEN: "", RATE_LIMIT_SECRET: "graduation-e2e-only", WRITE_LIMIT_PER_10_MIN: "5" });
   delete env.VERCEL;
   if (spawnSync(process.execPath, ["scripts/migrate.mjs"], { env, stdio: "inherit" }).status !== 0) process.exit(1);
 }
