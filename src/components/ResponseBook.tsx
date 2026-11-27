@@ -58,7 +58,7 @@ function EntryList({ revision }: { revision: number }) {
           {entry.attendance && <span className={`entry-badge ${entry.attendance}`}>{entry.attendance === "yes" ? "Sẽ đến" : "Chưa thể đến"}</span>}
         </div>
       </div>
-      <p className="entry-message">{entry.message ?? "Chưa để lại lời chúc."}</p>
+      <p className="entry-message">{entry.message ?? "Chưa có lời chúc công khai."}</p>
     </li>)}</ul>}
     {loading && <p className="entry-status" role="status">Đang tải sổ lưu bút…</p>}
     {error && <p className="entry-status" role="status">{error} <button className="text-button" type="button" onClick={() => void load()}>Thử lại</button></p>}
