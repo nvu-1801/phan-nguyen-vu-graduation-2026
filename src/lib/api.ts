@@ -13,6 +13,14 @@ const rsvpSchema = z.strictObject({
   message: z.string().trim().max(1000).optional(),
 });
 const wishSchema = z.strictObject({ ...common, message: z.string().trim().min(1).max(1000) });
+const entrySchema = z.strictObject({
+  name: z.string().trim().min(1).max(80),
+  attendance: z.enum(["yes", "no"]),
+  message: z.string().trim().max(1000).optional(),
+  publicAttendance: z.boolean().default(false),
+  publicWish: z.boolean().default(false),
+  website: z.literal("").optional(),
+});
 const maxBytes = 8192;
 const windowSeconds = 600;
 // Shared venue Wi-Fi puts many guests behind one IP, so the default is higher
@@ -160,6 +168,118 @@ export async function list(request: Request, kind: Kind) {
         : { id: row.id, name: row.name, message: row.message }),
       nextCursor: results[0].rows.length > pageSize ? String(rows.at(-1)?.row_id) : null,
       ...(counts ? { counts: { yes: 0, no: 0, ...counts } } : {}),
+    }, { headers: { "Cache-Control": "no-store" } });
+  } catch (error) {
+    return failure(error, randomUUID());
+  }
+}
+
+export async function submitEntry(request: Request) {
+  const requestId = randomUUID();
+  try {
+    const origin = request.headers.get("origin");
+    const url = new URL(request.url);
+    const host = request.headers.get("host") || url.host;
+    const protocol = process.env.VERCEL ? "https:" : url.protocol;
+    const expectedOrigin = process.env.SITE_ORIGIN || `${protocol}//${host}`;
+    if (!origin || origin !== expectedOrigin) throw new ApiError(403, "Vui lòng gửi từ trang thiệp mời.");
+    const key = request.headers.get("idempotency-key");
+    if (!key || !/^[A-Za-z0-9_-]{16,100}$/.test(key)) throw new ApiError(400, "Mã gửi chưa hợp lệ.");
+    const parsed = entrySchema.safeParse(await readBody(request));
+    if (!parsed.success) throw new ApiError(400, "Bạn kiểm tra lại tên và nội dung nhé.");
+    const { name, attendance, message, publicAttendance, publicWish } = parsed.data;
+    const wishText = message ?? "";
+    const digest = createHash("sha256").update(JSON.stringify([name, attendance, wishText, publicAttendance, publicWish])).digest("hex");
+
+    const db = getDb();
+    const now = Math.floor(Date.now() / 1000);
+    const bucket = bucketFor(request);
+    const entryId = randomUUID();
+    const rsvpId = randomUUID();
+    const wishId = randomUUID();
+
+    const statements: { sql: string; args: (string | number)[] }[] = [
+      {
+        sql: `INSERT INTO rate_limits(bucket_key,hits,expires_at)
+              SELECT ?,1,? WHERE NOT EXISTS (SELECT 1 FROM rsvps WHERE idempotency_key = ?)
+              ON CONFLICT(bucket_key) DO UPDATE SET
+                hits = CASE WHEN expires_at <= ? THEN 1 ELSE MIN(hits + 1, ?) END,
+                expires_at = CASE WHEN expires_at <= ? THEN excluded.expires_at ELSE expires_at END`,
+        args: [bucket, now + windowSeconds, key, now, writeLimit + 1, now],
+      },
+      {
+        sql: `INSERT OR IGNORE INTO rsvps (id,guest_name,attendance,public_consent,idempotency_key,request_hash,entry_id)
+              SELECT ?,?,?,?,?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?`,
+        args: [rsvpId, name, attendance, Number(publicAttendance), key, digest, entryId, bucket, writeLimit],
+      },
+    ];
+    if (wishText) {
+      statements.push({
+        sql: `INSERT OR IGNORE INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash,entry_id)
+              SELECT ?,?,?,?,?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?`,
+        args: [wishId, name, wishText, Number(publicWish), key, digest, entryId, bucket, writeLimit],
+      });
+    }
+    const savedIndex = wishText ? 3 : 2;
+    statements.push({ sql: "SELECT id, entry_id, request_hash FROM rsvps WHERE idempotency_key = ?", args: [key] });
+    statements.push({ sql: "SELECT expires_at FROM rate_limits WHERE bucket_key = ?", args: [bucket] });
+
+    const results = await db.batch(statements, "write");
+    const saved = results[savedIndex].rows[0];
+    if (!saved) {
+      return Response.json({ error: "Bạn đã gửi nhiều lần. Vui lòng thử lại sau." }, {
+        status: 429,
+        headers: { "Retry-After": String(Math.max(1, Number(results[savedIndex + 1].rows[0]?.expires_at) - now)) },
+      });
+    }
+    if (saved.request_hash !== digest) throw new ApiError(409, "Yêu cầu gửi trước đó có nội dung khác.");
+    return Response.json({
+      id: saved.entry_id,
+      attendance,
+      wishStatus: wishText ? "pending" : null,
+    }, { status: saved.id === rsvpId ? 201 : 200 });
+  } catch (error) {
+    return failure(error, requestId);
+  }
+}
+
+export async function listEntries(request: Request) {
+  try {
+    const params = new URL(request.url).searchParams;
+    const cursor = params.get("cursor");
+    if (cursor !== null && !/^\d{1,15}$/.test(cursor)) throw new ApiError(400, "Trang dữ liệu chưa hợp lệ.");
+    const offset = cursor ? Number(cursor) : 0;
+    const combined = `
+      SELECT COALESCE(r.entry_id, r.id) AS id, r.guest_name AS name,
+             CASE WHEN r.public_consent = 1 THEN r.attendance ELSE NULL END AS attendance,
+             w.message AS message, r.created_at AS created_at
+      FROM rsvps r
+      LEFT JOIN wishes w ON w.entry_id = r.entry_id AND w.status = 'approved' AND w.public_consent = 1
+      WHERE r.public_consent = 1 OR w.id IS NOT NULL
+      UNION ALL
+      SELECT w.id, w.guest_name, NULL, w.message, w.created_at
+      FROM wishes w
+      WHERE w.entry_id IS NULL AND w.status = 'approved' AND w.public_consent = 1`;
+    const results = await getDb().batch([
+      { sql: `SELECT * FROM (${combined}) ORDER BY created_at DESC, id DESC LIMIT ? OFFSET ?`, args: [pageSize + 1, offset] },
+      { sql: `SELECT attendance, COUNT(*) AS amount FROM (${combined}) WHERE attendance IS NOT NULL GROUP BY attendance`, args: [] },
+    ], "read");
+    const rows = results[0].rows.slice(0, pageSize);
+    const counts = { yes: 0, no: 0 };
+    for (const row of results[1].rows) {
+      if (row.attendance === "yes") counts.yes = Number(row.amount);
+      if (row.attendance === "no") counts.no = Number(row.amount);
+    }
+    return Response.json({
+      items: rows.map(row => ({
+        id: row.id,
+        name: row.name,
+        attendance: row.attendance === "yes" || row.attendance === "no" ? row.attendance : null,
+        message: row.message ?? null,
+        createdAt: row.created_at,
+      })),
+      counts,
+      nextCursor: results[0].rows.length > pageSize ? String(offset + pageSize) : null,
     }, { headers: { "Cache-Control": "no-store" } });
   } catch (error) {
     return failure(error, randomUUID());

@@ -55,29 +55,31 @@ try {
   const page=await browser.newPage({viewport:{width:390,height:844},reducedMotion:'reduce'});
   const errors=[];page.on('pageerror',e=>errors.push(e.message));
   await page.goto(origin);await page.getByRole('heading',{name:'Phan Nguyên Vũ',exact:true}).waitFor();
-  const rsvp=page.locator('#xac-nhan .guest-form').first();
-  await rsvp.getByLabel('Tên của bạn').fill(`${tag}-private`);
-  await rsvp.getByLabel('Lời nhắn riêng (không bắt buộc)').fill('Local container persistence fixture.');
-  const savedRsvp=page.waitForResponse(r=>r.url().endsWith('/api/rsvps')&&r.request().method()==='POST');
-  await rsvp.getByRole('button',{name:'Gửi xác nhận',exact:true}).click();
-  const privateReceipt=await savedRsvp;assert.equal(privateReceipt.status(),201);ids.rsvps.push((await privateReceipt.json()).id);
-  const wish=page.locator('#loi-chuc .guest-form');
-  await wish.getByLabel('Tên của bạn').fill(`${tag}-wish`);
-  await wish.locator('summary').click();
-  await wish.getByRole('button',{name:'Dùng gợi ý: Chân thành',exact:true}).click();
-  await wish.getByRole('checkbox').check();
-  const savedWish=page.waitForResponse(r=>r.url().endsWith('/api/wishes')&&r.request().method()==='POST');
-  await wish.getByRole('button',{name:'Gửi lời chúc',exact:true}).click();
-  const publicWish=await savedWish;assert.equal(publicWish.status(),201);ids.wishes.push((await publicWish.json()).id);
+  const form=page.locator('.entry-form');
+  await form.getByLabel('Tên của bạn').fill(`${tag}-entry`);
+  await form.locator('summary').click();
+  await form.getByRole('button',{name:'Dùng gợi ý: Chân thành',exact:true}).click();
+  await form.getByLabel(/Đồng ý công khai lời chúc/).check();
+  const savedEntry=page.waitForResponse(r=>r.url().endsWith('/api/entries')&&r.request().method()==='POST');
+  await form.getByRole('button',{name:'Gửi phản hồi',exact:true}).click();
+  const entryResponse=await savedEntry;assert.equal(entryResponse.status(),201);
+  const entryId=(await entryResponse.json()).id;
+  const entryRsvp=await query('SELECT id FROM rsvps WHERE entry_id=?',[entryId]);
+  const entryWish=await query('SELECT id FROM wishes WHERE entry_id=?',[entryId]);
+  assert.equal(entryRsvp.length,1);assert.equal(entryWish.length,1);
+  ids.rsvps.push(entryRsvp[0].id);ids.wishes.push(entryWish[0].id);
   const privateWish=await post('/api/wishes',{name:`${tag}-private-wish`,message:'Private fixture',publicConsent:false});
   assert.equal(privateWish.status,201);ids.wishes.push((await privateWish.json()).id);
-  assert(!(await get('/api/guests')).items.some(x=>x.name===`${tag}-private`));
-  assert(!(await get('/api/wishes')).items.some(x=>x.name===`${tag}-wish`));
-  ok('Frontend submits RSVP and suggested wish to SQLite; private and pending data stay hidden');
+  assert(!(await get('/api/guests')).items.some(x=>x.name===`${tag}-entry`));
+  assert(!(await get('/api/wishes')).items.some(x=>x.name===`${tag}-entry`));
+  assert(!(await get('/api/entries')).items.some(x=>x.id===entryId));
+  ok('Frontend submits one combined entry; private attendance and pending wish stay hidden');
   for(const id of ids.wishes) exec(['node','scripts/moderate.mjs','approve',id]);
   const publicList=await get('/api/wishes');
   assert(publicList.items.some(x=>x.id===ids.wishes[0]));assert(!publicList.items.some(x=>x.id===ids.wishes[1]));
-  ok('Moderation works inside production image; consent remains enforced after approval');
+  const visibleEntry=(await get('/api/entries')).items.find(x=>x.id===entryId);
+  assert(visibleEntry);assert.equal(visibleEntry.attendance,null);assert(visibleEntry.message.includes('Chúc mừng Vũ'));
+  ok('Moderation works inside production image; combined list shows the wish without the private attendance');
   const before=docker([...compose,'ps','-q','invitation']).trim();
   docker([...compose,'up','-d','--force-recreate','--wait']);
   const after=docker([...compose,'ps','-q','invitation']).trim();assert.notEqual(before,after);
@@ -85,7 +87,7 @@ try {
   const persisted=await query('SELECT id FROM rsvps WHERE id IN (?,?)',ids.rsvps);assert.equal(persisted.length,2);
   assert((await get('/api/wishes')).items.some(x=>x.id===ids.wishes[0]));
   ok('Container recreated with new ID; SQLite data survives in persistent volume');
-  await page.reload();await page.getByText(`${tag}-wish`,{exact:true}).waitFor();
+  await page.reload();await page.getByText(`${tag}-entry`,{exact:true}).waitFor();
   assert.equal(await page.getByText(`${tag}-private-wish`,{exact:true}).count(),0);
   assert.equal(await page.evaluate(()=>document.documentElement.scrollWidth),390);
   for(const path of ['/images/backgrounds/fpt-800.webp','/images/portrait-9516-cutout.webp','/images/graduation-og.png','/tot-nghiep-vu.ics']) assert.equal((await read(path)).status,200,path);
@@ -96,8 +98,8 @@ try {
 } finally {
   await browser.close();
   for(const [table,records] of Object.entries(ids)) for(const id of records) await query(`DELETE FROM ${table} WHERE id=?`,[id]);
-  // Reset only this local bucket when nobody else has added a write during the check.
-  exec(['node','--input-type=module','-e',`import {createClient} from '@libsql/client';import {createHmac} from 'node:crypto';const db=createClient({url:process.env.DATABASE_URL});try{await db.execute({sql:'DELETE FROM rate_limits WHERE bucket_key=? AND hits=4',args:[createHmac('sha256',process.env.RATE_LIMIT_SECRET).update('local').digest('hex')]})}finally{db.close()}`]);
+  // Reset this local bucket unconditionally; the smoke project is isolated.
+  exec(['node','--input-type=module','-e',`import {createClient} from '@libsql/client';import {createHmac} from 'node:crypto';const db=createClient({url:process.env.DATABASE_URL});try{await db.execute({sql:'DELETE FROM rate_limits WHERE bucket_key=?',args:[createHmac('sha256',process.env.RATE_LIMIT_SECRET).update('local').digest('hex')]})}finally{db.close()}`]);
   for(const [table,records] of Object.entries(ids)) for(const id of records) assert.equal((await query(`SELECT id FROM ${table} WHERE id=?`,[id])).length,0);
   console.log('Local smoke fixtures removed by exact IDs; volume and other data retained.');
 }

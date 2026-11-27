@@ -23,12 +23,12 @@ export async function GET(request: Request) {
   try {
     const conditions: string[] = [];
     const args: (string | number)[] = [];
-    if (consent !== "all") { conditions.push("public_consent = ?"); args.push(consent === "public" ? 1 : 0); }
-    if (attendance !== "all") { conditions.push("attendance = ?"); args.push(attendance); }
-    if (cursor) { conditions.push("rowid < ?"); args.push(Number(cursor)); }
+    if (consent !== "all") { conditions.push("r.public_consent = ?"); args.push(consent === "public" ? 1 : 0); }
+    if (attendance !== "all") { conditions.push("r.attendance = ?"); args.push(attendance); }
+    if (cursor) { conditions.push("r.rowid < ?"); args.push(Number(cursor)); }
     const result = await getDb().batch([
       {
-        sql: `SELECT rowid AS row_id, id, guest_name AS name, attendance, message, public_consent, created_at FROM rsvps${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY rowid DESC LIMIT ?`,
+        sql: `SELECT r.rowid AS row_id, r.id, r.guest_name AS name, r.attendance, COALESCE(r.message, w.message) AS message, r.public_consent, r.created_at FROM rsvps r LEFT JOIN wishes w ON w.entry_id = r.entry_id${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY r.rowid DESC LIMIT ?`,
         args: [...args, pageSize + 1],
       },
       { sql: "SELECT attendance, COUNT(*) AS amount FROM rsvps GROUP BY attendance", args: [] },

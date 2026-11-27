@@ -30,7 +30,7 @@ test('SQLite migration applies once and preserves RSVP across reopen', () => {
     for (const file of [path, backup]) {
       const reopened = new DatabaseSync(file);
       try {
-        assert.equal(reopened.prepare('SELECT count(*) AS count FROM schema_migrations').get().count, 3);
+        assert.equal(reopened.prepare('SELECT count(*) AS count FROM schema_migrations').get().count, 4);
         assert.equal(reopened.prepare('SELECT public_consent FROM rsvps WHERE id = ?').get('fixture').public_consent, 0);
         const rsvpColumns = reopened.prepare('PRAGMA table_info(rsvps)').all().map(column => column.name);
         assert.ok(rsvpColumns.includes('message'));

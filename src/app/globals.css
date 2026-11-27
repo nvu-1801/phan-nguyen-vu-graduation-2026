@@ -389,6 +389,40 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
 .wish-idea-icon{display:grid;place-items:center;flex:0 0 30px;width:30px;height:30px;border-radius:50%;background:#e4f0c9;color:#1c6746;font-size:.9rem;line-height:1}
 .wish-idea-add{margin-left:auto;font-size:1rem;font-weight:500;color:#4f7b60;line-height:1}
 
+/* Single response form and shared entry list — 27/11/2026 */
+.response-book{display:grid;gap:0}
+.entry-form{width:100%;max-width:780px;margin-inline:auto;padding:30px}
+.entry-form .guest-form,.entry-form label{color:#425b4c}
+.attendance-cards{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.guest-form .attendance-cards label{display:flex;align-items:flex-start;gap:10px;padding:14px;border:1px solid #d7ddbf;border-radius:14px;background:#fffef9;font-size:.8rem;font-weight:600;color:#274a38;cursor:pointer;transition:border-color .2s,background-color .2s,box-shadow .2s}
+.attendance-cards input{margin-top:3px;accent-color:#176d4c}
+.attendance-cards strong{display:block;font-size:.85rem;line-height:1.4}
+.attendance-cards small{display:block;margin-top:3px;font-size:.72rem;font-weight:400;color:#5b6b5f;line-height:1.5}
+.attendance-cards label:has(input:checked){border-color:#176d4c;background:#eef4d9;box-shadow:inset 0 0 0 1px #176d4c}
+.entry-form .checkbox{font-size:.78rem;line-height:1.6}
+.entry-form .checkbox small{font-size:.95em}
+.entry-form .button{justify-self:center;width:100%;min-height:52px}
+.entry-form .form-feedback{text-align:center}
+
+.entry-list{margin-top:54px;scroll-margin-top:96px}
+.entry-list-heading{display:flex;justify-content:space-between;align-items:flex-end;gap:20px;flex-wrap:wrap}
+.entry-list-heading .eyebrow{color:#d6ef72;margin-bottom:8px}
+.entry-list-heading h3{font:500 clamp(1.6rem,2.4vw,2.2rem)/1.15 var(--serif);letter-spacing:-.03em;color:#fff8e9}
+.entry-list-note{margin-top:10px;font-size:.82rem;line-height:1.65;color:#cfe0d5;max-width:54ch}
+.entry-list .entry-counts{margin:0;font-size:.8rem;font-weight:600;color:#e1eadc}
+.entry-rows{list-style:none;margin:24px 0 0;padding:0;display:grid;gap:10px}
+.entry-row{display:grid;grid-template-columns:minmax(165px,.55fr) 1.45fr;gap:22px;align-items:start;padding:18px 20px;border:1px solid #ffffff26;border-radius:16px;background:#ffffff0d}
+.entry-person{display:flex;align-items:center;gap:11px;min-width:0}
+.entry-avatar{display:grid;place-items:center;flex:0 0 36px;width:36px;height:36px;border-radius:50%;background:#d6ef72;color:#153b2d;font:700 .95rem var(--sans)}
+.entry-name{display:block;font-size:.92rem;color:#fff8e9;overflow-wrap:anywhere}
+.entry-badge{display:inline-flex;margin-top:5px;padding:3px 9px;border-radius:20px;font-size:.66rem;font-weight:700}
+.entry-badge.yes{background:#d6ef72;color:#153b2d}
+.entry-badge.no{background:#ffffff1f;color:#e6efe4}
+.entry-message{margin:0;font-size:.9rem;line-height:1.75;color:#e8f1e4;white-space:pre-wrap;overflow-wrap:anywhere}
+.entry-status,.entry-empty{margin-top:18px;font-size:.85rem;color:#d6e3d8}
+.entry-status .text-button,.entry-list>.text-button{color:#d6ef72}
+.entry-more{margin-top:16px}
+
 /* Mobile polish — 26/11/2026. Desktop rules above stay untouched. */
 @media(max-width:760px){
   .wrap{width:calc(100% - 36px)}
@@ -481,6 +515,12 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
   .response-block-heading h3{font-size:1.55rem}
   .response-block-heading p{font-size:.92rem;line-height:1.7}
   .response-block+.response-block{padding-top:26px}
+  .entry-form{max-width:none;padding:20px}
+  .attendance-cards{grid-template-columns:1fr}
+  .entry-list{margin-top:38px}
+  .entry-list-heading{align-items:flex-start}
+  .entry-row{grid-template-columns:1fr;gap:10px;padding:16px}
+  .entry-message{font-size:.9rem}
   .guest-form{padding:20px;border-radius:18px}
   .guest-form fieldset{gap:16px}
   .guest-form label{font-size:.82rem;gap:6px}

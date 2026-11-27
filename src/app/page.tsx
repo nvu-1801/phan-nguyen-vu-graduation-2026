@@ -1,7 +1,7 @@
 import { CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
 import { copy, wishesForGuests } from "@/content/copy";
 import { WishIdeas } from "@/components/WishIdeas";
-import { Guestbook } from "@/components/Guestbook";
+import { ResponseBook } from "@/components/ResponseBook";
 import { PhotoStory } from "@/components/PhotoStory";
 import { FloatingActions } from "@/components/FloatingActions";
 import { ScrollEffects } from "@/components/ScrollEffects";
@@ -74,16 +74,15 @@ export default function Invitation() {
 
       <section id="xac-nhan" className="response-section" aria-labelledby="response-title"><div className="wrap response-inner">
         <div className="response-heading" data-reveal><p className="eyebrow">05 / HẸN BẠN HÔM ẤY</p><h2 id="response-title">Một cuộc hẹn.<br /><em>Một lời nhắn.</em></h2><p>{copy.response}</p></div>
-        <div className="response-columns">
-          <div className="response-block">
-            <div className="response-block-heading" data-reveal><p className="response-label">XÁC NHẬN THAM DỰ</p><h3>Bạn có thể đến chung vui không?</h3><p>{copy.rsvp}</p></div>
-            {online ? <Guestbook kind="rsvp" /> : <div className="contact-card"><p>Bạn nhắn mình để xác nhận tham dự nhé.</p><div className="actions"><SmsLink message="Vũ ơi, mình sẽ đến dự lễ tốt nghiệp của bạn.">Mình sẽ đến</SmsLink><a className="button button-line" href={`tel:${event.tel}`}>Gọi {event.phone}</a></div></div>}
+        {online ? <ResponseBook /> : <div className="response-offline">
+          <div className="response-block-heading" data-reveal><p className="response-label">XÁC NHẬN THAM DỰ &amp; GỬI LỜI CHÚC</p><h3>Bạn có thể đến chung vui không?</h3><p>{copy.rsvp}</p></div>
+          <div className="contact-card"><p>Bạn nhắn mình để xác nhận tham dự nhé.</p><div className="actions"><SmsLink message="Vũ ơi, mình sẽ đến dự lễ tốt nghiệp của bạn.">Mình sẽ đến</SmsLink><a className="button button-line" href={`tel:${event.tel}`}>Gọi {event.phone}</a></div></div>
+          <div className="response-block-heading"><p className="response-label">GỬI LỜI CHÚC</p><h3>Một lời nhắn. Một kỷ niệm.</h3><p>{copy.wishes}</p></div>
+          <div id="loi-chuc">
+            <SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink>
+            <WishIdeas />
           </div>
-          <div id="loi-chuc" className="response-block">
-            <div className="response-block-heading" data-reveal><p className="response-label">GỬI LỜI CHÚC</p><h3>Một lời nhắn. Một kỷ niệm.</h3><p>{copy.wishes}</p></div>
-            {online ? <Guestbook kind="wish" /> : <div><SmsLink message="Vũ ơi, chúc mừng bạn tốt nghiệp! ">Gửi lời chúc</SmsLink><WishIdeas /></div>}
-          </div>
-        </div>
+        </div>}
       </div></section>
 
       <section id="duong-di" className="venue" aria-labelledby="venue-heading"><div className="venue-photo landscape"><div className="landscape-image venue-image" role="img" aria-label="Ảnh trung tâm hội nghị, bảng tên cũ tỉnh Bình Định" /><div className="venue-photo-title"><p>ĐIỂM HẸN · QUY NHƠN</p><h2>Hẹn bạn<br /><em>ở đây.</em></h2><span>{event.venue}</span></div><div className="venue-photo-caption">Ảnh tham khảo địa điểm · bảng tên cũ trong ảnh</div></div><div className="wrap venue-grid">

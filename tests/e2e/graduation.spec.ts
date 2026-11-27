@@ -49,7 +49,7 @@ test("the invitation and location work with JavaScript disabled", async ({ brows
     await expect(page).toHaveURL(/#dia-diem$/);
     await expect(page.locator(".event-facts").getByText("Trung tâm Hội nghị tỉnh Gia Lai")).toBeVisible();
     await expect(page.locator("#xac-nhan noscript p").first()).toHaveText("Vui lòng bật JavaScript để gửi phản hồi.");
-    await expect(page.getByRole("button", { name: "Gửi xác nhận" })).toBeDisabled();
+    await expect(page.getByRole("button", { name: "Gửi phản hồi" })).toBeDisabled();
     await expect(page.getByRole("link", {name: "Mở mã QR cà phê"})).toHaveAttribute("href", "/payments/vu-coffee-vietqr.png");
   } finally { await context.close(); }
 });
@@ -82,9 +82,9 @@ test("both portraits and the calendar are served", async ({ page, request }) => 
 
 test("RSVP confirms through the form and stores private data, with concurrent retries returning the same receipt", async ({ page, request }) => {
   await page.goto("/");
-  const form = page.locator(".guest-form").filter({ has: page.getByRole("button", { name: "Gửi xác nhận" }) });
+  const form = page.locator(".guest-form").filter({ has: page.getByRole("button", { name: "Gửi phản hồi" }) });
   await form.getByLabel("Tên của bạn").fill("Khách riêng tư");
-  await form.getByRole("button", { name: "Gửi xác nhận" }).click();
+  await form.getByRole("button", { name: "Gửi phản hồi" }).click();
   await expect(form.getByRole("status")).toHaveText("Vũ đã nhận được phản hồi của bạn.");
   const payload = { name: "Khách công khai", attendance: "no", publicConsent: true };
   const key = randomUUID();
@@ -120,9 +120,44 @@ test("wishes require approval and consent and are rendered as plain text", async
   } finally { db.close(); }
   await page.goto("/");
   await expect(page.getByText(message, { exact: true })).toBeVisible();
-  await expect(page.locator("#loi-chuc .public-entries img")).toHaveCount(0);
+  await expect(page.locator("#loi-chuc img")).toHaveCount(0);
   await expect(page.getByText("Riêng tư", { exact: true })).toHaveCount(0);
   await expect(page.getByText("Bị từ chối", { exact: true })).toHaveCount(0);
+});
+
+test("one form records attendance and wish, and the shared list joins them", async ({ page, request }) => {
+  const stamp = Date.now();
+  const name = `Ghép cặp ${stamp}`;
+  const message = `Lời chúc ghép cặp ${stamp}`;
+  const db = new DatabaseSync(fixture);
+  try { db.exec("DELETE FROM rate_limits"); } finally { db.close(); }
+
+  await page.goto("/");
+  const form = page.locator(".entry-form");
+  await form.getByLabel("Tên của bạn").fill(name);
+  await form.getByRole("radio", { name: /Mình sẽ đến/ }).check();
+  await form.getByLabel(/Lời chúc dành cho Vũ/).fill(message);
+  await form.getByLabel(/Cho phép hiển thị tên/).check();
+  await form.getByLabel(/Đồng ý công khai lời chúc/).check();
+  const saved = page.waitForResponse(response => response.url().endsWith("/api/entries") && response.request().method() === "POST");
+  await form.getByRole("button", { name: "Gửi phản hồi" }).click();
+  const response = await saved;
+  expect(response.status()).toBe(201);
+  const receipt = await response.json() as { id: string; wishStatus: string | null };
+  expect(receipt.wishStatus).toBe("pending");
+  await expect(form.getByRole("status")).toHaveText(/đang chờ Vũ duyệt/);
+
+  const publicList = await (await request.get("/api/entries")).json() as { items: { id: string; attendance: string | null; message: string | null }[] };
+  const beforeApproval = publicList.items.find(item => item.id === receipt.id);
+  expect(beforeApproval?.attendance).toBe("yes");
+  expect(beforeApproval?.message).toBeNull();
+
+  const approve = new DatabaseSync(fixture);
+  try { approve.prepare("UPDATE wishes SET status='approved' WHERE entry_id = ?").run(receipt.id); } finally { approve.close(); }
+  await page.reload();
+  const row = page.locator(".entry-row").filter({ hasText: name });
+  await expect(row.getByText(message, { exact: true })).toBeVisible();
+  await expect(row.getByText("Sẽ đến", { exact: true })).toBeVisible();
 });
 
 test("additional writes are throttled and bad origins, payloads and cursors are rejected", async ({ request }) => {
@@ -211,16 +246,17 @@ test("wish suggestions are editable drafts and never submit on selection", async
   let writes = 0;
   page.on("request", req => { if (req.method() === "POST" && req.url().includes("/api/wishes")) writes++; });
   await page.goto("/");
-  const form = page.locator("#loi-chuc .guest-form");
+  const form = page.locator(".entry-form");
   await form.locator("summary").click();
   await form.getByRole("button", { name: "Dùng gợi ý: Chân thành", exact: true }).click();
-  const message = form.getByLabel("Lời chúc của bạn");
+  const message = form.getByLabel(/Lời chúc dành cho Vũ/);
   await expect(message).toHaveValue(/Chúc mừng Vũ đã đi hết một chặng đường/);
   await expect(message).toBeFocused();
   await message.fill("Lời của riêng mình.");
   await form.getByRole("button", { name: "Dùng gợi ý: Ngắn mà thật lòng", exact: true }).click();
   await expect(message).toHaveValue(/^Lời của riêng mình\.\n\nChúc mừng Vũ tốt nghiệp!/);
-  await expect(form.getByRole("checkbox")).not.toBeChecked();
+  await expect(form.getByRole("checkbox")).toHaveCount(2);
+  for (const checkbox of await form.getByRole("checkbox").all()) await expect(checkbox).not.toBeChecked();
   expect(writes).toBe(0);
 });
 

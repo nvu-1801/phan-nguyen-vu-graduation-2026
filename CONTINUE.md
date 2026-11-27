@@ -211,6 +211,17 @@ The public write limit was hardcoded to 5 per IP per 10 minutes. At the venue, m
 
 Verified: lint, typecheck, production build and the full Playwright suite 22/22 (1.7m) passed.
 
+## Single response form and joined guest list — 27/11/2026
+
+User asked to merge the RSVP and wish forms into one submit and show each person's name with their wish in the list below.
+
+- Migration `0004_entry_link.sql` adds nullable `entry_id` to `rsvps` and `wishes` plus indexes; `/api/health` now requires schema version 4. The migration is additive; legacy rows keep working.
+- `POST /api/entries` validates `{name, attendance, message?, publicAttendance, publicWish}` and writes the RSVP plus, when a message exists, a `pending` wish in one idempotent batch sharing an `entry_id`. `GET /api/entries` returns the joined list: attendance only with its consent, message only when the wish is approved and consented, plus legacy RSVP-only and wish-only rows; offset pagination, no-store.
+- UI: `ResponseBook` replaces the two forms with one card (attendance cards, name, optional wish with suggestions, two consent checkboxes, one submit) and a "Sổ lưu bút" list (avatar initial, attendance badge, wish text; two columns on desktop, stacked on phones). `#loi-chuc` remains the anchor. Removed the unused `Guestbook` component.
+- Admin RSVP list and CSV now use `COALESCE(rsvp.message, wish.message)` so combined entries show the wish text next to the attendance record.
+- Defaults chosen without further questions: two separate consents (attendance, wish), attendance badge shown, the old private RSVP message removed in favour of the wish.
+- Verified locally: `npm run lint`, `npm run typecheck`, `npm run build` (new `/api/entries`) and 23/23 Playwright (new test for the combined entry and joined list, legacy rows, JS-off and no-DB paths); screenshots at 390/1440 inspected. Deployment is handled by the VPS timer; the first deploy must run migration 4 before health turns green.
+
 ### CTA polish — 26/11/2026
 
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.

@@ -28,10 +28,10 @@ export async function GET(request: Request) {
   try {
     const conditions: string[] = [];
     const args: (string | number)[] = [];
-    if (consent !== "all") { conditions.push("public_consent = ?"); args.push(consent === "public" ? 1 : 0); }
-    if (attendance !== "all") { conditions.push("attendance = ?"); args.push(attendance); }
+    if (consent !== "all") { conditions.push("r.public_consent = ?"); args.push(consent === "public" ? 1 : 0); }
+    if (attendance !== "all") { conditions.push("r.attendance = ?"); args.push(attendance); }
     const result = await getDb().execute({
-      sql: `SELECT guest_name AS name, attendance, message, public_consent, created_at FROM rsvps${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY guest_name COLLATE NOCASE, rowid LIMIT ?`,
+      sql: `SELECT r.guest_name AS name, r.attendance, COALESCE(r.message, w.message) AS message, r.public_consent, r.created_at FROM rsvps r LEFT JOIN wishes w ON w.entry_id = r.entry_id${conditions.length ? ` WHERE ${conditions.join(" AND ")}` : ""} ORDER BY r.guest_name COLLATE NOCASE, r.rowid LIMIT ?`,
       args: [...args, maxRows],
     });
     const lines = ["Tên,Tham dự,Lời nhắn,Đồng ý công khai,Thời gian gửi"];
