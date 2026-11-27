@@ -22,7 +22,7 @@ function EntryList({ revision }: { revision: number }) {
     setLoading(true);
     setError("");
     try {
-      const response = await fetch("/api/entries" + (after ? "?cursor=" + encodeURIComponent(after) : ""), { signal: controller.signal });
+      const response = await fetch("/api/entries" + (after ? "?cursor=" + encodeURIComponent(after) : ""), { signal: controller.signal, cache: "no-store" });
       if (!response.ok) throw new Error();
       const page = await response.json() as Page;
       if (controller.signal.aborted) return;
@@ -40,6 +40,16 @@ function EntryList({ revision }: { revision: number }) {
     const frame = requestAnimationFrame(() => void load());
     return () => { cancelAnimationFrame(frame); activeRequest.current?.abort(); };
   }, [load, revision]);
+
+  useEffect(() => {
+    const refresh = () => { if (document.visibilityState === "visible") void load(); };
+    document.addEventListener("visibilitychange", refresh);
+    window.addEventListener("focus", refresh);
+    return () => {
+      document.removeEventListener("visibilitychange", refresh);
+      window.removeEventListener("focus", refresh);
+    };
+  }, [load]);
 
   return <section className="entry-list" aria-labelledby="entry-list-title">
     <div className="entry-list-heading">

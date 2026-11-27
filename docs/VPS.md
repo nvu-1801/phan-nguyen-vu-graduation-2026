@@ -240,6 +240,20 @@ sudo systemctl daemon-reload
 
 Khi có `BACKUP_REMOTE` và `rclone`, script tự copy thư mục backup mới lên remote; nếu copy lỗi thì bản local vẫn giữ và log ghi rõ. Chưa cấu hình remote nào trong phiên này.
 
+### Xoá toàn bộ dữ liệu thử
+
+Sau khi thử form, có thể xoá sạch RSVP, lời chúc và bucket rate limit. Nên backup trước:
+
+```sh
+mkdir -p backups/before-clear
+docker compose --env-file .env.production stop invitation
+docker compose --env-file .env.production cp invitation:/app/data/. backups/before-clear
+docker compose --env-file .env.production up -d --wait
+docker compose --env-file .env.production exec invitation node scripts/clear-data.mjs --yes
+```
+
+Lệnh in số dòng trước/sau và từ chối chạy nếu thiếu `--yes`; chỉ xoá dữ liệu, giữ nguyên schema. Dữ liệu đã xoá không thể hoàn tác, chỉ khôi phục được từ bản backup.
+
 ### Giám sát uptime
 
 `.github/workflows/uptime.yml` chạy mỗi 30 phút, kiểm tra `/api/health` trả `{"status":"ok"}` và trang chủ còn chứa tên Vũ; run fail sẽ khiến GitHub gửi email cho chủ repo. Có thể chạy tay bằng `gh workflow run uptime.yml`.

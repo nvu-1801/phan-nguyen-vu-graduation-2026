@@ -18,7 +18,7 @@ COPY --from=build --chown=node:node /app/.next/standalone ./
 COPY --from=build --chown=node:node /app/.next/static ./.next/static
 COPY --from=build --chown=node:node /app/public ./public
 COPY --from=build --chown=node:node /app/db ./db
-COPY --from=build --chown=node:node /app/scripts/migrate.mjs /app/scripts/moderate.mjs ./scripts/
+COPY --from=build --chown=node:node /app/scripts/migrate.mjs /app/scripts/moderate.mjs /app/scripts/clear-data.mjs ./scripts/
 RUN mkdir -p /app/data && chown node:node /app/data
 USER node
 EXPOSE 3000

@@ -232,6 +232,12 @@ User asked to remove the approval step and allow deleting a wish from `/admin`.
 - Tests updated: the public-wish test expects immediate visibility and `approved`; the combined-entry test expects the message in `/api/entries` without DB approval; a new admin test covers 401/403 on DELETE, two-step delete, row removal and DB deletion; the Docker smoke no longer runs the moderation CLI.
 - Verified: lint, typecheck, production build, full Playwright 24/24 (including the new delete test) and CI Docker smoke. Deployment runs through the VPS timer with migration 5.
 
+### Delete refresh and data reset — 27/11/2026
+
+- User reported that a wish deleted in `/admin` still appeared on the site. The DELETE endpoint is live and protected (401 without session, 403 wrong Origin); the public list was a long-lived tab that never refetched. `ResponseBook` now fetches `/api/entries` with `cache: "no-store"` and reloads on `visibilitychange`/`focus`, so returning to the tab reflects admin deletions.
+- Added `scripts/clear-data.mjs`: refuses without `--yes`, prints before/after counts, deletes all rows from `wishes`, `rsvps` and `rate_limits` without touching the schema. Copied into the runtime image and documented in `docs/VPS.md` with a backup-first sequence.
+- The production data was not cleared by the agent (no SSH access); the owner runs the documented command on the VPS. Backups already exist in `backups/auto-*`/`backups/daily-*`.
+
 ### CTA polish — 26/11/2026
 
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.
