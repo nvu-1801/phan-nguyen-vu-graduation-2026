@@ -25,7 +25,9 @@ npm run test:browser
 
 Playwright khởi tạo file SQLite riêng trong thư mục kết quả và chạy trên bản build production. Dữ liệu này được tạo lại mỗi lần chạy.
 
-## Kiểm duyệt
+## Lời chúc
+
+Lời chúc công khai ngay khi người gửi tick đồng ý chia sẻ; không cần bước duyệt. Lời không đồng ý vẫn riêng tư và chỉ Vũ đọc được trong `/admin`. Nếu cần ẩn/xoá, dùng nút **Xoá lời chúc** trong `/admin`.
 
 ```sh
 npm run moderate -- pending
@@ -34,11 +36,11 @@ npm run moderate -- reject <id>
 npm run moderate -- cleanup
 ```
 
-Dùng cấu hình DB đúng môi trường khi chạy. Chỉ lời chúc đã duyệt và có consent mới xuất hiện. RSVP công khai chỉ hiện tên và trạng thái khi khách đồng ý, lời nhắn RSVP luôn riêng tư.
+Các lệnh trên vẫn dùng được như công cụ dự phòng khi không mở được trình duyệt (`reject` để ẩn một lời chúc). RSVP công khai chỉ hiện tên và trạng thái khi khách đồng ý, lời nhắn RSVP luôn riêng tư.
 
 ## Quản lý lời chúc
 
-Mở `/admin` để xem lời chúc và xác nhận tham dự, kể cả nội dung riêng tư. Cấu hình `ADMIN_PASSWORD` (tối thiểu 16 ký tự) và `ADMIN_SESSION_SECRET` (tối thiểu 32 ký tự ngẫu nhiên) trong môi trường server. Không đưa hai giá trị này vào Git. Phiên đăng nhập dùng cookie HttpOnly và tự hết hạn sau 8 giờ. Trong tab "Lời chúc", nút **Duyệt** / **Từ chối** cập nhật trạng thái qua `PATCH /api/admin/wishes/[id]`; yêu cầu phải có phiên admin và `Origin` cùng site. Duyệt không tự mở công khai: lời chúc vẫn chỉ hiện khi người gửi đã đồng ý công khai. Tab "Xác nhận tham dự" có nút **Xuất CSV** tải danh sách theo bộ lọc hiện tại (có BOM UTF-8 cho Excel, chống công thức CSV). Lệnh `npm run moderate` phía trên vẫn dùng được như phương án dự phòng khi không mở được trình duyệt.
+Mở `/admin` để xem lời chúc và xác nhận tham dự, kể cả nội dung riêng tư. Cấu hình `ADMIN_PASSWORD` (tối thiểu 16 ký tự) và `ADMIN_SESSION_SECRET` (tối thiểu 32 ký tự ngẫu nhiên) trong môi trường server. Không đưa hai giá trị này vào Git. Phiên đăng nhập dùng cookie HttpOnly và tự hết hạn sau 8 giờ. Tab "Lời chúc" cho phép **Xoá lời chúc** (có bước xác nhận) qua `DELETE /api/admin/wishes/[id]`; yêu cầu phiên admin và `Origin` cùng site. Xoá chỉ bỏ lời chúc, không xoá xác nhận tham dự của người đó. Tab "Xác nhận tham dự" có nút **Xuất CSV** tải danh sách theo bộ lọc hiện tại (có BOM UTF-8 cho Excel, chống công thức CSV).
 
 ## Vercel
 

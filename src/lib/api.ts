@@ -116,7 +116,7 @@ export async function submit(request: Request, kind: Kind) {
       {
         sql: kind === "rsvp"
           ? "INSERT OR IGNORE INTO rsvps (id,guest_name,attendance,public_consent,idempotency_key,request_hash,message) SELECT ?,?,?,?,?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?"
-          : "INSERT OR IGNORE INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash) SELECT ?,?,?,?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?",
+          : "INSERT OR IGNORE INTO wishes (id,guest_name,message,public_consent,status,idempotency_key,request_hash) SELECT ?,?,?,?,'approved',?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?",
         args: kind === "rsvp"
           ? [id,name,attendance!,Number(publicConsent),key,digest,message || null,bucket,writeLimit]
           : [id,name,message!,Number(publicConsent),key,digest,bucket,writeLimit],
@@ -130,7 +130,7 @@ export async function submit(request: Request, kind: Kind) {
       headers: { "Retry-After": String(Math.max(1, Number(results[3].rows[0]?.expires_at) - now)) },
     });
     if (saved.request_hash !== digest) throw new ApiError(409, "Yêu cầu gửi trước đó có nội dung khác.");
-    const receipt = kind === "wish" ? { id: saved.id, status: "pending" } : { id: saved.id };
+    const receipt = kind === "wish" ? { id: saved.id, status: "approved" } : { id: saved.id };
     return Response.json(receipt, { status: saved.id === id ? 201 : 200 });
   } catch (error) {
     return failure(error, requestId);
@@ -215,8 +215,8 @@ export async function submitEntry(request: Request) {
     ];
     if (wishText) {
       statements.push({
-        sql: `INSERT OR IGNORE INTO wishes (id,guest_name,message,public_consent,idempotency_key,request_hash,entry_id)
-              SELECT ?,?,?,?,?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?`,
+        sql: `INSERT OR IGNORE INTO wishes (id,guest_name,message,public_consent,status,idempotency_key,request_hash,entry_id)
+              SELECT ?,?,?,?,'approved',?,?,? WHERE (SELECT hits FROM rate_limits WHERE bucket_key = ?) <= ?`,
         args: [wishId, name, wishText, Number(publicWish), key, digest, entryId, bucket, writeLimit],
       });
     }
@@ -236,7 +236,7 @@ export async function submitEntry(request: Request) {
     return Response.json({
       id: saved.entry_id,
       attendance,
-      wishStatus: wishText ? "pending" : null,
+      wishStatus: wishText ? "approved" : null,
     }, { status: saved.id === rsvpId ? 201 : 200 });
   } catch (error) {
     return failure(error, requestId);

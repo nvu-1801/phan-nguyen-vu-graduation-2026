@@ -3,9 +3,9 @@
 ## Mục tiêu
 
 - Khách có thể chọn một lời gợi ý, sửa thành câu của mình hoặc tự viết từ đầu.
-- Khách chủ động chọn công khai tên và lời chúc sau khi Vũ duyệt; mặc định là riêng tư.
-- Mục lời chúc công khai trên thiệp chỉ hiện bài đã đồng ý công khai và được duyệt.
-- Trang `/admin` cho Vũ xem tất cả lời chúc, kể cả riêng tư, cùng trạng thái duyệt.
+- Khách chủ động chọn công khai tên và lời chúc; mặc định là riêng tư.
+- Mục lời chúc công khai trên thiệp chỉ hiện bài đã đồng ý công khai.
+- Trang `/admin` cho Vũ xem tất cả lời chúc, kể cả riêng tư, và xoá khi cần.
 
 ## Phạm vi bản đầu
 
@@ -16,18 +16,17 @@
 5. API admin trả danh sách tên, nội dung, thời điểm, đồng ý công khai, trạng thái duyệt và thời điểm xử lý; không trả IP, khóa idempotency hay request hash. Mutation duyệt/từ chối dùng phiên admin + kiểm tra Origin, chỉ chuyển từ `pending`.
 6. Fail closed khi thiếu cấu hình admin; không ghi thông tin đăng nhập, lời riêng tư hoặc secret vào log.
 
-## Cách duyệt lời chúc
+## Cách xoá lời chúc
 
-Trang `/admin` đã có nút **Duyệt** / **Từ chối** cho từng lời chúc đang chờ. Luồng này yêu cầu bấm xác nhận lần hai, gọi `PATCH /api/admin/wishes/[id]` với `{ "action": "approve" | "reject" }`, và chỉ chấp nhận khi:
+Lời chúc công khai ngay khi người gửi đồng ý; không có bước duyệt. Trang `/admin` có nút **Xoá lời chúc** với xác nhận lần hai, gọi `DELETE /api/admin/wishes/[id]`. Endpoint chỉ chấp nhận khi:
 
 - Có cookie phiên admin hợp lệ (HttpOnly, SameSite=Strict, 8 giờ).
 - Header `Origin` khớp `SITE_ORIGIN` (hoặc origin của request khi chạy local).
-- Lời chúc đang ở trạng thái `pending`; bản ghi đã xử lý trả `409`.
-- Nội dung gửi là JSON nhỏ, không phải HTML.
+- Id là UUID hợp lệ; bản ghi không tồn tại trả `404`.
 
-Mỗi lần cập nhật ghi `moderated_at` và `moderated_by` (`admin` cho web, `cli` cho script). Duyệt không đổi `public_consent`, nên lời riêng tư vẫn riêng tư. Lệnh `npm run moderate -- pending`, `approve <id>` và `reject <id>` vẫn dùng được như phương án dự phòng.
+Xoá chỉ bỏ dòng trong bảng `wishes`, không xoá xác nhận tham dự của người đó. Lệnh `npm run moderate -- pending`, `approve <id>` và `reject <id>` vẫn dùng được như công cụ dự phòng để ẩn/đăng lại.
 
-Đã kiểm thử: chưa đăng nhập trả 401, sai Origin trả 403, duyệt lại trả 409, lời đã từ chối và lời riêng tư không xuất hiện ở `/api/wishes`, nội dung render dạng text. Nếu sau này cần hoàn tác quyết định duyệt, phải thêm trạng thái/undo có kiểm toán riêng — hiện chưa có.
+Đã kiểm thử: chưa đăng nhập trả 401, sai Origin trả 403, xoá xong bản ghi mất khỏi `/api/wishes` và khỏi DB; lời riêng tư không xuất hiện ở trang công khai; nội dung render dạng text.
 
 ## Cấu hình triển khai
 

@@ -49,7 +49,7 @@ function EntryList({ revision }: { revision: number }) {
       </div>
       {counts && <p className="entry-counts">{counts.yes} sẽ đến · {counts.no} chưa thể đến</p>}
     </div>
-    <p className="entry-list-note">Chỉ hiện khi khách đồng ý chia sẻ. Lời chúc hiện sau khi Vũ duyệt.</p>
+    <p className="entry-list-note">Chỉ hiện khi khách đồng ý chia sẻ công khai.</p>
     {items.length > 0 && <ul className="entry-rows">{items.map(entry => <li key={entry.id} className="entry-row">
       <div className="entry-person">
         <span className="entry-avatar" aria-hidden="true">{entry.name.trim().charAt(0).toUpperCase()}</span>
@@ -108,7 +108,7 @@ export function ResponseBook() {
       }
       form.reset();
       receipt.current = null;
-      setFeedback(message ? "Đã ghi nhận phản hồi. Lời chúc của bạn đang chờ Vũ duyệt." : "Vũ đã nhận được phản hồi của bạn.");
+      setFeedback(message ? "Đã gửi lời chúc. Cảm ơn bạn!" : "Vũ đã nhận được phản hồi của bạn.");
       setRevision(previous => previous + 1);
     } catch (error) {
       setFeedback(error instanceof Error ? error.message : "Chưa gửi được. Bạn thử lại nhé.");
@@ -137,7 +137,7 @@ export function ResponseBook() {
         <label>Lời chúc dành cho Vũ (không bắt buộc)<textarea ref={messageInput} name="message" rows={4} maxLength={1000} placeholder="Một lời chúc, một kỷ niệm…" /></label>
         <div hidden><label>Website<input name="website" tabIndex={-1} autoComplete="off" /></label></div>
         <label className="checkbox"><input type="checkbox" name="publicAttendance" /><span>Cho phép hiển thị tên và trạng thái tham dự.<small>Bỏ chọn nghĩa là chỉ Vũ đọc được phản hồi này.</small></span></label>
-        <label className="checkbox"><input type="checkbox" name="publicWish" /><span>Đồng ý công khai lời chúc sau khi Vũ duyệt.<small>Lời chúc luôn mặc định riêng tư cho đến khi bạn chọn và Vũ duyệt.</small></span></label>
+        <label className="checkbox"><input type="checkbox" name="publicWish" /><span>Đồng ý công khai tên và lời chúc.<small>Bỏ chọn nghĩa là riêng tư; chỉ Vũ đọc được lời nhắn này.</small></span></label>
         <button type="submit" className="button button-dark">{pending ? "Đang gửi…" : "Gửi phản hồi"}</button>
       </fieldset>
       <p role="status" className="form-feedback">{feedback}</p>

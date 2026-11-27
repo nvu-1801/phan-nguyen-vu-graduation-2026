@@ -10,7 +10,7 @@ Chạy website, RSVP, lưu lời chúc, khu vực xem lời chúc riêng tư và
 - Thiếu `ADMIN_PASSWORD`/`ADMIN_SESSION_SECRET` khiến đăng nhập admin chưa cấu hình, nhưng không phải nguyên nhân trực tiếp khiến health trả `503`.
 - VPS Compose đã gắn volume `graduation-data` vào `/app/data`; `DATABASE_URL` được đặt trong Compose thành `file:/app/data/graduation.db`. Không đặt database vào filesystem của container hoặc chạy `docker compose down -v`.
 - Container tự chạy migration idempotent khi khởi động. VPS env mẫu hiện có domain, rate-limit secret và proxy; cần bổ sung admin credentials khi chuẩn bị production.
-- Lời chúc công khai chỉ hiện sau khi người gửi đồng ý và lời chúc được duyệt. Admin web có nút duyệt/từ chối trên điện thoại và desktop; script CLI trong container vẫn là phương án dự phòng.
+- Lời chúc công khai ngay khi người gửi đồng ý; không cần duyệt. Admin web có nút xoá lời chúc khi cần; script CLI trong container vẫn là phương án dự phòng.
 
 ## Phase 1 — Chuẩn bị mã nguồn và cấu hình
 
@@ -45,11 +45,11 @@ Health mong đợi `{"status":"ok"}`. Nếu `503`, kiểm tra log container, vol
 1. Mở `https://YOUR_DOMAIN/admin`, đăng nhập; kiểm tra phiên dùng cookie bảo mật và danh sách có cả lời riêng tư.
 2. Gửi một RSVP và xác nhận dữ liệu còn sau khi container được recreate nhưng volume được giữ nguyên.
 3. Gửi một lời chúc riêng tư: thấy trong admin, không xuất hiện ở trang công khai.
-4. Gửi một lời chúc đồng ý công khai: vẫn ẩn khi chờ duyệt; mở `/admin`, bấm **Duyệt** rồi **Xác nhận duyệt** trên điện thoại để kiểm tra luồng thực tế. Dự phòng bằng CLI:
+4. Gửi một lời chúc đồng ý công khai: tải lại thiệp và xác minh lời chúc hiện ngay, không cần duyệt. Vào `/admin`, thử **Xoá lời chúc** (có xác nhận); xác nhận tham dự của người đó vẫn còn. Dự phòng bằng CLI:
 
    ```sh
    docker compose --env-file .env.production exec invitation node scripts/moderate.mjs pending
-   docker compose --env-file .env.production exec invitation node scripts/moderate.mjs approve ID
+   docker compose --env-file .env.production exec invitation node scripts/moderate.mjs reject ID
    ```
 
 5. Xác nhận lời chúc công khai chỉ xuất hiện sau khi vừa consent vừa approve; lời bị từ chối/riêng tư vẫn ẩn.
@@ -58,7 +58,7 @@ Health mong đợi `{"status":"ok"}`. Nếu `503`, kiểm tra log container, vol
 ## Phase 4 — Vận hành và cải thiện admin
 
 - Thiết lập backup SQLite định kỳ và một bản sao ngoài VPS; trước mỗi release, backup trước khi cập nhật image. Giữ nguyên Compose project/volume và tuyệt đối không dùng `down -v`.
-- Nút duyệt/từ chối trong `/admin` đã hoàn thành ngày 26/11/2026: endpoint `PATCH /api/admin/wishes/[id]` yêu cầu phiên admin + Origin, chỉ chuyển `pending → approved|rejected`, ghi `moderated_at`/`moderated_by`, có bước xác nhận và test quyền riêng tư. Hoàn tác quyết định duyệt chưa có; nếu cần thì phải thêm trạng thái và kiểm toán riêng.
+- Nút xoá lời chúc trong `/admin` đã hoàn thành ngày 27/11/2026: `DELETE /api/admin/wishes/[id]` yêu cầu phiên admin + Origin, có bước xác nhận; xoá chỉ bỏ lời chúc, giữ RSVP. Bước duyệt đã bỏ — wish mới công khai ngay khi người gửi đồng ý.
 - Nếu sau này chuyển provider, lập migration/export-import riêng, backup và đối chiếu số dòng trước/sau. Không cho Vercel và VPS ghi vào hai database production khác nhau cùng lúc.
 
 ## Tiêu chí hoàn tất

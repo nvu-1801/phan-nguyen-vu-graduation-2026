@@ -43,14 +43,19 @@ async function readAction(request: Request) {
   }
 }
 
-export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+function authorize(request: Request) {
   const origin = request.headers.get("origin");
   const url = new URL(request.url);
   const protocol = process.env.VERCEL ? "https:" : url.protocol;
   const expectedOrigin = process.env.SITE_ORIGIN || `${protocol}//${request.headers.get("host") || url.host}`;
   if (!origin || origin !== expectedOrigin) return noStore(403, "Nguồn gửi không hợp lệ.");
+  if (!hasAdminSession(request)) return noStore(401, "Cần đăng nhập để quản lý lời chúc.");
+  return null;
+}
 
-  if (!hasAdminSession(request)) return noStore(401, "Cần đăng nhập để duyệt lời chúc.");
+export async function PATCH(request: Request, context: { params: Promise<{ id: string }> }) {
+  const denied = authorize(request);
+  if (denied) return denied;
 
   const { id } = await context.params;
   if (!idPattern.test(id)) return noStore(400, "Lời chúc chưa hợp lệ.");
@@ -70,18 +75,31 @@ export async function PATCH(request: Request, context: { params: Promise<{ id: s
   try {
     const db = getDb();
     const result = await db.execute({
-      sql: "UPDATE wishes SET status = ?, moderated_at = ?, moderated_by = 'admin' WHERE id = ? AND status = 'pending'",
+      sql: "UPDATE wishes SET status = ?, moderated_at = ?, moderated_by = 'admin' WHERE id = ?",
       args: [status, moderatedAt, id],
     });
-    if (!result.rowsAffected) {
-      const existing = await db.execute({ sql: "SELECT status FROM wishes WHERE id = ?", args: [id] });
-      const current = existing.rows[0]?.status;
-      return current ? noStore(409, "Lời chúc này đã được xử lý trước đó.") : noStore(404, "Không tìm thấy lời chúc.");
-    }
-    // Duyệt không tự mở công khai: lời chúc vẫn cần public_consent riêng.
+    if (!result.rowsAffected) return noStore(404, "Không tìm thấy lời chúc.");
     return Response.json({ id, status, moderatedAt }, { headers });
   } catch {
     console.error("Graduation wish moderation failed", { requestId });
     return Response.json({ error: "Chưa cập nhật được lời chúc. Bạn thử lại sau nhé." }, { status: 503, headers });
+  }
+}
+
+export async function DELETE(request: Request, context: { params: Promise<{ id: string }> }) {
+  const denied = authorize(request);
+  if (denied) return denied;
+
+  const { id } = await context.params;
+  if (!idPattern.test(id)) return noStore(400, "Lời chúc chưa hợp lệ.");
+
+  const requestId = randomUUID();
+  try {
+    const result = await getDb().execute({ sql: "DELETE FROM wishes WHERE id = ?", args: [id] });
+    if (!result.rowsAffected) return noStore(404, "Không tìm thấy lời chúc.");
+    return Response.json({ id, deleted: true }, { headers });
+  } catch {
+    console.error("Graduation wish deletion failed", { requestId });
+    return Response.json({ error: "Chưa xoá được lời chúc. Bạn thử lại sau nhé." }, { status: 503, headers });
   }
 }

@@ -59,7 +59,7 @@ try {
   await form.getByLabel('Tên của bạn').fill(`${tag}-entry`);
   await form.locator('summary').click();
   await form.getByRole('button',{name:'Dùng gợi ý: Chân thành',exact:true}).click();
-  await form.getByLabel(/Đồng ý công khai lời chúc/).check();
+  await form.getByLabel(/Đồng ý công khai tên và lời chúc/).check();
   const savedEntry=page.waitForResponse(r=>r.url().endsWith('/api/entries')&&r.request().method()==='POST');
   await form.getByRole('button',{name:'Gửi phản hồi',exact:true}).click();
   const entryResponse=await savedEntry;assert.equal(entryResponse.status(),201);
@@ -71,15 +71,12 @@ try {
   const privateWish=await post('/api/wishes',{name:`${tag}-private-wish`,message:'Private fixture',publicConsent:false});
   assert.equal(privateWish.status,201);ids.wishes.push((await privateWish.json()).id);
   assert(!(await get('/api/guests')).items.some(x=>x.name===`${tag}-entry`));
-  assert(!(await get('/api/wishes')).items.some(x=>x.name===`${tag}-entry`));
-  assert(!(await get('/api/entries')).items.some(x=>x.id===entryId));
-  ok('Frontend submits one combined entry; private attendance and pending wish stay hidden');
-  for(const id of ids.wishes) exec(['node','scripts/moderate.mjs','approve',id]);
   const publicList=await get('/api/wishes');
-  assert(publicList.items.some(x=>x.id===ids.wishes[0]));assert(!publicList.items.some(x=>x.id===ids.wishes[1]));
+  assert(publicList.items.some(x=>x.id===ids.wishes[0]));
+  assert(!publicList.items.some(x=>x.id===ids.wishes[1]));
   const visibleEntry=(await get('/api/entries')).items.find(x=>x.id===entryId);
   assert(visibleEntry);assert.equal(visibleEntry.attendance,null);assert(visibleEntry.message.includes('Chúc mừng Vũ'));
-  ok('Moderation works inside production image; combined list shows the wish without the private attendance');
+  ok('One form submits; the public wish shows immediately while private attendance stays hidden');
   const before=docker([...compose,'ps','-q','invitation']).trim();
   docker([...compose,'up','-d','--force-recreate','--wait']);
   const after=docker([...compose,'ps','-q','invitation']).trim();assert.notEqual(before,after);

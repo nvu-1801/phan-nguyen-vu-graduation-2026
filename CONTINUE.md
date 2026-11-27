@@ -222,6 +222,16 @@ User asked to merge the RSVP and wish forms into one submit and show each person
 - Defaults chosen without further questions: two separate consents (attendance, wish), attendance badge shown, the old private RSVP message removed in favour of the wish.
 - Verified locally: `npm run lint`, `npm run typecheck`, `npm run build` (new `/api/entries`) and 23/23 Playwright (new test for the combined entry and joined list, legacy rows, JS-off and no-DB paths); screenshots at 390/1440 inspected. Deployment is handled by the VPS timer; the first deploy must run migration 4 before health turns green.
 
+## Auto-public wishes and admin delete — 27/11/2026
+
+User asked to remove the approval step and allow deleting a wish from `/admin`.
+
+- New wishes are written with `status='approved'` in both `POST /api/entries` and the legacy `POST /api/wishes`; responses report `wishStatus: "approved"`. Migration `0005_auto_approve_wishes.sql` converts existing `pending` rows to `approved`; public visibility still requires `public_consent = 1`. Health now requires schema ≥5.
+- Admin replaced Duyệt/Từ chối with **Xoá lời chúc** (inline confirmation) calling `DELETE /api/admin/wishes/[id]`: session + Origin required, UUID validated, 404 if missing. Deleting a wish keeps the guest's RSVP; the entry list then shows the attendance with “Chưa có lời chúc công khai.” The legacy PATCH endpoint stays for the CLI fallback (`moderate.mjs reject`).
+- Copy updated: the share checkbox is now “Đồng ý công khai tên và lời chúc.”, the list note no longer mentions approval, success text is “Đã gửi lời chúc. Cảm ơn bạn!”, and admin copy says public wishes need only the sender's consent.
+- Tests updated: the public-wish test expects immediate visibility and `approved`; the combined-entry test expects the message in `/api/entries` without DB approval; a new admin test covers 401/403 on DELETE, two-step delete, row removal and DB deletion; the Docker smoke no longer runs the moderation CLI.
+- Verified: lint, typecheck, production build, full Playwright 24/24 (including the new delete test) and CI Docker smoke. Deployment runs through the VPS timer with migration 5.
+
 ### CTA polish — 26/11/2026
 
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.

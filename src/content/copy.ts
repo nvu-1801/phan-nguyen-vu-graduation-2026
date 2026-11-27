@@ -12,7 +12,7 @@ export const copy = {
   ],
   rsvp: "Bạn cho mình biết có thể đến không nhé. Nếu chưa chắc lịch, bạn cứ liên hệ trực tiếp với mình. Không đến được cũng không sao — lời nhắn ở đây chỉ gửi riêng cho Vũ.",
   response: "Một lời hẹn đến chung vui, một lời nhắn để giữ lại. Bạn chọn cách nào cũng được — mình đều trân trọng.",
-  wishes: "Bạn có thể chọn một gợi ý bên dưới hoặc viết bằng lời của riêng mình. Lời nhắn mặc định là riêng tư; nếu muốn chia sẻ với mọi người, bạn có thể chủ động đồng ý công khai. Vũ sẽ duyệt trước khi lời chúc hiện lên trang.",
+  wishes: "Bạn có thể chọn một gợi ý bên dưới hoặc viết bằng lời của riêng mình. Lời nhắn mặc định là riêng tư; nếu muốn chia sẻ với mọi người, bạn chỉ cần đồng ý công khai — lời chúc sẽ hiện ngay trong sổ lưu bút.",
   photo: "Hai tấm hình này vẫn còn thiếu một điều: một tấm có bạn đứng cạnh. Nếu hôm ấy gặp nhau, nhớ gọi mình lại chụp hình nhé. Mình muốn giữ cả niềm vui của cuộc gặp trong tấm ảnh ấy.",
   coffee: "Bạn đến chung vui hoặc gửi một lời nhắn thôi đã là một món quà rồi. Nếu vẫn muốn mời mình một ly cà phê cho chặng đường mới, mình xin nhận và cảm ơn bạn thật nhiều. Hoàn toàn tùy bạn nhé.",
   closing: "Cảm ơn bạn đã đọc đến đây. Mình mong ngày ấy sẽ có dịp gặp bạn, nhưng dù bạn ở đâu, mình cũng chúc bạn có những ngày bình an, làm điều mình yêu thích và luôn có người để chia sẻ niềm vui.",

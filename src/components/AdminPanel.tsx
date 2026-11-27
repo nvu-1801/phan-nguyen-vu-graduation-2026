@@ -10,7 +10,7 @@ type Visibility = "all" | "public" | "private";
 type Attendance = "all" | "yes" | "no";
 type View = "wishes" | "rsvps";
 
-const statusLabels: Record<Wish["status"], string> = { pending: "Chờ duyệt", approved: "Đã duyệt", rejected: "Đã từ chối" };
+const statusLabels: Record<Wish["status"], string> = { pending: "Chờ duyệt", approved: "Đã đăng", rejected: "Đã ẩn" };
 
 function formatDate(value: string) {
   const iso = value.includes("T") ? value : `${value.replace(" ", "T")}Z`;
@@ -98,7 +98,7 @@ export function AdminPanel() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
   const [notice, setNotice] = useState("");
-  const [armed, setArmed] = useState<{ id: string; action: "approve" | "reject" } | null>(null);
+  const [deleteTarget, setDeleteTarget] = useState<string | null>(null);
   const [busyId, setBusyId] = useState<string | null>(null);
 
   const loadWishes = useCallback(async (status: Filter, after: string | null = null, access: Visibility = "all") => {
@@ -169,38 +169,26 @@ export function AdminPanel() {
     setItems([]);
   }, []);
 
-  async function moderate(wish: Wish, action: "approve" | "reject") {
-    if (armed?.id !== wish.id || armed.action !== action) {
-      setArmed({ id: wish.id, action });
+  async function remove(wish: Wish) {
+    if (deleteTarget !== wish.id) {
+      setDeleteTarget(wish.id);
       return;
     }
     setBusyId(wish.id);
     setError("");
     setNotice("");
     try {
-      const response = await fetch(`/api/admin/wishes/${wish.id}`, {
-        method: "PATCH",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ action }),
-      });
+      const response = await fetch(`/api/admin/wishes/${wish.id}`, { method: "DELETE" });
       if (response.status === 401) { expireSession(); return; }
-      const data = await response.json().catch(() => ({})) as { error?: string; status?: Wish["status"]; moderatedAt?: string };
-      if (!response.ok) throw new Error(data.error || "Chưa cập nhật được lời chúc.");
-      const nextStatus = data.status ?? (action === "approve" ? "approved" : "rejected");
-      const moderatedAt = data.moderatedAt ?? new Date().toISOString();
-      setItems(previous => previous.flatMap(item => {
-        if (item.id !== wish.id) return [item];
-        const next = { ...item, status: nextStatus, moderatedAt };
-        return filter === "all" || filter === nextStatus ? [next] : [];
-      }));
-      setNotice(action === "approve"
-        ? "Đã duyệt lời chúc. Lời chỉ hiện công khai nếu người gửi đã đồng ý."
-        : "Đã từ chối lời chúc. Lời này không hiện ở trang công khai.");
+      const data = await response.json().catch(() => ({})) as { error?: string };
+      if (!response.ok) throw new Error(data.error || "Chưa xoá được lời chúc.");
+      setItems(previous => previous.filter(item => item.id !== wish.id));
+      setNotice("Đã xoá lời chúc.");
     } catch (reason) {
-      setError(reason instanceof Error ? reason.message : "Chưa cập nhật được lời chúc.");
+      setError(reason instanceof Error ? reason.message : "Chưa xoá được lời chúc.");
     } finally {
       setBusyId(null);
-      setArmed(null);
+      setDeleteTarget(null);
     }
   }
 
@@ -233,14 +221,14 @@ export function AdminPanel() {
       <button className="button button-dark" type="submit" disabled={loading}>{loading ? "Đang kiểm tra…" : "Đăng nhập"}</button>
       {error && <p className="admin-error" role="alert">{error}</p>}
     </form> : <section className="admin-list" aria-labelledby="admin-list-title">
-      <div className="admin-list-heading"><div><h2 id="admin-list-title">{view === "wishes" ? "Lời nhắn của bạn bè" : "Xác nhận tham dự"}</h2><p>{view === "wishes" ? "Riêng tư chỉ Vũ đọc được. Lời công khai cần có sự đồng ý và được duyệt." : "Bao gồm cả phản hồi không đồng ý công khai. Lời nhắn RSVP luôn chỉ Vũ đọc được."}</p></div><button type="button" className="button button-line" onClick={logout}>Đăng xuất</button></div>
+      <div className="admin-list-heading"><div><h2 id="admin-list-title">{view === "wishes" ? "Lời nhắn của bạn bè" : "Xác nhận tham dự"}</h2><p>{view === "wishes" ? "Riêng tư chỉ Vũ đọc được. Lời công khai cần có sự đồng ý của người gửi; có thể xoá nếu cần." : "Bao gồm cả phản hồi không đồng ý công khai. Lời nhắn RSVP luôn chỉ Vũ đọc được."}</p></div><button type="button" className="button button-line" onClick={logout}>Đăng xuất</button></div>
       <div className="admin-tabs" role="group" aria-label="Chọn loại dữ liệu">
         <button type="button" aria-pressed={view === "wishes"} onClick={() => setView("wishes")}>Lời chúc</button>
         <button type="button" aria-pressed={view === "rsvps"} onClick={() => setView("rsvps")}>Xác nhận tham dự</button>
       </div>
       {notice && <p className="admin-notice" role="status">{notice}</p>}
       {view === "wishes" ? <>
-        <div className="admin-filters" role="group" aria-label="Lọc theo trạng thái duyệt">
+        <div className="admin-filters" role="group" aria-label="Lọc theo trạng thái">
           {(["all", "pending", "approved", "rejected"] as const).map(value => <button key={value} type="button" aria-pressed={filter === value} onClick={() => selectFilter(value)}>{value === "all" ? "Tất cả" : statusLabels[value]}</button>)}
         </div>
         <div className="admin-filters admin-visibility-filters" role="group" aria-label="Lọc theo quyền riêng tư">
@@ -252,26 +240,19 @@ export function AdminPanel() {
         <div className="admin-wishes">{items.map(wish => <article key={wish.id} className="admin-wish">
           <header><div><h3>{wish.name}</h3><time dateTime={new Date(`${wish.createdAt.replace(" ", "T")}Z`).toISOString()}>{formatDate(wish.createdAt)}</time></div><div className="admin-badges"><span>{statusLabels[wish.status]}</span><span className={wish.publicConsent ? "is-public" : "is-private"}>{wish.publicConsent ? "Đồng ý công khai" : "Riêng tư"}</span></div></header>
           <p>{wish.message}</p>
-          {wish.status === "pending" ? <div className="admin-moderation">
-            {armed?.id === wish.id ? <>
-              <p className="admin-moderation-question" role="status">
-                {armed.action === "approve" ? "Duyệt lời chúc này?" : "Từ chối lời chúc này?"}
-                {!wish.publicConsent && " Người gửi chọn riêng tư nên lời vẫn không hiện công khai."}
-              </p>
+          <div className="admin-moderation">
+            {deleteTarget === wish.id ? <>
+              <p className="admin-moderation-question" role="status">Xoá lời chúc này? Thao tác không thể hoàn tác.</p>
               <div className="admin-moderation-actions">
-                <button className="button button-dark" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, armed.action)}>
-                  {busyId === wish.id ? "Đang lưu…" : armed.action === "approve" ? "Xác nhận duyệt" : "Xác nhận từ chối"}
+                <button className="button admin-danger" type="button" disabled={busyId === wish.id} onClick={() => void remove(wish)}>
+                  {busyId === wish.id ? "Đang xoá…" : "Xác nhận xoá"}
                 </button>
-                <button className="button button-line" type="button" disabled={busyId === wish.id} onClick={() => setArmed(null)}>Huỷ</button>
+                <button className="button button-line" type="button" disabled={busyId === wish.id} onClick={() => setDeleteTarget(null)}>Huỷ</button>
               </div>
-            </> : <>
-              <div className="admin-moderation-actions">
-                <button className="button button-dark" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, "approve")}>Duyệt</button>
-                <button className="button button-line" type="button" disabled={busyId === wish.id} onClick={() => void moderate(wish, "reject")}>Từ chối</button>
-              </div>
-              {!wish.publicConsent && <p className="admin-moderation-hint">Người gửi chọn riêng tư: duyệt cũng không hiện ở trang công khai.</p>}
-            </>}
-          </div> : wish.moderatedAt ? <p className="admin-moderated">Đã xử lý lúc {formatDate(wish.moderatedAt)}</p> : null}
+            </> : <div className="admin-moderation-actions">
+              <button className="button admin-danger-outline" type="button" disabled={busyId === wish.id} onClick={() => void remove(wish)}>Xoá lời chúc</button>
+            </div>}
+          </div>
         </article>)}</div>
         {cursor && <button type="button" className="button button-line admin-more" disabled={loading} onClick={() => void loadWishes(filter, cursor, visibility)}>Xem thêm lời chúc</button>}
       </> : <RsvpList onExpired={expireSession} />}

@@ -45,6 +45,7 @@ Trước đây chỉ duyệt bằng CLI trong container. Nay Vũ duyệt đượ
 - UI: nút Duyệt / Từ chối + bước xác nhận, disable khi đang gửi, tự gỡ khỏi tab "Chờ duyệt", hiện "Đã xử lý lúc …", nhắc rõ lời riêng tư vẫn riêng tư sau khi duyệt.
 - Xác minh: 22/22 Playwright pass (53,7s), gồm 401, 403 sai Origin, 409 duyệt lại, lời bị từ chối/riêng tư không lọt `/api/wishes`; `npm run lint`, `npm run typecheck`, `npm run build` pass; test SQLite pass với 3 migration; ảnh chụp admin 1440/390 đã xem.
 - `/api/health` giờ yêu cầu schema version ≥3, nên lần deploy kế tiếp bắt buộc container chạy migration trước khi healthy.
+- **Cập nhật 27/11/2026 (yêu cầu người dùng):** bỏ bước duyệt. Wish mới tạo với `status='approved'`, migration `0005` chuẩn hoá các wish `pending` cũ; lời chúc công khai ngay khi người gửi đồng ý. Admin chuyển từ Duyệt/Từ chối sang **Xoá lời chúc** (`DELETE /api/admin/wishes/[id]`), có xác nhận; xoá chỉ bỏ wish, giữ RSVP. `/api/health` yêu cầu schema ≥5.
 
 ### P2 — Vận hành: backup, giám sát, danh sách khách — ĐÃ TRIỂN KHAI 26/11/2026
 

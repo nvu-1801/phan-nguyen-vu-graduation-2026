@@ -367,6 +367,10 @@ dialog{border:1px solid #e5dcc5;border-radius:24px;background:#fffdf6;color:#173
 .admin-moderation-actions .button{min-height:44px;padding:0 20px;font-size:.8rem}
 .admin-moderation-hint{margin:10px 0 0;font-size:.72rem;color:#6a705f}
 .admin-moderated{margin-top:14px;font-size:.72rem;color:#6a705f}
+.admin-danger{background:#9a301e;border-color:#9a301e;color:#fff8e9}
+.admin-danger:hover{background:#7c2417;border-color:#7c2417}
+.admin-danger-outline{border-color:#c08d80;background:#fffdf6;color:#8a2f1f}
+.admin-danger-outline:hover{background:#f6e2db;border-color:#9a301e;color:#7c2417}
 .admin-more{margin-top:20px}
 @media(max-width:600px){
   .admin-page{padding:17px 16px 52px}
