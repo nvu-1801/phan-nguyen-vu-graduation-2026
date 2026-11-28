@@ -1,4 +1,5 @@
 import { CopyAddress, MapPreview, SmsLink } from "@/components/EventActions";
+import { IconPin, IconScroll } from "@/components/Icons";
 import { copy, wishesForGuests } from "@/content/copy";
 import { WishIdeas } from "@/components/WishIdeas";
 import { ResponseBook } from "@/components/ResponseBook";
@@ -17,8 +18,8 @@ export default function Invitation() {
     <ScrollEffects />
     <a href="#noi-dung" className="skip">Chuyển đến nội dung</a>
     <header className="masthead"><div className="wrap header-inner">
-      <a className="wordmark" href="#noi-dung">Vũ<span className="wordmark-star" aria-hidden="true">✳</span><span className="wordmark-year"> / 2026</span></a>
-      <nav aria-label="Thiệp mời"><a href="#dia-diem">Ngày và địa điểm</a><a href="#loi-chuc" className="nav-letter">Lời chúc</a><a href="#xac-nhan" className="nav-rsvp">Xác nhận <span aria-hidden="true">↗</span></a></nav>
+      <a className="wordmark" href="#noi-dung">Vũ<span className="wordmark-year"> / 2026</span></a>
+      <nav aria-label="Thiệp mời"><a href="#dia-diem">Ngày và địa điểm</a><a href="#loi-chuc" className="nav-letter">Lời chúc</a><a href="#xac-nhan" className="nav-rsvp">Xác nhận</a></nav>
     </div></header>
     <main id="noi-dung">
       <section className="hero-surface" aria-labelledby="hero-title">
@@ -30,17 +31,17 @@ export default function Invitation() {
             <p className="hero-greeting">{copy.greeting}</p>
             <p className="hero-tagline">Một cột mốc mới.<br />Một ngày muốn có bạn.</p>
             <p className="invitation">{copy.hero}</p>
-            <div className="hero-actions"><a className="button button-dark" href="#xac-nhan">Xác nhận tham dự <span aria-hidden="true">↗</span></a><a className="hero-wish" href="#dia-diem">Khám phá lời mời <span aria-hidden="true">↓</span></a></div>
+            <div className="hero-actions"><a className="button button-dark" href="#xac-nhan">Xác nhận tham dự</a><a className="hero-wish" href="#dia-diem">Khám phá lời mời <span aria-hidden="true"><IconScroll size={16} /></span></a></div>
             <div className="hero-meta"><span>{event.school}</span><span>20.12.2026 · Dự kiến</span></div>
           </div>
           <div className="hero-art">
             <div className="hero-year" aria-hidden="true">20<br />26</div>
             <figure className="hero-frame"><Image src="/images/portrait-9516-cutout.webp" alt="Phan Nguyên Vũ trong lễ phục tốt nghiệp" width={850} height={1364} unoptimized preload /></figure>
-            <div className="photo-label"><span aria-hidden="true">✦</span><span>Hẹn gặp bạn<br /><strong>ngày mình tốt nghiệp</strong></span></div>
+            <div className="photo-label"><span>Hẹn gặp bạn<br /><strong>ngày mình tốt nghiệp</strong></span></div>
             <span className="hero-note">Một cuộc hẹn ở Quy Nhơn.</span>
           </div>
         </div>
-        <div className="wrap hero-bottom"><span>CUỘN ĐỂ MỞ LỜI MỜI</span><span aria-hidden="true">↓</span><span>QUY NHƠN, VIỆT NAM</span></div>
+        <div className="wrap hero-bottom"><span>CUỘN ĐỂ MỞ LỜI MỜI</span><span aria-hidden="true" className="hero-scroll"><IconScroll size={14} /></span><span>QUY NHƠN, VIỆT NAM</span></div>
       </section>
 
       <section className="campus" aria-labelledby="campus-title">
@@ -55,9 +56,9 @@ export default function Invitation() {
 
       <section id="dia-diem" className="event-section" aria-labelledby="event-title"><div className="wrap event-inner">
         <div className="event-heading" data-reveal><p className="eyebrow">02 / MỘT CUỘC HẸN</p><h2 id="event-title">Để dành cho mình<br /><em>ngày hôm ấy.</em></h2><p>{copy.event}</p></div>
-        <div className="event-ticket"><div className="ticket-top"><span>LỜI MỜI DÀNH CHO BẠN</span><span aria-hidden="true">↗</span></div><div className="ticket-date"><strong>20</strong><div><span>THÁNG 12 · 2026</span><p>Chủ nhật</p><small>Ngày dự kiến</small></div></div>
+        <div className="event-ticket"><div className="ticket-top"><span>LỜI MỜI DÀNH CHO BẠN</span></div><div className="ticket-date"><strong>20</strong><div><span>THÁNG 12 · 2026</span><p>Chủ nhật</p><small>Ngày dự kiến</small></div></div>
           <dl className="event-facts"><div><dt>Trường</dt><dd>{event.school}</dd></div><div><dt>Địa điểm</dt><dd>{event.venue}<small>{event.address}</small></dd></div><div><dt>Thời gian</dt><dd>Giờ tổ chức sẽ được cập nhật</dd></div></dl>
-          <div className="actions"><a className="button button-dark" href="#duong-di">Chỉ đường <span aria-hidden="true">↗</span></a><a className="button button-line" href="/tot-nghiep-vu.ics" download>Lưu vào lịch</a></div><div className="ticket-perforation" aria-hidden="true" /><p className="ticket-footer">MỘT TẤM HÌNH CÙNG BẠN, MỘT KỶ NIỆM CÙNG NHAU.</p>
+          <div className="actions"><a className="button button-dark" href="#duong-di"><IconPin size={17} /> Chỉ đường</a><a className="button button-line" href="/tot-nghiep-vu.ics" download>Lưu vào lịch</a></div><div className="ticket-perforation" aria-hidden="true" /><p className="ticket-footer">MỘT TẤM HÌNH CÙNG BẠN, MỘT KỶ NIỆM CÙNG NHAU.</p>
         </div>
       </div></section>
 
@@ -86,10 +87,10 @@ export default function Invitation() {
       </div></section>
 
       <section id="duong-di" className="venue" aria-labelledby="venue-heading"><div className="venue-photo landscape"><div className="landscape-image venue-image" role="img" aria-label="Ảnh trung tâm hội nghị, bảng tên cũ tỉnh Bình Định" /><div className="venue-photo-title"><p>ĐIỂM HẸN · QUY NHƠN</p><h2>Hẹn bạn<br /><em>ở đây.</em></h2><span>{event.venue}</span></div><div className="venue-photo-caption">Ảnh tham khảo địa điểm · bảng tên cũ trong ảnh</div></div><div className="wrap venue-grid">
-        <div className="venue-copy" data-reveal><p className="eyebrow">06 / ĐƯỜNG ĐẾN CUỘC HẸN</p><h2 id="venue-heading">Hẹn gặp bạn<br /><em>tại đây.</em></h2><h3>{event.venue}</h3><p>{event.address}</p><a className="button button-dark venue-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer">Chỉ đường đến lễ tốt nghiệp <span aria-hidden="true">↗</span></a><div className="venue-links"><a href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a><CopyAddress /></div></div><MapPreview />
+        <div className="venue-copy" data-reveal><p className="eyebrow">06 / ĐƯỜNG ĐẾN CUỘC HẸN</p><h2 id="venue-heading">Hẹn gặp bạn<br /><em>tại đây.</em></h2><h3>{event.venue}</h3><p>{event.address}</p><a className="button button-dark venue-directions" href={`https://www.google.com/maps/dir/?api=1&destination=${encodeURIComponent(event.venue + ", " + event.address)}`} target="_blank" rel="noreferrer"><IconPin size={17} /> Chỉ đường đến lễ tốt nghiệp</a><div className="venue-links"><a href={mapsUrl} target="_blank" rel="noreferrer">Mở Google Maps</a><CopyAddress /></div></div><MapPreview />
       </div></section>
     </main>
-    <footer className="closing"><div className="wrap coffee-banner landscape"><div className="landscape-image coffee-image" aria-hidden="true" /><div className="coffee-copy"><p className="eyebrow">MỘT MÓN QUÀ NHỎ, NẾU BẠN MUỐN</p><h2>Một lời chúc thôi<br />cũng đã <em>rất quý.</em></h2><p>{copy.coffee}</p><p className="coffee-dock-note">Bạn có thể mở mã QR bằng nút ly cà phê ở góc màn hình.</p></div></div><div className="wrap closing-message"><p>{copy.closing}</p></div><div className="wrap closing-inner"><p className="signature">Cảm ơn vì đã là một phần trong hành trình của Vũ.</p></div></footer>
+    <footer className="closing"><div className="wrap coffee-banner landscape"><div className="landscape-image coffee-image" aria-hidden="true" /><div className="coffee-copy"><p className="eyebrow">MỘT MÓN QUÀ NHỎ, NẾU BẠN MUỐN</p><h2>Một lời chúc thôi<br />cũng đã <em>rất quý.</em></h2><p>{copy.coffee}</p><p className="coffee-dock-note">Bạn có thể mở mã QR bằng nút ly cà phê ở góc màn hình.</p></div></div><div className="wrap closing-message"><p>{copy.closing}</p></div><div className="wrap closing-inner"><p className="signature">Cảm ơn vì đã là một phần trong hành trình của Vũ.</p><p className="music-credit">Nhạc nền: “Graduation Background Music” — MaksymMalko · Pixabay</p></div></footer>
     <FloatingActions />
   </>;
 }

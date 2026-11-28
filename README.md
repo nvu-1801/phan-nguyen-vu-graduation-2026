@@ -25,6 +25,13 @@ npm run test:browser
 
 Playwright khởi tạo file SQLite riêng trong thư mục kết quả và chạy trên bản build production. Dữ liệu này được tạo lại mỗi lần chạy.
 
+## Nhạc nền
+
+Nhạc nền tùy chọn là “Graduation Background Music” của MaksymMalko, dùng theo
+[Pixabay Content License](https://pixabay.com/service/license-summary/). Website
+không tự phát: khách bấm nút nhạc ở cụm nút nổi để bật/tắt. Nguồn, hash và hành
+vi chi tiết: [docs/graduation/MUSIC.md](docs/graduation/MUSIC.md).
+
 ## Lời chúc
 
 Lời chúc công khai ngay khi người gửi tick đồng ý chia sẻ; không cần bước duyệt. Lời không đồng ý vẫn riêng tư và chỉ Vũ đọc được trong `/admin`. Nếu cần ẩn/xoá, dùng nút **Xoá lời chúc** trong `/admin`.

@@ -243,3 +243,20 @@ User asked to remove the approval step and allow deleting a wish from `/admin`.
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.
 - Wish suggestion buttons are now dashed soft-green rows with a sparkle badge on the left and a plus on the right. Icon spans are `aria-hidden`, so the accessible name remains exactly “Dùng gợi ý: <label>” and the existing exact-name test still passes.
 - Verified: lint, production build, full Playwright 22/22 (2.1m); screenshots at 390 and 1440 inspected (`test-results/cta-polish`, ignored).
+
+## Nhạc nền tốt nghiệp — 28/11/2026
+
+User chọn bản "Graduation Background Music" của MaksymMalko trên Pixabay và yêu cầu gắn vào web.
+
+- Đã tải MP3 theo Pixabay Content License vào `public/audio/graduation-background-music.mp3` (2.627.291 bytes, SHA-256 `4b9dc84dbe0b5163b8bb291dcfd253ed152f7ca60c1c3aef4bad904a017d8388`). Nguồn, giấy phép và hành vi ghi tại `docs/graduation/MUSIC.md`; hash bổ sung vào `assets/manifest.json`.
+- Thêm component client `BackgroundMusic` và nút nhạc trong cụm nút nổi. Không tự phát; chỉ phát sau click/phím, fade 0.9s, lặp, âm lượng 0.32, lưu lựa chọn `vu-graduation-music`, chỉ tiếp tục sau thao tác đầu tiên khi mở lại, tạm dừng khi tab ẩn. Có `aria-pressed` và vùng thông báo cho trình đọc màn hình.
+- `FloatingActions` bọc nhạc + liên hệ trong `.floating-dock`; thêm dòng ghi công ở footer. Không push/deploy.
+- Đã kiểm: `npm run lint`, `npm run typecheck`, `npm run build`, Playwright đầy đủ 24/24 (thêm test nhạc; axe 390px vẫn sạch). Đã xem ảnh chụp cụm nút 390/1440 ở trạng thái bật/tắt.
+
+## Icon refresh — 28/11/2026
+
+User asked to delete the orange asterisk in the wordmark and replace the cheap/AI-looking glyph icons, especially the text arrows.
+
+- Removed the `✳` wordmark star and the `✦`, `↗`, `↓`, `×`, `←`, `＋` glyphs. Added `src/components/Icons.tsx` — one 1.6px stroke SVG family: pin, phone, coffee, music note, close, chevron, plus, pen, scroll mouse, up.
+- Updated page CTAs, ticket, photo-label, hero scroll cue, map link, QR close, admin back link, wish suggestions, floating dock and music toggle. CSS drops the old star rules, aligns icon spacing and keeps 44px targets.
+- Verified: lint, typecheck, production build and Playwright 24/24 after the refresh. Inspected 390/1440 element screenshots of header, hero actions, photo label, ticket actions, venue links, wish suggestion and dock.

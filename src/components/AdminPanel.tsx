@@ -2,6 +2,7 @@
 
 import { useCallback, useEffect, useState, type FormEvent } from "react";
 import Link from "next/link";
+import { IconChevronLeft } from "./Icons";
 
 type Wish = { id: string; name: string; message: string; publicConsent: boolean; status: "pending" | "approved" | "rejected"; createdAt: string; moderatedAt: string | null };
 type Rsvp = { id: string; name: string; attendance: "yes" | "no"; message: string | null; publicConsent: boolean; createdAt: string };
@@ -205,7 +206,7 @@ export function AdminPanel() {
   }
 
   return <div className="admin-shell">
-    <Link className="admin-back" href="/#loi-chuc">← Về thiệp mời</Link>
+    <Link className="admin-back" href="/#loi-chuc"><IconChevronLeft size={16} /> Về thiệp mời</Link>
     <header className="admin-heading">
       <p className="eyebrow">KHU VỰC RIÊNG CỦA VŨ</p>
       <h1>Lời chúc<br /><em>gửi đến mình.</em></h1>

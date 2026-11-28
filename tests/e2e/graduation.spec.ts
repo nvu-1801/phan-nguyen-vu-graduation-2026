@@ -418,3 +418,21 @@ test("photo scene keeps its poster during cold load and initializes when entered
   await expect(stage).not.toHaveClass(/photo-stage-live/);
   await expect(stage.locator(".photo-poster")).toHaveCSS("opacity","1");
 });
+
+test("background music waits for a click, then plays and pauses", async ({ page, request }) => {
+  await page.goto("/");
+  const audio = page.locator("audio.music-audio");
+  const toggle = page.getByRole("button", { name: "Bật nhạc nền" });
+  await expect(toggle).toHaveAttribute("aria-pressed", "false");
+  await expect(audio).toHaveAttribute("src", "/audio/graduation-background-music.mp3");
+  expect(await audio.evaluate((el: HTMLAudioElement) => el.paused)).toBe(true);
+  await toggle.click();
+  await expect(page.getByRole("button", { name: "Tắt nhạc nền" })).toHaveAttribute("aria-pressed", "true");
+  await expect.poll(() => audio.evaluate((el: HTMLAudioElement) => el.paused)).toBe(false);
+  await page.getByRole("button", { name: "Tắt nhạc nền" }).click();
+  await expect.poll(() => audio.evaluate((el: HTMLAudioElement) => el.paused)).toBe(true);
+  await expect(page.getByRole("button", { name: "Bật nhạc nền" })).toHaveAttribute("aria-pressed", "false");
+  const asset = await request.get("/audio/graduation-background-music.mp3");
+  expect(asset.ok()).toBeTruthy();
+  expect(asset.headers()["content-type"]).toContain("audio/mpeg");
+});

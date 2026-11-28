@@ -107,6 +107,11 @@
       "path": "assets/payments/vu-coffee-vietqr.png",
       "bytes": 84882,
       "sha256": "6c1d757af4815ce7ca6b67dd5ab3ad4bc1bbe2677cca63c33dc85fdfb149483e"
+    },
+    {
+      "path": "public/audio/graduation-background-music.mp3",
+      "bytes": 2627291,
+      "sha256": "4b9dc84dbe0b5163b8bb291dcfd253ed152f7ca60c1c3aef4bad904a017d8388"
     }
   ],
   "hashBasis": "Git blob bytes (LF-normalized text); original JPEG bytes unchanged"

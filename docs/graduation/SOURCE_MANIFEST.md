@@ -27,3 +27,5 @@ Các đoạn ghi “chưa đóng gói/chưa copy” trong kế hoạch là lịc
 
 ## Asset bổ sung
 Người dùng cung cấp assets/payments/vu-coffee-vietqr.png và số liên hệ 0343628267. Bật khối cà phê theo cập nhật cuối IMPLEMENTATION_PLAN.md; hash ảnh QR có trong assets/manifest.json. Chưa quét xác minh payload thanh toán.
+
+Nhạc nền “Graduation Background Music” của MaksymMalko (Pixabay Content License) nằm ở `public/audio/graduation-background-music.mp3`; nguồn, hash và hành vi opt-in ghi trong `docs/graduation/MUSIC.md`. Không tự phát.
