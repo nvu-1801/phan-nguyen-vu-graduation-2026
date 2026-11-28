@@ -238,6 +238,14 @@ User asked to remove the approval step and allow deleting a wish from `/admin`.
 - Added `scripts/clear-data.mjs`: refuses without `--yes`, prints before/after counts, deletes all rows from `wishes`, `rsvps` and `rate_limits` without touching the schema. Copied into the runtime image and documented in `docs/VPS.md` with a backup-first sequence.
 - The production data was not cleared by the agent (no SSH access); the owner runs the documented command on the VPS. Backups already exist in `backups/auto-*`/`backups/daily-*`.
 
+## Background music autoplay — 28/11/2026
+
+User asked the site to start the background music as soon as it opens.
+
+- `BackgroundMusic` now attempts `audio.play()` on mount with a fade-in; `preload="auto"`. If the browser blocks sound before a gesture, the button returns to “Bật nhạc nền”, announces it to screen readers, and starts on the first pointer/key press (ignoring presses on the music button so the toggle is not double-fired).
+- A saved `off` preference is still respected, so turning the music off once keeps it off on later visits; turning it on stores `on`. Hidden tabs pause and resume as before.
+- Playwright runs Chromium with `--autoplay-policy=no-user-gesture-required`; the test now asserts autoplay, pause, persistence across reload and manual restart. `docs/graduation/MUSIC.md` documents both the autoplay branch and the real-browser gesture fallback.
+
 ### CTA polish — 26/11/2026
 
 - `.hero-wish` inherited the global link underline; it now sets `text-decoration:none` and renders as a cream-gradient pill with the arrow inside a dark circular badge (orange on hover/focus). On phones it is full-width with the label and badge at opposite ends.

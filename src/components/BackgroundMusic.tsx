@@ -44,14 +44,16 @@ function MusicIcon({ playing }: { playing: boolean }) {
 }
 
 /**
- * Optional background music. It never autoplays: the first sound always follows
- * a click or key press, and a saved preference is only resumed on the next gesture.
+ * Background music. It tries to autoplay on load; browsers that block audio
+ * before a gesture fall back to starting on the first pointer/key press. A
+ * saved "off" preference is respected and no autoplay is attempted.
  */
 export function BackgroundMusic() {
   const audioRef = useRef<HTMLAudioElement | null>(null);
   const frameRef = useRef<number | null>(null);
   const aliveRef = useRef(true);
   const enabledRef = useRef(false);
+  const startRef = useRef<() => Promise<boolean>>(async () => false);
   const [enabled, setEnabled] = useState(false);
   const [playing, setPlaying] = useState(false);
   const [notice, setNotice] = useState("");
@@ -62,23 +64,20 @@ export function BackgroundMusic() {
     aliveRef.current = true;
     audio.volume = TARGET_VOLUME;
 
-    let restore = false;
+    let stored: string | null = null;
     try {
-      restore = window.localStorage.getItem(STORAGE_KEY) === "on";
+      stored = window.localStorage.getItem(STORAGE_KEY);
     } catch {
-      restore = false;
+      stored = null;
     }
-    let syncTimer: number | undefined;
-    if (restore) {
-      enabledRef.current = true;
-      // Reflect the saved preference after hydration without blocking the first paint.
-      syncTimer = window.setTimeout(() => {
-        if (enabledRef.current) setEnabled(true);
-      }, 0);
-    }
+    const wantsMusic = stored !== "off";
+    enabledRef.current = wantsMusic;
 
-    const playSoftly = async () => {
-      if (!enabledRef.current || !audio.paused) return false;
+    let removeGesture: (() => void) | null = null;
+
+    const start = async () => {
+      if (!enabledRef.current) return false;
+      if (!audio.paused) return true;
       try {
         audio.volume = 0;
         await audio.play();
@@ -87,21 +86,55 @@ export function BackgroundMusic() {
         return true;
       } catch {
         audio.volume = TARGET_VOLUME;
-        enabledRef.current = false;
-        setEnabled(false);
         return false;
       }
     };
+    startRef.current = start;
 
-    // Browsers block audio before a gesture, so a stored preference waits for one.
-    const onFirstGesture = () => {
-      window.removeEventListener("pointerdown", onFirstGesture);
-      window.removeEventListener("keydown", onFirstGesture);
-      void playSoftly().then((started) => { if (started) setEnabled(true); });
+    const playFromGesture = async () => {
+      enabledRef.current = true;
+      setEnabled(true);
+      const started = await start();
+      if (!started) {
+        enabledRef.current = false;
+        setEnabled(false);
+        setNotice("Trình duyệt chưa cho phát nhạc. Bạn thử bấm nút nhạc nhé.");
+        return;
+      }
+      setNotice("Đang phát nhạc nền. Bạn có thể tắt bất cứ lúc nào.");
     };
-    if (restore) {
-      window.addEventListener("pointerdown", onFirstGesture, { passive: true });
-      window.addEventListener("keydown", onFirstGesture);
+
+    const waitForGesture = () => {
+      if (removeGesture) return;
+      const onGesture = (event: Event) => {
+        const target = event.target;
+        if (target instanceof Element && target.closest(".music-toggle")) return;
+        removeGesture?.();
+        removeGesture = null;
+        void playFromGesture();
+      };
+      window.addEventListener("pointerdown", onGesture, { passive: true });
+      window.addEventListener("keydown", onGesture);
+      removeGesture = () => {
+        window.removeEventListener("pointerdown", onGesture);
+        window.removeEventListener("keydown", onGesture);
+      };
+    };
+
+    if (wantsMusic) {
+      void start().then((started) => {
+        if (!aliveRef.current) return;
+        if (started) {
+          setEnabled(true);
+          setNotice("Đang phát nhạc nền. Bạn có thể tắt bất cứ lúc nào.");
+          return;
+        }
+        // Autoplay blocked: reflect the real state and start on the first gesture.
+        enabledRef.current = false;
+        setEnabled(false);
+        setNotice("Chạm vào trang để bật nhạc nền.");
+        waitForGesture();
+      });
     }
 
     let resumeWhenVisible = false;
@@ -109,19 +142,18 @@ export function BackgroundMusic() {
       if (document.hidden) {
         resumeWhenVisible = !audio.paused;
         if (resumeWhenVisible) audio.pause();
-      } else if (resumeWhenVisible) {
+      } else if (resumeWhenVisible && enabledRef.current) {
         resumeWhenVisible = false;
-        void playSoftly();
+        void start();
       }
     };
     document.addEventListener("visibilitychange", onVisibility);
 
     return () => {
-      window.removeEventListener("pointerdown", onFirstGesture);
-      window.removeEventListener("keydown", onFirstGesture);
+      removeGesture?.();
       document.removeEventListener("visibilitychange", onVisibility);
-      if (syncTimer !== undefined) window.clearTimeout(syncTimer);
       aliveRef.current = false;
+      startRef.current = async () => false;
       audio.pause();
     };
   }, []);
@@ -139,7 +171,7 @@ export function BackgroundMusic() {
         // Storage can be unavailable in private browsing; the toggle still works.
       }
       fade(audio, frameRef, 0, () => audio.pause(), () => aliveRef.current);
-      setNotice("Đã tắt nhạc nền.");
+      setNotice("Đã tắt nhạc nền. Lần sau trang sẽ không tự phát.");
       return;
     }
 
@@ -150,19 +182,14 @@ export function BackgroundMusic() {
     } catch {
       // Ignore storage failures.
     }
-    try {
-      audio.volume = 0;
-      await audio.play();
-      if (!enabledRef.current) { audio.pause(); audio.volume = TARGET_VOLUME; return; }
-      fade(audio, frameRef, TARGET_VOLUME, undefined, () => aliveRef.current);
-      setNotice("Đang phát nhạc nền. Bạn có thể tắt bất cứ lúc nào.");
-    } catch {
-      if (!enabledRef.current) return;
+    const started = await startRef.current();
+    if (!started) {
       enabledRef.current = false;
       setEnabled(false);
-      audio.volume = TARGET_VOLUME;
       setNotice("Trình duyệt chưa cho phát nhạc. Bạn thử bấm lại nhé.");
+      return;
     }
+    setNotice("Đang phát nhạc nền. Bạn có thể tắt bất cứ lúc nào.");
   };
 
   return <>
@@ -183,7 +210,7 @@ export function BackgroundMusic() {
       className="music-audio"
       src={TRACK}
       loop
-      preload="none"
+      preload="auto"
       onPlay={() => setPlaying(true)}
       onPause={() => setPlaying(false)}
       onError={() => {
