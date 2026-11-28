@@ -26,9 +26,9 @@ MaksymMalko · Pixabay”.
 
 ## Hành vi trên website
 
-- **Tự phát khi mở trang.** Component thử gọi `audio.play()` ngay sau khi mount.
-- Trình duyệt chặn autoplay có âm thanh khi chưa có tương tác (Chrome/Safari): khi đó nhạc tự phát ở **thao tác chạm/phím đầu tiên** trên trang; nút nhạc chuyển về “Bật nhạc nền” và có thông báo ẩn.
-- Bấm nút loa để tắt; lựa chọn “off” được lưu trong `localStorage` (`vu-graduation-music`) và **lần sau mở trang sẽ không tự phát** cho tới khi khách bật lại.
+- **Tự phát khi mở trang.** Component thử gọi `audio.play()` ngay sau khi mount; mỗi lần mở trang đều thử lại.
+- Trình duyệt chặn autoplay có âm thanh khi chưa có tương tác (Chrome/Safari): listener được đăng ký **trước** khi thử phát, nên thao tác chạm/kéo/gõ phím/click đầu tiên ở bất kỳ đâu sẽ bật nhạc (trừ nút nhạc, để tránh bấm hai lần).
+- Bấm nút loa để tắt trong phiên hiện tại. Không lưu trạng thái tắt vào `localStorage`; mở lại trang vẫn thử autoplay.
 - Nút có `aria-pressed` và nhãn đổi giữa “Bật nhạc nền” / “Tắt nhạc nền”.
 - Nhạc lặp vô hạn, âm lượng mục tiêu 0.32, tăng/giảm dần trong 0.9 giây.
 - Tự tạm dừng khi tab bị ẩn và phát lại khi quay lại tab nếu khách vẫn bật.
@@ -36,7 +36,7 @@ MaksymMalko · Pixabay”.
   ẩn (`role="status"`) cho trình đọc màn hình.
 - Tôn trọng `prefers-reduced-motion`: hiệu ứng sóng nhạc đứng yên, không ảnh
   hưởng tới việc phát nhạc.
-- Test Playwright chạy Chromium với `--autoplay-policy=no-user-gesture-required` để kiểm tra nhánh autoplay; máy thật vẫn có thể rơi vào nhánh chờ thao tác đầu tiên.
+- Test Playwright chạy Chromium với `--autoplay-policy=no-user-gesture-required` để kiểm tra nhánh autoplay; máy thật vẫn có thể rơi vào nhánh chờ thao tác đầu tiên nếu trình duyệt chưa có tương tác với domain.
 
 ## Kiểm tra
 

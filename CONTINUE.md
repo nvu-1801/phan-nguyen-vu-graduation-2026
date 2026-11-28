@@ -242,9 +242,9 @@ User asked to remove the approval step and allow deleting a wish from `/admin`.
 
 User asked the site to start the background music as soon as it opens.
 
-- `BackgroundMusic` now attempts `audio.play()` on mount with a fade-in; `preload="auto"`. If the browser blocks sound before a gesture, the button returns to “Bật nhạc nền”, announces it to screen readers, and starts on the first pointer/key press (ignoring presses on the music button so the toggle is not double-fired).
-- A saved `off` preference is still respected, so turning the music off once keeps it off on later visits; turning it on stores `on`. Hidden tabs pause and resume as before.
-- Playwright runs Chromium with `--autoplay-policy=no-user-gesture-required`; the test now asserts autoplay, pause, persistence across reload and manual restart. `docs/graduation/MUSIC.md` documents both the autoplay branch and the real-browser gesture fallback.
+- `BackgroundMusic` now attempts `audio.play()` on mount with a fade-in; `preload="auto"`. The first pointer/touch/key/click listeners are attached **before** the attempt, so an early scroll/tap is not missed; presses on the music button are ignored to avoid double-toggling. If the browser blocks sound, the button shows “Bật nhạc nền” and the first interaction starts it.
+- No `off` preference is stored anymore: every fresh visit attempts autoplay, and the toggle only mutes the current visit. Turning it off then reloading tests that autoplay runs again.
+- Playwright runs Chromium with `--autoplay-policy=no-user-gesture-required`; the test asserts autoplay, pause, reload-autoplay and manual restart. `docs/graduation/MUSIC.md` documents the autoplay branch and the real-browser gesture fallback.
 
 ### CTA polish — 26/11/2026
 
